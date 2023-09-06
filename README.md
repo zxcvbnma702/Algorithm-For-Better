@@ -388,4 +388,508 @@ public:
 > 完全二叉树 使用顺序存储 fabulous
 >
 
+#### 递归遍历
+
+[前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```c++
+class Solution
+{
+public:
+    void traversal(TreeNode *cur, vector<int> &vec)
+    {
+        if (cur == nullptr)
+            return;
+        vec.push_back(cur->val);
+        traversal(cur->left, vec);
+        traversal(cur->right, vec);
+    }
+    vector<int> preorderTraversal(TreeNode *root)
+    {
+        vector<int> vec;
+        traversal(root, vec);
+        return vec;
+    }
+};
+```
+
+[中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+```c++
+class Solution {
+public:
+void traversal(TreeNode *cur, vector<int> &vec)
+    {
+        if (cur == nullptr)
+            return;
+        traversal(cur->left, vec);
+        vec.push_back(cur->val);
+        traversal(cur->right, vec);
+    }
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> vec;
+        traversal(root, vec);
+        return vec;
+    }
+};
+```
+
+[后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+```c++
+class Solution
+{
+public:
+    void traversal(TreeNode *cur, vector<int> &vec)
+    {
+        if (cur == nullptr)
+            return;
+        traversal(cur->left, vec);
+        traversal(cur->right, vec);
+        vec.push_back(cur->val);
+    }
+    vector<int> postorderTraversal(TreeNode *root)
+    {
+        vector<int> vec;
+        traversal(root, vec);
+        return vec;
+    }
+};
+```
+
+#### 非递归遍历
+
+> 使用栈来模拟递归过程
+> 中左右
+> 加入栈时，先将根节点放入栈中，然后放入右孩子，再加入左孩子
+> 这样出栈时存储的就是中左右，即前序遍历的顺序了
+
+[前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+```c++
+// 前序非递归遍历
+class Solution
+{
+public:
+    vector<int> preorderTraversal(TreeNode *root)
+    {
+        stack<TreeNode *> st;
+        vector<int> vec;
+        if (root == nullptr)
+            return vec;
+        st.push(root);
+        while (!st.empty())
+        {
+            TreeNode *temp = st.top();
+            st.pop();
+            vec.push_back(temp->val);
+            // 前序，需要以中右左的顺序添加入栈
+            if (temp->right != nullptr)
+                st.push(temp->right);
+            if (temp->left != nullptr)
+                st.push(temp->left);
+        }
+        return vec;
+    }
+};
+```
+
+[后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+> 相较于非递归的前序遍历， 非递归的后序遍历需要将子节点入栈顺序改为中左右
+> 这样出栈后存储的节点顺序就是中右左， 然后将数组翻转一下，就得到了左右中的遍历顺序, 即后序遍历的顺序。
+
+``` c++
+// 后序非递归遍历
+class Solution
+{
+public:
+    vector<int> postorderTraversal(TreeNode *root)
+    {
+        stack<TreeNode *> st;
+        vector<int> vec;
+        if (root == nullptr)
+            return vec;
+        st.push(root);
+        while (!st.empty())
+        {
+            TreeNode *temp = st.top();
+            st.pop();
+            vec.push_back(temp->val);
+            // 后序，需要以中左右的顺序添加入栈
+            if (temp->left != nullptr)
+                st.push(temp->left);
+            if (temp->right != nullptr)
+                st.push(temp->right);
+        }
+        // 最后将存储的中右左顺序翻转为左右中
+        reverse(vec.begin(), vec.end());
+        return vec;
+    }
+};
+```
+
+[中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+> 在使用迭代法写中序遍历，就需要借用指针的遍历来帮助访问节点，栈则用来处理节点上的元素。
+> 指针不为空 => 压栈， 一直往左走
+> 指针为空 => 取栈节点，存下来，往右走
+> 如此循环往复，直至栈和指针都为空
+
+```c++
+// 中序非递归遍历
+class Solution
+{
+public:
+    vector<int> inorderTraversal(TreeNode *root)
+    {
+        vector<int> result;
+        stack<TreeNode *> st;
+        // 中序非递归需要一个指针,首先指向根节点
+        TreeNode *cur = root;
+
+        while (cur != nullptr || !st.empty())
+        {
+            if (cur != nullptr) // 指针向左访问到底
+            {
+                st.push(cur);
+                cur = cur->left;
+            }
+            else
+            {
+                cur = st.top();
+                st.pop();
+                result.push_back(cur->val); // 中
+                cur = cur->right;
+            }
+        }
+        return result;
+    }
+};
+```
+
+#### 层序遍历
+
+[层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
+
+> 使用队列来辅助遍历
+
+```c++
+// 层序遍历
+class Solution
+{
+public:
+    vector<vector<int>> levelOrder(TreeNode *root)
+    {
+        queue<TreeNode *> que;
+        if (root != nullptr)
+            que.push(root);
+        vector<vector<int>> result;
+        while (!que.empty())
+        {
+            int size = que.size(); // 记录每层节点数目
+            vector<int> vec;
+            for (int i = 0; i < size; i++)
+            {
+                TreeNode *node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+            }
+            result.push_back(vec);
+        }
+        return result;
+    }
+};
+```
+
+[逆层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/)
+
+> 将层序遍历结果reserve即可
+
+[二叉树的层平均值](https://leetcode.cn/problems/average-of-levels-in-binary-tree/)
+
+> 层序时计算平均值即可
+
+[二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/description/)
+
+> 取层序遍历的结果中的最右值即可
+> result.push_back(vec[size-1]);
+
+[N叉树的遍历](https://leetcode.cn/problems/n-ary-tree-level-order-traversal/description/)
+
+> 添加子节点时有些许不同
+
+```c++
+// N叉树的遍历
+class Solution
+{
+public:
+    vector<vector<int>> levelOrder(Node *root)
+    {
+        queue<Node *> que;
+        vector<vector<int>> result;
+        if (root != nullptr)
+        {
+            que.push(root);
+        }
+        while (!que.empty())
+        {
+            int size = que.size();
+            vector<int> vec;
+            for (int i = 0; i < size; i++)
+            {
+                Node *node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                // 将所有子节点加入队列
+                for (Node *p : node->children)
+                {
+                    que.push(p);
+                }
+            }
+            result.push_back(vec);
+        }
+        return result;
+    }
+};
+```
+
+[在每个树行中找最大值](https://leetcode.cn/problems/find-largest-value-in-each-tree-row/description/)
+
+> 遍历每一层时比较大小，最后将每层的最大值存储即可
+
+[二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/description/)
+
+> 返回 result.size()
+
+[二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
+
+> 当找到第一个左右子节点都为空的节点时，就表明找到了最小的深度
+
+[填充每个节点的下一个右侧节点指针](https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/description/)
+
+> 本题依然是层序遍历，只不过在单层遍历的时候记录一下本层的头部节点，然后在遍历的时候让前一个节点指向本节点就可以了
+
+```c++
+// 填充下一个右侧节点
+class Solution
+{
+public:
+    Node *connect(Node *root)
+    {
+        queue<Node *> que;
+        if (root != NULL)
+            que.push(root);
+        while (!que.empty())
+        {
+            int size = que.size();
+            // vector<int> vec;
+            Node *nodePre;
+            Node *node;
+            for (int i = 0; i < size; i++)
+            {
+                if (i == 0)
+                {
+                    nodePre = que.front(); // 取出一层的头结点
+                    que.pop();
+                    node = nodePre;
+                }
+                else
+                {
+                    node = que.front();
+                    que.pop();
+                    nodePre->next = node; // 本层前一个节点next指向本节点
+                    nodePre = nodePre->next;
+                }
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+            }
+            nodePre->next = NULL; // 本层最后一个节点指向NULL
+        }
+        return root;
+    }
+};
+```
+
 ### 并查集
+
+## 图
+
+### 存储结构
+
+邻接矩阵(边多)
+  
+```c++
+#define maxsize 100
+#define inf 999999
+// 邻接矩阵
+struct Graph
+{
+    char node[maxsize];         // 顶点表, 记录顶点名字
+    int edge[maxsize][maxsize]; // 邻接矩阵
+    int nodeNum, edgeNum;       // 顶点数, 边数
+};
+
+/*  vector<vector<int>> vec = {
+    {1, 2, 5}, {2, 3, 4}, {3, 1, 8},
+    {3, 6, 9}, {4, 3, 5}, {4, 6, 6},
+    {5, 4, 5}, {6, 1, 3}, {6, 5, 1} };
+每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值 */
+
+Graph *create(vector<vector<int>> &vec, int nodeNum)
+{
+    Graph *g = new Graph;
+    g->nodeNum = nodeNum;
+
+    for (int i = 0; i < maxsize; i++)
+    {
+        for (int j = 0; j < maxsize; j++)
+        {
+            if (i == j)
+                g->edge[i][j] = 0; // 对角线, 自己指自己
+            else
+                g->edge[i][j] = inf;
+        }
+    }
+    for (int i = 0; i < vec.size(); i++)
+    {
+        // 一条a->b，权值为w的边
+        int a = vec[i][0];
+        int b = vec[i][1];
+        int w = vec[i][2];
+        g->edge[a][b] = w;
+        g->edgeNum++;
+    }
+    return g;
+}
+
+int testCreate()
+{
+    // 每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = {{1, 2, 5}, {2, 3, 4}, {3, 1, 8}, {3, 6, 9}, {4, 3, 5}, {4, 6, 6}, {5, 4, 5}, {6, 1, 3}, {6, 5, 1}};
+    Graph *g = create(vec, 6);
+    // 打印邻接矩阵
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        for (int j = 1; j < g->nodeNum + 1; j++)
+        {
+            if (g->edge[i][j] == inf)
+                cout << "n";
+            else
+                cout << g->edge[i][j];
+            cout << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+邻接表(顶点多边少)
+
+```c++
+struct EdgeNode // 边表节点
+{
+    int b; // 节点序号
+    int w; // 节点权值
+    EdgeNode *next = nullptr;
+};
+
+struct HeadNode
+{
+    char data; // 节点信息
+    EdgeNode *first = nullptr;
+};
+
+struct GraphEH
+{
+    HeadNode adjlist[maxsize];
+    int nodeNum, edgeNum;
+};
+
+void insertEdge(HeadNode &hn, EdgeNode *en)
+{
+    en->next = hn.first;
+    hn.first = en;
+}
+
+GraphEH *createEH(vector<vector<int>> &vec, int nodeNum)
+{
+    GraphEH *g = new GraphEH;
+    g->nodeNum = nodeNum;
+
+    for (int i = 0; i < vec.size(); i++)
+    {
+        // 一条a->b，权值为w的边
+        int a = vec[i][0];
+        int b = vec[i][1];
+        int w = vec[i][2];
+
+        EdgeNode *node = new EdgeNode;
+        node->b = b;
+        node->w = w;
+
+        insertEdge(g->adjlist[a], node);
+    }
+    return g;
+}
+
+int textCreateEH()
+{
+    // 每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = {{1, 2, 5}, {2, 3, 4}, {3, 1, 8}, {3, 6, 9}, {4, 3, 5}, {4, 6, 6}, {5, 4, 5}, {6, 1, 3}, {6, 5, 1}};
+    GraphEH *g = createEH(vec, 6);
+    // 打印邻接表
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        cout << i;
+        EdgeNode *temp = g->adjlist[i].first;
+        while (temp != nullptr)
+        {
+            cout << " -> " << temp->b << "," << temp->w;
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    return 0;
+}
+```
+
+### 遍历算法
+
+#### 深度优先遍历
+
+![深度优先遍历](image-4.png)
+
+#### 广度优先遍历
+
+![广度优先遍历](image-10.png)
+
+#### 连通分量的计算
+
+> 使用深度优先搜索
+
+### 拓扑排序
+
+> 有向无环图的逆后序
+
+### 最小生成树
+
+> 图的生成树是他的一颗含有其所有顶点的无环连通子图
+> 加权图的最小生成树是他的一颗权值最小的生成树
+
+#### Prim算法
+
+#### Kruskal算法
+
+### 最短路径
+
+#### Dijskall
+
+![Alt text](image-11.png)![Alt text](image-12.png)

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "graphND.h"
 
 using namespace std;
 
@@ -169,8 +170,9 @@ int main()
     //     it = it->next;
     // }
 
-    int result = myKMP("tsa", "sadbutsad");
-    cout << result << ";";
+    // int result = myKMP("tsa", "sadbutsad");
 
+    testCreate();
+    testCreateEH();
     return 0;
 }
