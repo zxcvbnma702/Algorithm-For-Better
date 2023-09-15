@@ -1048,3 +1048,34 @@ public:
 - 找出适合的贪心策略
 - 求解每一个子问题的最优解
 - 将局部最优解堆叠成全局最优解
+
+[分发饼干](https://leetcode.cn/problems/assign-cookies/)
+
+> for 来控制目标数组, while 来控制资源
+
+```c++
+// 分发饼干
+class Solution
+{
+public:
+    int findContentChildren(vector<int> &g, vector<int> &s)
+    {
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+
+        int index = s.size() - 1;
+        int result = 0;
+
+        for (int i = g.size() - 1; i >= 0; i--)
+        {
+            while (index >= 0 && s[index] >= g[i])
+            {
+                result++;
+                index--;
+                break;
+            }
+        }
+        return result;
+    }
+};
+```
