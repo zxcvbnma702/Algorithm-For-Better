@@ -2,7 +2,65 @@
 
 为了考研,努力刷题
 
-## 线性表课后习题
+## 数组
+
+### 二分搜索
+
+[二分查找](https://leetcode.cn/problems/binary-search/)
+
+> 左闭右闭区间，while(left <= right)，left = middle + 1, right = middle - 1
+> 左闭右开区间，while(left < right)，left = middle + 1, right = middle
+
+```c++
+class Solution
+{
+public:
+    int search(vector<int> &nums, int target)
+    {
+        int left = 0;
+        int right = nums.size() - 1;
+
+        // 当left==right，区间[left, right]依然有效，所以用 <=
+        while (left <= right)
+        {
+            // 防止溢出 等同于(left + right)/2
+            int middle = left + ((right - left) / 2);
+            if (nums[middle] > target)
+            {
+                // target 在左区间，所以[left, middle - 1]
+                right = middle - 1;
+            }
+            else if (nums[middle] < target)
+            {
+                // target 在右区间，所以[middle + 1, right]
+                left = middle + 1;
+            }
+            else
+            {
+                return middle;
+            }
+        }
+        return -1;
+    }
+};
+```
+
+[搜索插入的位置](https://leetcode.cn/problems/search-insert-position/description/)
+
+> 直接二分查找返回left即可。
+> 根据if的判断条件，left左边的值一直保持小于target，right右边的值一直保持大于等于target，而且left最终一定等于right+1
+> 这么一来，循环结束后，在left和right之间画一条竖线，恰好可以把数组分为两部分：left左边的部分和right右边的部分，而且left左边的部分全部小于target，并以right结尾；right右边的部分全部大于等于target，并以left为首。
+> 所以最终答案一定在left的位置。
+
+### 移除元素
+
+[移除元素](https://leetcode.cn/problems/remove-element/)
+
+> 双指针法 
+
+
+
+## 线性表
 
 ### 链表的初始化
 
@@ -717,6 +775,37 @@ public:
 };
 ```
 
+#### 翻转二叉树
+
+[翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
+
+```c++
+// 翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        swapT(root);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
+```
+
+#### 对称二叉树
+
+
+
 ### 并查集
 
 ## 图
@@ -892,4 +981,70 @@ int textCreateEH()
 
 #### Dijskall
 
-![Alt text](image-11.png)![Alt text](image-12.png)
+## 排序
+
+## 回溯
+
+组合问题，切割问题，子集问题，排列问题，棋盘问题
+
+![回溯](image-13.png)
+
+```c
+// 回溯模版
+void backtracking(参数) {
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+
+    for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) {
+        处理节点;
+        backtracking(路径，选择列表); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
+
+### 组合问题
+
+[组合](https://leetcode.cn/problems/combinations/description/)
+
+```c++
+// 组合问题
+class Solution
+{
+public:
+    vector<vector<int>> result; // 最终结果
+    vector<int> combine;        // 每一层组合结果
+
+    void backTracing(int n, int k, int startIndex)
+    {
+        // 递归终止条件
+        if (combine.size() == k)
+        {
+            result.push_back(combine);
+            return;
+        }
+        // i <= n - (k - combines.size()) + 1 剪枝
+        for (int i = startIndex; i <= n; i++)
+        {
+            combine.push_back(i);
+            backTracing(n, k, i + 1);
+            combine.pop();
+        }
+    }
+
+    vector<vector<int>> combine(int n, int k)
+    {
+        backTracing(n, k, 1);
+        return result;
+    }
+};
+```
+
+## 贪心
+
+- 将问题分解为若干个子问题
+- 找出适合的贪心策略
+- 求解每一个子问题的最优解
+- 将局部最优解堆叠成全局最优解

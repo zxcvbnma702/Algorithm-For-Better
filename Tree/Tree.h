@@ -252,3 +252,24 @@ public:
         return root;
     }
 };
+
+// 翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        swapT(root);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
