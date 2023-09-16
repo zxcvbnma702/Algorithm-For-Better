@@ -1029,14 +1029,93 @@ public:
         for (int i = startIndex; i <= n; i++)
         {
             combine.push_back(i);
-            backTracing(n, k, i + 1);
-            combine.pop();
+            backTracing(n, k, i + 1);// i+1，组合问题，防止集合数字重复
+            combine.pop_back();
         }
     }
 
     vector<vector<int>> combine(int n, int k)
     {
         backTracing(n, k, 1);
+        return result;
+    }
+};
+```
+
+[组合三](https://leetcode.cn/problems/combination-sum-iii/description/)
+
+> 在递归出口判断下总和即可, 也可以在递归时加减总和
+
+```c++
+// 在递归出口判断总和是否为n
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> combines;
+
+    void backTracing(int k, int n, int startIndex)
+    {
+        if (combines.size() == k)
+        {
+            int sum = 0;
+            for (int i = 0; i < k; i++)
+            {
+                sum += combines[i];
+            }
+            if (sum == n)
+            {
+                result.push_back(combines);
+            }
+            return;
+        }
+
+        for (int i = startIndex; i <= 9; i++)
+        {
+            combines.push_back(i);
+            backTracing(k, n, i + 1); // 注意 i+1，不然会有重复数字出现，而题目明确要求每个数字只能使用一次
+            combines.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum3(int k, int n)
+    {
+        backTracing(k, n, 1);
+        return result;
+    }
+};
+
+// 组合问题三， 也可以在递归过程中加减求和
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> combines;
+
+    void backTracing(int k, int n, int startIndex, int sum)
+    {
+        if (combines.size() == k)
+        {
+            if (sum == n)
+            {
+                result.push_back(combines);
+            }
+            return;
+        }
+
+        for (int i = startIndex; i <= 9; i++)
+        {
+            sum += i;
+            combines.push_back(i);
+            backTracing(k, n, i + 1, sum);
+            sum -= i;
+            combines.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum3(int k, int n)
+    {
+        backTracing(k, n, 1, 0);
         return result;
     }
 };
