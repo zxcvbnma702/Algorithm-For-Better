@@ -1352,9 +1352,62 @@ public:
 
 [组合总和2](https://leetcode.cn/problems/combination-sum-ii/)
 
-```c++
+> 问题的关键在于去重
+> ![Alt text](assets/image-15.png)
 
+```c++
+// 组合总和2
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> layer;
+
+    // 在一个集合里做组合，需要startIndex
+    // 递归深度是选择的数字加起来等于target的个数
+    void backTracing(vector<int> &candidates, int target, int startIndex, int sum, vector<bool> used)
+    {
+        if (sum == target)
+        {
+            result.push_back(layer);
+            return;
+        }
+
+        // 遍历参数是集合的大小
+        // 如果数值和大于目标值，就没有必要继续遍历了
+        for (int i = startIndex; i < candidates.size() && sum + candidates[i] <= target; i++)
+        {
+
+            // used[i - 1] == true，说明同一树枝candidates[i - 1]使用过，二蛋允许同一树枝成立的
+            // used[i - 1] == false，说明同一树层candidates[i - 1]使用过，再次以同一个值为起点,结果数组值就会重复
+            // 要对同一树层使用过的元素进行跳过
+            if (i > 0 && candidates[i] == candidates[i - 1] && used[i - 1] == false)
+            {
+                continue;
+            }
+            sum += candidates[i];
+            layer.push_back(candidates[i]);
+            used[i] = true;
+            backTracing(candidates, target, i + 1, sum, used); // 不允许重复选择自己，所以+1
+            used[i] = false;
+            layer.pop_back();
+            sum -= candidates[i];
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
+    {
+        vector<bool> used(candidates.size(), false); // 使用数组来横向去重
+        sort(candidates.begin(), candidates.end());
+        backTracing(candidates, target, 0, 0, used);
+        return result;
+    }
+};
 ```
+
+### 分割问题
+
+
 
 ## 贪心
 
