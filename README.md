@@ -413,7 +413,7 @@ public:
 > 2. 树中的每个结点，只保留它与第一个孩子结点的连线，删除其他孩子结点之间的连线
 > 3. 以树的根结点为轴心，将整个树调节一下
 >
-> ![Alt text](image.png)
+> ![Alt text](assets/image.png)
 >
 > 二叉树转换为树
 >
@@ -421,25 +421,25 @@ public:
 > 2. 找到每一层节点在其上一层的父节点，加线
 > 3. 去除兄弟节点之间的连线
 >
-> ![Alt text](image-2.png)
+> ![Alt text](assets/image-2.png)
 >
 > 二叉树转换为森林
 >
 > 前提: 加入一棵二叉树的根节点有右孩子，则这棵二叉树能够转换为森林，否则转换为一棵树。
-> ![Alt text](image-3.png)
+> ![Alt text](assets/image-3.png)
 >
 > 1. 从根节点开始，若右孩子存在，则把与右孩子结点的连线删除。再查看分离后的二叉树，若其根节点的右孩子存在，则连续删除。直到所有这些根结点与右孩子的连线都删除为止。
 > 2. 将每棵分离后的二叉树转换为树。
-> ![Alt text](image-5.png)
+> ![Alt text](assets/image-5.png)
 >
 > 森林转换为二叉树
 >
 > 1. 第一步每棵树自己先成为一课二叉树
-> ![给兄弟加线](image-6.png)
-> ![去线](image-7.png)
-> ![儿子在左，兄弟在右](image-8.png)
+> ![给兄弟加线](assets/image-6.png)
+> ![去线](assets/image-7.png)
+> ![儿子在左，兄弟在右](assets/image-8.png)
 > 2. 从第二棵二叉树开始，每棵二叉树都是上一个二叉树根节点的右孩子
-> ![森林转二叉树](image-9.png)
+> ![森林转二叉树](assets/image-9.png)
 
 ### 二叉树
 
@@ -518,7 +518,7 @@ public:
 #### 非递归遍历
 
 > 使用栈来模拟递归过程
-> 中左右
+> 前序，需要以**中右左**的顺序添加入栈
 > 加入栈时，先将根节点放入栈中，然后放入右孩子，再加入左孩子
 > 这样出栈时存储的就是中左右，即前序遍历的顺序了
 
@@ -554,8 +554,8 @@ public:
 
 [后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
 
-> 相较于非递归的前序遍历， 非递归的后序遍历需要将子节点入栈顺序改为中左右
-> 这样出栈后存储的节点顺序就是中右左， 然后将数组翻转一下，就得到了左右中的遍历顺序, 即后序遍历的顺序。
+> 相较于非递归的前序遍历，非递归的后序遍历需要将子节点入栈顺序改为**中左右**
+> 这样出栈后存储的节点顺序就是中右左，然后将数组翻转一下，就得到了**左右中**的遍历顺序，即后序遍历的顺序。
 
 ``` c++
 // 后序非递归遍历
@@ -590,7 +590,7 @@ public:
 [中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
 
 > 在使用迭代法写中序遍历，就需要借用指针的遍历来帮助访问节点，栈则用来处理节点上的元素。
-> 指针不为空 => 压栈， 一直往左走
+> 指针不为空 => 压栈，一直往左走
 > 指针为空 => 取栈节点，存下来，往右走
 > 如此循环往复，直至栈和指针都为空
 
@@ -781,6 +781,7 @@ public:
 
 ```c++
 // 翻转二叉树
+// 前序翻转二叉树
 class Solution
 {
 public:
@@ -797,6 +798,88 @@ public:
         swapT(root);
         invertTree(root->left);
         invertTree(root->right);
+        return root;
+    }
+};
+
+// 后序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        invertTree(root->left);
+        invertTree(root->right);
+        swapT(root);
+        return root;
+    }
+};
+
+// 中序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        invertTree(root->left); // 中序->左中右
+        swapT(root);            // 未处理的右子树被翻转到了左边
+        invertTree(root->left); // 所以继续处理左子树
+        return root;
+    }
+};
+
+// 层序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        queue<TreeNode *> que;
+        if (root == nullptr)
+        {
+            return nullptr;
+        }
+        else
+        {
+            que.push(root);
+        };
+
+        while (!que.empty())
+        {
+            int size = que.size();
+            for (int i = 0; i < size; i++)
+            {
+                TreeNode *node = que.front();
+                que.pop();
+                swapT(node);
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+            }
+        }
         return root;
     }
 };
@@ -954,11 +1037,11 @@ int textCreateEH()
 
 #### 深度优先遍历
 
-![深度优先遍历](image-4.png)
+![深度优先遍历](assets/image-4.png)
 
 #### 广度优先遍历
 
-![广度优先遍历](image-10.png)
+![广度优先遍历](assets/image-10.png)
 
 #### 连通分量的计算
 
@@ -983,11 +1066,49 @@ int textCreateEH()
 
 ## 排序
 
+![排序算法](assets/image-14.png)
+
+一些小结论：
+
+1. 除上述之外，折半插入排序算法：最坏时间复杂度为O(n²)，平均时间复杂度O(n²)，最好时间复杂度O(nlogn)，空间O(1)，也是一种稳定的排序算法
+
+2. 可以发现有用到二叉树思想的算法（快、堆、归），其三种情况下的时间复杂度基本都在O(nlogn)（除了快速排序在最坏情况下会退化到O(n²)）
+
+3. 具有稳定性的算法：合插基冒（在这家店喝茶几毛钱一直是稳定的）
+
+4. 若n较小，可采用直接插入排序或简单选择排序。又由于直接插入排序所需的记录移动次数较简单选择排序的多，因此当记录本身信息量较大时，用简单选择排序较好。
+
+5. 若文件的初始状态已按关键字基本有序，则选用直接插入排序或冒泡排序
+
+6. 若n较大，则应采用时间复杂度为的排序方法：快速排序、堆排序或合并排序。
+
+7. 当待排序的关键字随机分布时，快速排序的平均时间最短，平均性能最优；但当排序的关键字基本有序或基本逆序时，会得到最坏的时间复杂度和最坏的空间复杂度
+
+8. 堆排序所需的辅助空间少于快速排序，并且不会出现快速排序可能出现的最坏情况
+
+9. 若要求排序稳定，并且时间复杂度为O(nlogn)，则可选用合并排序
+
+10. 当数据量较大时，可以将合并排序和直接插入排序结合使用，先利用直接插入排序求得较长的有序子文件，然后再使用合并排序两两合并，由于两种方法都是稳定的，因此结合之后也是稳定的。
+
+11. 当n很大，记录的关键字位数较少且可以分解时，采用基数排序较好
+
+12. 当记录本身信息量较大时，为避免耗费大量时间移动记录，可以使用链表作为存储结构（当然，有的排序方法不适用于链表）
+
+### 插入排序
+
+#### 直接插入排序
+
+> 双重for循环
+
+```c++
+
+```
+
 ## 回溯
 
 组合问题，切割问题，子集问题，排列问题，棋盘问题
 
-![回溯](image-13.png)
+![回溯](assets/image-13.png)
 
 ```c
 // 回溯模版
@@ -1006,6 +1127,10 @@ void backtracking(参数) {
 ```
 
 ### 组合问题
+
+> 学会将问题拆分为树形结构，找到纵向的遍历条件作为递归参数，横向条件作为for循环的参数
+> 如果是在一个集合中求组合，那么递归参数就需要有startIndex， 例如组合总和，组合问题等
+> 如果在两个集合中求组合，就不需要startIndex，例如电话号码组合
 
 [组合](https://leetcode.cn/problems/combinations/description/)
 
@@ -1119,6 +1244,116 @@ public:
         return result;
     }
 };
+```
+
+[电话号码的字母组合](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/)
+
+> 递归深度由数字的多少来确定
+> for循环参数由每个数字所对应的字符宽度来确定
+
+```c++
+// 电话号码的字母组合
+class Solution
+{
+public:
+    const string letterMap[10] = {
+        "",     // 0
+        "",     // 1
+        "abc",  // 2
+        "def",  // 3
+        "ghi",  // 4
+        "jkl",  // 5
+        "mno",  // 6
+        "pqrs", // 7
+        "tuv",  // 8
+        "wxyz", // 9
+    };
+
+    vector<string> result;
+    string layer;
+
+    // 递归深度由数字的多少来确定
+    void backTracing(string digits, int index)
+    {
+        if (index == digits.size())
+        {
+            result.push_back(layer);
+            return;
+        }
+
+        int num = digits[index] - '0'; // 获取数字字符串中的数字
+        string a = letterMap[num];     // 获取对应的文字字符
+        int size = a.size();           // 横向遍历for循环的参数
+
+        for (int i = 0; i < size; i++)
+        {
+            layer.push_back(a[i]);
+            backTracing(digits, index + 1);
+            layer.pop_back();
+        }
+    }
+
+    vector<string> letterCombinations(string digits)
+    {
+        if (digits == "")
+        {
+            return result;
+        }
+        backTracing(digits, 0);
+        return result;
+    }
+};
+```
+
+[组合总和](https://leetcode.cn/problems/combination-sum/)
+
+```c++
+// 组合总和
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> layer;
+
+    // 注意，递归出口，等于大于都要退出
+    // 一个集合做组合，需要startIndex，否则结果就成了全排列
+    void backTracing(vector<int> &candidates, int target, int startIndex, int sum)
+    {
+        if (sum == target)
+        {
+            result.push_back(layer);
+            return;
+        }
+        else if (sum > target)
+        {
+            return;
+        }
+
+        // 遍历参数就是集合大小
+        for (int i = startIndex; i < candidates.size(); i++)
+        {
+            sum += candidates[i];
+            layer.push_back(candidates[i]);
+            backTracing(candidates, target, i, sum); // 因为允许选择自身，所以i不需要加一
+            sum -= candidates[i];
+            layer.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int> &candidates, int target)
+    {
+        if (candidates.size() == 0)
+            return result;
+        backTracing(candidates, target, 0, 0);
+        return result;
+    }
+};
+```
+
+[组合总和2](https://leetcode.cn/problems/combination-sum-ii/)
+
+```c++
+
 ```
 
 ## 贪心

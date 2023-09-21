@@ -273,3 +273,85 @@ public:
         return root;
     }
 };
+
+// 后序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        invertTree(root->left);
+        invertTree(root->right);
+        swapT(root);
+        return root;
+    }
+};
+
+// 中序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        if (root == nullptr)
+            return root;
+        invertTree(root->left); // 中序->左中右
+        swapT(root);            // 未处理的右子树被翻转到了左边
+        invertTree(root->left); // 所以继续处理左子树
+        return root;
+    }
+};
+
+// 层序翻转二叉树
+class Solution
+{
+public:
+    void swapT(TreeNode *root)
+    {
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+    }
+    TreeNode *invertTree(TreeNode *root)
+    {
+        queue<TreeNode *> que;
+        if (root == nullptr)
+        {
+            return nullptr;
+        }
+        else
+        {
+            que.push(root);
+        };
+
+        while (!que.empty())
+        {
+            int size = que.size();
+            for (int i = 0; i < size; i++)
+            {
+                TreeNode *node = que.front();
+                que.pop();
+                swapT(node);
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+            }
+        }
+        return root;
+    }
+};

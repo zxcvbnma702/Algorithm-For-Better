@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "graphND.h"
+#include "Sort/Sort.h"
 
 using namespace std;
 
@@ -171,8 +171,8 @@ int main()
     // }
 
     // int result = myKMP("tsa", "sadbutsad");
-
-    testCreate();
-    testCreateEH();
+    insertDriect();
+    // testCreate();
+    // testCreateEH();
     return 0;
 }
