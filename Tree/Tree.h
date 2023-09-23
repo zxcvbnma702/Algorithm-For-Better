@@ -219,7 +219,7 @@ public:
     Node *connect(Node *root)
     {
         queue<Node *> que;
-        if (root != NULL)
+        if (root != nullptr)
             que.push(root);
         while (!que.empty())
         {
@@ -247,7 +247,7 @@ public:
                 if (node->right)
                     que.push(node->right);
             }
-            nodePre->next = NULL; // 本层最后一个节点指向NULL
+            nodePre->next = nullptr; // 本层最后一个节点指向nullptr
         }
         return root;
     }
@@ -353,5 +353,283 @@ public:
             }
         }
         return root;
+    }
+};
+
+// 对称二叉树-递归遍历
+class Solution
+{
+public:
+    bool compare(TreeNode *left, TreeNode *right)
+    {
+        // 首先排除空节点的情况
+        if (left == nullptr && right != nullptr)
+            return false;
+        else if (left != nullptr && right == nullptr)
+            return false;
+        else if (left == nullptr && right == nullptr)
+            return true;
+        // 排除了空节点，再排除数值不相同的情况
+        else if (left->val != right->val)
+            return false;
+
+        // 此时就是：左右节点都不为空，且数值相同的情况
+        // 此时才做递归，做下一层的判断
+        bool outside = compare(left->left, right->right); // 左子树：左、 右子树：右
+        bool inside = compare(left->right, right->left);  // 左子树：右、 右子树：左
+        bool isSame = outside && inside;                  // 左子树：中、 右子树：中 （逻辑处理）
+        return isSame;
+    }
+    bool isSymmetric(TreeNode *root)
+    {
+        if (root == nullptr)
+            return true;
+        return compare(root->left, root->right);
+    }
+};
+
+// 对称二叉树-使用队列
+class Solution
+{
+public:
+    // 每次入队以外层内层顺序入队，取出时取两个来比较值是否相等
+    bool isSymmetric(TreeNode *root)
+    {
+        if (root == nullptr)
+            return true;
+        queue<TreeNode *> que;
+        que.push(root->left);
+        que.push(root->right);
+
+        while (!que.empty())
+        {
+            TreeNode *left = que.front();
+            que.pop();
+            TreeNode *right = que.front();
+            que.pop();
+
+            if (left == nullptr && right == nullptr)
+                continue;
+
+            // 不对称情况
+            if (left == nullptr && right != nullptr)
+                return false;
+            if (left != nullptr && right == nullptr)
+                return false;
+            if (left->val != right->val)
+                return false;
+
+            que.push(right->right);
+            que.push(left->left);
+            que.push(left->right);
+            que.push(right->left);
+        }
+
+        return true;
+    }
+};
+
+// 相同的树
+class Solution
+{
+public:
+    bool compare(TreeNode *left, TreeNode *right)
+    {
+        // 首先排除空节点的情况
+        if (left == nullptr && right != nullptr)
+            return false;
+        else if (left != nullptr && right == nullptr)
+            return false;
+        else if (left == nullptr && right == nullptr)
+            return true;
+        // 排除了空节点，再排除数值不相同的情况
+        else if (left->val != right->val)
+            return false;
+
+        // 此时就是：左右节点都不为空，且数值相同的情况
+        // 此时才做递归，做下一层的判断
+        bool outside = compare(left->left, right->left);
+        bool inside = compare(right->right, left->right);
+        bool isSame = outside && inside;
+        return isSame;
+    }
+
+    bool isSameTree(TreeNode *p, TreeNode *q)
+    {
+        return compare(p, q);
+    }
+};
+
+// 二叉树的最大深度-后序遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+        int leftDepth = backTracing(root->left);
+        int rightDepth = backTracing(root->right);
+
+        int maxDepth = max(leftDepth, rightDepth) + 1;
+        return maxDepth;
+    }
+
+    int maxDepth(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+
+// 二叉树的最大深度-前序遍历
+class Solution
+{
+public:
+    int result;
+    void getDepth(TreeNode *node, int depth)
+    {
+        result = depth > result ? depth : result; // 中
+
+        if (node->left == NULL && node->right == NULL)
+            return;
+
+        if (node->left)
+        {            // 左
+            depth++; // 深度+1
+            getDepth(node->left, depth);
+            depth--; // 回溯，深度-1
+        }
+        if (node->right)
+        {            // 右
+            depth++; // 深度+1
+            getDepth(node->right, depth);
+            depth--; // 回溯，深度-1
+        }
+        return;
+    }
+    int maxDepth(TreeNode *root)
+    {
+        result = 0;
+        if (root == NULL)
+            return result;
+        getDepth(root, 1);
+        return result;
+    }
+};
+
+// 二叉树的最小深度-层序遍历
+class Solution
+{
+public:
+    int minDepth(TreeNode *root)
+    {
+        queue<TreeNode *> que;
+        if (root != nullptr)
+            que.push(root);
+        int depth = 0;
+
+        while (!que.empty())
+        {
+            int size = que.size(); // 记录每层节点数目
+            depth++;
+            for (int i = 0; i < size; i++)
+            {
+                TreeNode *node = que.front();
+                que.pop();
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+                if (!node->left && !node->right)
+                    return depth;
+            }
+        }
+        return depth;
+    }
+};
+
+// 二叉树的最小深度-递归遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int leftDepth = backTracing(root->left);
+        int rightDepth = backTracing(root->right);
+
+        // 根节点到叶子结点的最短路径
+        // 所以单边子树为空的情况不符合最小深度
+        if (root->left != nullptr && root->right == nullptr)
+            return 1 + leftDepth;
+        if (root->right != nullptr && root->left == nullptr)
+            return 1 + rightDepth;
+
+        int minDepth = min(leftDepth, rightDepth) + 1;
+
+        return minDepth;
+    }
+
+    int minDepth(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+
+// 完全二叉树的节点个数-后序遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int left = backTracing(root->left);
+        int right = backTracing(root->right);
+
+        int num = left + right + 1;
+        return num;
+    }
+
+    int countNodes(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+
+// 完全二叉树的节点个数-利用满二叉树性质
+class Solution
+{
+public:
+    int countNodes(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        TreeNode *left = root->left;
+        TreeNode *right = root->right;
+        int leftDepth = 0, rightDepth = 0; // 这里初始为0是有目的的，为了下面求指数方便
+
+        while (left)
+        { // 求左子树深度
+            left = left->left;
+            leftDepth++;
+        }
+
+        while (right)
+        { // 求右子树深度
+            right = right->right;
+            rightDepth++;
+        }
+
+        if (leftDepth == rightDepth) // 此时子树是一颗满二叉树
+        {
+            return (2 << leftDepth) - 1; // 注意(2<<1) 相当于2^2，所以leftDepth初始为0
+        }
+
+        return countNodes(root->left) + countNodes(root->right) + 1;
     }
 };

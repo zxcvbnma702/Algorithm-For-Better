@@ -887,6 +887,348 @@ public:
 
 #### 对称二叉树
 
+> 只能使用后序，左右中来遍历
+> 左右获取到结果，回溯到中来进行汇总
+>![Alt text](assets/image-16.png)
+
+[对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
+
+```C++
+// 对称二叉树-递归遍历
+class Solution
+{
+public:
+    bool compare(TreeNode *left, TreeNode *right)
+    {
+        // 首先排除空节点的情况
+        if (left == nullptr && right != nullptr)
+            return false;
+        else if (left != nullptr && right == nullptr)
+            return false;
+        else if (left == nullptr && right == nullptr)
+            return true;
+        // 排除了空节点，再排除数值不相同的情况
+        else if (left->val != right->val)
+            return false;
+
+        // 此时就是：左右节点都不为空，且数值相同的情况
+        // 此时才做递归，做下一层的判断
+        bool outside = compare(left->left, right->right); // 左子树：左、 右子树：右
+        bool inside = compare(left->right, right->left);  // 左子树：右、 右子树：左
+        bool isSame = outside && inside;                  // 左子树：中、 右子树：中 （逻辑处理）
+        return isSame;
+    }
+
+    bool isSymmetric(TreeNode *root)
+    {
+        if (root == nullptr)
+            return true;
+        return compare(root->left, root->right);
+    }
+};
+
+// 对称二叉树-使用队列
+class Solution
+{
+public:
+    // 每次入队以外层内层顺序入队，取出时取两个来比较值是否相等
+    bool isSymmetric(TreeNode *root)
+    {
+        if (root == nullptr)
+            return true;
+        queue<TreeNode *> que;
+        que.push(root->left);
+        que.push(root->right);
+
+        while (!que.empty())
+        {
+            TreeNode *left = que.front();
+            que.pop();
+            TreeNode *right = que.front();
+            que.pop();
+
+            if (left == nullptr && right == nullptr)
+                continue;
+
+            // 不对称情况
+            if (left == nullptr && right != nullptr)
+                return false;
+            if (left != nullptr && right == nullptr)
+                return false;
+            if (left->val != right->val)
+                return false;
+
+            que.push(right->right);
+            que.push(left->left);
+            que.push(left->right);
+            que.push(right->left);
+        }
+
+        return true;
+    }
+};
+```
+
+[相同的树](https://leetcode.cn/problems/same-tree/)
+
+```c++
+// 相同的树
+class Solution
+{
+public:
+    bool compare(TreeNode *left, TreeNode *right)
+    {
+        // 首先排除空节点的情况
+        if (left == nullptr && right != nullptr)
+            return false;
+        else if (left != nullptr && right == nullptr)
+            return false;
+        else if (left == nullptr && right == nullptr)
+            return true;
+        // 排除了空节点，再排除数值不相同的情况
+        else if (left->val != right->val)
+            return false;
+
+        // 此时就是：左右节点都不为空，且数值相同的情况
+        // 此时才做递归，做下一层的判断
+        bool outside = compare(left->left, right->left);
+        bool inside = compare(right->right, left->right);
+        bool isSame = outside && inside;
+        return isSame;
+    }
+    
+    bool isSameTree(TreeNode *p, TreeNode *q)
+    {
+        return compare(p, q);
+    }
+};
+```
+
+[另一棵树的子树](https://leetcode.cn/problems/subtree-of-another-tree/)
+
+> 深度暴力匹配
+> 转换成深度优先搜索序列 -> kmp匹配
+
+```c++
+
+
+```
+
+#### 二叉树的深度
+
+[二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
+
+> 层序遍历解法见上文
+> 使用后序遍历来解题最优
+> 但严格求解深度问题还是得用前序遍历
+
+```c++
+// 二叉树的最大深度-前序遍历
+class Solution
+{
+public:
+    int result;
+    void getDepth(TreeNode *node, int depth)
+    {
+        result = depth > result ? depth : result; // 中
+
+        if (node->left == NULL && node->right == NULL)
+            return;
+
+        if (node->left)
+        {            // 左
+            depth++; // 深度+1
+            getDepth(node->left, depth);
+            depth--; // 回溯，深度-1
+        }
+        if (node->right)
+        {            // 右
+            depth++; // 深度+1
+            getDepth(node->right, depth);
+            depth--; // 回溯，深度-1
+        }
+        return;
+    }
+    
+    int maxDepth(TreeNode *root)
+    {
+        result = 0;
+        if (root == NULL)
+            return result;
+        getDepth(root, 1);
+        return result;
+    }
+};
+
+// 二叉树的最大深度-后序遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int leftDepth = backTracing(root->left);
+        int rightDepth = backTracing(root->right);
+
+        int maxDepth = max(leftDepth, rightDepth) + 1;
+        return maxDepth;
+    }
+
+    int maxDepth(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+```
+
+[二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
+
+> - 层序遍历时当找到第一个左右子节点都为空的节点时，就表明找到了最小的深度
+> - 递归深度遍历时要注意单边子树为空的情况
+> ![最小深度](assets/image-17.png)
+> **最小深度是从根节点到最近叶子节点的最短路径上的节点数量**
+
+```c++
+// 二叉树的最小深度-层序遍历
+class Solution
+{
+public:
+    int minDepth(TreeNode *root)
+    {
+        queue<TreeNode *> que;
+        if (root != nullptr)
+            que.push(root);
+        int depth = 0;
+
+        while (!que.empty())
+        {
+            int size = que.size(); // 记录每层节点数目
+            depth++;
+            for (int i = 0; i < size; i++)
+            {
+                TreeNode *node = que.front();
+                que.pop();
+                if (node->left)
+                    que.push(node->left);
+                if (node->right)
+                    que.push(node->right);
+                if (!node->left && !node->right)
+                    return depth;
+            }
+        }
+        return depth;
+    }
+};
+
+// 二叉树的最小深度-递归遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int leftDepth = backTracing(root->left);
+        int rightDepth = backTracing(root->right);
+
+        // 根节点到叶子结点的最短路径
+        // 所以单边子树为空的情况不符合最小深度
+        if (root->left != nullptr && root->right == nullptr)
+            return 1 + leftDepth;
+        if (root->right != nullptr && root->left == nullptr)
+            return 1 + rightDepth;
+
+        int minDepth = min(leftDepth, rightDepth) + 1;
+
+        return minDepth;
+    }
+
+    int minDepth(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+```
+
+#### 完全二叉树的节点个数
+
+[完全二叉树的节点个数](https://leetcode.cn/problems/count-complete-tree-nodes/)
+
+> 一棵深度为k的有n个结点的二叉树，对树中的结点按从上至下、从左到右的顺序进行编号，如果编号为i（1≤i≤n）的结点与满二叉树中编号为i的结点在二叉树中的位置相同，则这棵二叉树称为完全二叉树。
+> ![完全二叉树](assets/image-18.png)
+> ![Alt text](assets/image-19.png)
+> **满二叉树是完全二叉树的一种特殊形态**
+> 满二叉树的结点数是**2ⁿ-1**
+
+```c++
+// 完全二叉树的节点个数-后序遍历
+class Solution
+{
+public:
+    int backTracing(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int left = backTracing(root->left);
+        int right = backTracing(root->right);
+
+        int num = left + right + 1;
+        return num;
+    }
+
+    int countNodes(TreeNode *root)
+    {
+        return backTracing(root);
+    }
+};
+
+// 完全二叉树的节点个数-利用满二叉树性质
+class Solution
+{
+public:
+    int countNodes(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        TreeNode *left = root->left;
+        TreeNode *right = root->right;
+        int leftDepth = 0, rightDepth = 0; // 这里初始为0是有目的的，为了下面求指数方便
+
+        while (left)
+        { // 求左子树深度
+            left = left->left;
+            leftDepth++;
+        }
+
+        while (right)
+        { // 求右子树深度
+            right = right->right;
+            rightDepth++;
+        }
+
+        if (leftDepth == rightDepth) // 此时子树是一颗满二叉树
+        {
+            return (2 << leftDepth) - 1; // 注意(2<<1) 相当于2^2，所以leftDepth初始为0
+        }
+
+        return countNodes(root->left) + countNodes(root->right) + 1;
+    }
+};
+```
+
+#### 平衡二叉树
+
+[平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
+
+> 一个二叉树每个节点的左右两个子树的高度差的绝对值不超过 1 。
+> ![平衡二叉树](assets/image-20.png)
+> 判断高度使用后序遍历
+
 
 
 ### 并查集
