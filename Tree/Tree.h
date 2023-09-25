@@ -633,3 +633,167 @@ public:
         return countNodes(root->left) + countNodes(root->right) + 1;
     }
 };
+
+// 平衡二叉树
+class Solution
+{
+public:
+    int getHeight(TreeNode *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int leftHeight = getHeight(root->left);
+        if (leftHeight == -1)
+            return -1;
+
+        int rightHeight = getHeight(root->right);
+        if (rightHeight == -1)
+            return -1;
+
+        return abs(leftHeight - rightHeight) > 1 ? -1 : 1 + max(leftHeight, rightHeight);
+    }
+
+    bool isBalanced(TreeNode *root)
+    {
+        return getHeight(root) != -1;
+    }
+};
+
+// 根节点的所有路径
+class Solution
+{
+public:
+    // 所有路径，从根节点开始
+    // 前序遍历
+    void backTracing(TreeNode *node, vector<int> &path, vector<string> &result)
+    {
+
+        path.push_back(node->val); // 写在终止条件前，否则叶子结点会被跳过去
+
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            string sPath;
+            for (int i = 0; i < path.size() - 1; i++)
+            {
+                sPath += to_string(path[i]);
+                sPath += "->";
+            }
+            sPath += to_string(path[path.size() - 1]);
+            result.push_back(sPath);
+            return;
+        }
+
+        // 必要判空，递归进去没收到值，出来弹值，少一个节点
+        // 假设到了左叶子结点，存完路径，然后存右叶子结点
+        // 此时path中就需要删除掉左叶子结点再存右叶子结点
+        // 这就是一个回溯的过程
+        if (node->left)
+        {
+            backTracing(node->left, path, result);
+            path.pop_back();
+        }
+
+        if (node->right)
+        {
+            backTracing(node->right, path, result);
+            path.pop_back();
+        }
+    }
+
+    vector<string> binaryTreePaths(TreeNode *root)
+    {
+        vector<string> result;
+        vector<int> path;
+        if (root == nullptr)
+            return result;
+        backTracing(root, path, result);
+        return result;
+    }
+};
+
+// 路径总和
+class Solution
+{
+public:
+    bool result = false;
+    void backTracing(TreeNode *node, int targetSum)
+    {
+        targetSum -= node->val;
+
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            if (0 == targetSum)
+            {
+                result = true;
+            }
+            return;
+        }
+
+        if (node->left != nullptr)
+        {
+            // 注意不需要targetSum += val，因为我们是在进入递归之后才进行值的加减，如果加，就把上面刚加的值减下去了
+            backTracing(node->left, targetSum);
+        }
+
+        if (node->right != nullptr)
+        {
+            backTracing(node->right, targetSum);
+        }
+    }
+
+    bool hasPathSum(TreeNode *root, int targetSum)
+    {
+        if (root == nullptr)
+            return false;
+
+        backTracing(root, targetSum);
+        return result;
+    }
+};
+
+// 路径总和2
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> path;
+
+    void backTracing(TreeNode *node, int targetSum, int sum)
+    {
+        path.push_back(node->val);
+        sum += node->val;
+
+        if (node->left == nullptr && node->right == nullptr)
+        {
+            if (sum == targetSum)
+            {
+                result.push_back(path);
+            }
+            return;
+        }
+
+        if (node->left != nullptr)
+        {
+            // 注意不需要sum -= val，因为我们是在进入递归之后才进行值的加减，如果减，就把上面刚加的值减下去了
+            backTracing(node->left, targetSum, sum);
+            path.pop_back();
+            // 因为每次递归都只在开头执行一次path.push_back()，即每次递归path中都只会加入一个结点值，因此执行完一次递归(push一次)再pop一次就能回到之前的path
+        }
+
+        if (node->right != nullptr)
+        {
+            backTracing(node->right, targetSum, sum);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> pathSum(TreeNode *root, int targetSum)
+    {
+        if (root == nullptr)
+            return result;
+
+        backTracing(root, targetSum, 0);
+        return result;
+    }
+};
