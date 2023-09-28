@@ -797,3 +797,267 @@ public:
         return result;
     }
 };
+
+// 路径总合2-回溯
+class solution
+{
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    // 递归函数不需要返回值，因为我们要遍历整个树
+    void traversal(TreeNode *cur, int count)
+    {
+        if (!cur->left && !cur->right && count == 0)
+        { // 遇到了叶子节点且找到了和为sum的路径
+            result.push_back(path);
+            return;
+        }
+
+        if (!cur->left && !cur->right)
+            return; // 遇到叶子节点而没有找到合适的边，直接返回
+
+        if (cur->left)
+        { // 左 （空节点不遍历）
+            path.push_back(cur->left->val);
+            count -= cur->left->val;
+            traversal(cur->left, count); // 递归
+            count += cur->left->val;     // 回溯
+            path.pop_back();             // 回溯
+        }
+
+        if (cur->right)
+        { // 右 （空节点不遍历）
+            path.push_back(cur->right->val);
+            count -= cur->right->val;
+            traversal(cur->right, count); // 递归
+            count += cur->right->val;     // 回溯
+            path.pop_back();              // 回溯
+        }
+        return;
+    }
+
+public:
+    vector<vector<int>> pathSum(TreeNode *root, int sum)
+    {
+        result.clear();
+        path.clear();
+        if (root == NULL)
+            return result;
+        path.push_back(root->val); // 把根节点放进路径
+        traversal(root, sum - root->val);
+        return result;
+    }
+};
+
+// 从中序和后序构造二叉树
+class Solution
+{
+public:
+    TreeNode *traversal(vector<int> &inorder, vector<int> &postorder)
+    {
+        // 1. 如果数组为空，空树
+        if (postorder.size() == 0)
+            return nullptr;
+
+        // 2. 后序遍历最后一个元素，就是中间节点
+        int rootValue = postorder[postorder.size() - 1];
+        TreeNode *root = new TreeNode(rootValue);
+
+        // 叶子结点直接返回
+        if (postorder.size() == 1)
+            return root;
+
+        // 3. 找到中序遍历切割点
+        int delimiterIndex;
+        for (delimiterIndex = 0; delimiterIndex < inorder.size(); delimiterIndex++)
+        {
+            if (inorder[delimiterIndex] == rootValue)
+                break;
+        }
+
+        // 4. 切割中序数组
+        // 左闭右开区间：[0, delimiterIndex)
+        vector<int> leftInorder(inorder.begin(), inorder.begin() + delimiterIndex);
+        // [delimiterIndex + 1, end)
+        vector<int> rightInorder(inorder.begin() + delimiterIndex + 1, inorder.end());
+
+        // postorder 舍弃末尾元素
+        postorder.resize(postorder.size() - 1);
+
+        // 5. 切割后序数组
+        // 依然左闭右开，注意这里使用了左中序数组大小作为切割点
+        // [0, leftInorder.size)
+        vector<int> leftPostorder(postorder.begin(), postorder.begin() + leftInorder.size());
+        // [leftInorder.size(), end)
+        vector<int> rightPostorder(postorder.begin() + leftInorder.size(), postorder.end());
+
+        // 6. 递归处理左右区间
+        root->left = traversal(leftInorder, leftPostorder);
+        root->right = traversal(rightInorder, rightPostorder);
+
+        return root;
+    }
+
+    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder)
+    {
+        if (inorder.size() == 0 || postorder.size() == 0)
+            return NULL;
+        return traversal(inorder, postorder);
+    }
+}
+
+// 从前序和中序构造二叉树
+class Solution
+{
+public:
+    TreeNode *traversal(vector<int> &preorder, int preorderBegin, int preorderEnd, vector<int> &inorder, int inorderBegin, int inorderEnd)
+    {
+        // 1. 判断是否为空树
+        if (preorderBegin == preorderEnd)
+            return nullptr;
+
+        // 2. 获取中结点
+        int nodeValue = preorder[preorderBegin];
+        TreeNode *root = new TreeNode(nodeValue);
+
+        // 如果为叶子结点，直接返回
+        if (preorderEnd - preorderBegin == 1)
+            return root;
+
+        // 3. 寻找切割点
+        int delimiterIndex;
+        for (delimiterIndex = inorderBegin; delimiterIndex < inorderEnd; delimiterIndex++)
+        {
+            if (inorder[delimiterIndex] == nodeValue)
+                break;
+        }
+
+        // 4. 切割中序数组
+        // 左中序区间，左闭右开[leftInorderBegin, leftInorderEnd)
+        int leftInorderBegin = inorderBegin;
+        int leftInorderEnd = delimiterIndex;
+
+        // 右中序区间，左闭右开[rightInorderBegin, rightInorderEnd)
+        int rightInorderBegin = delimiterIndex + 1;
+        int rightInorderEnd = inorderEnd;
+
+        // 5. 切割前序数组
+        // 左子树的前序数组，去除根节点
+        int leftPreorderBegin = preorderBegin + 1;
+        int leftPreorderEnd = preorderBegin + leftInorderEnd - leftInorderBegin + 1; // 不加一会漏掉一个
+
+        // 右子树的前序数，
+        int rightPreorderBegin = preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
+        int rightPreorderEnd = preorderEnd;
+
+        // 6. 递归左右子树
+        root->left = traversal(preorder, leftPreorderBegin, leftPreorderEnd, inorder, leftInorderBegin, leftInorderEnd);
+        root->right = traversal(preorder, rightPreorderBegin, rightPreorderEnd, inorder, rightInorderBegin, rightInorderEnd);
+
+        return root;
+    }
+
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
+    {
+        if (preorder.size() == 0 || inorder.size() == 0)
+            return nullptr;
+
+        return traversal(preorder, 0, preorder.size(), inorder, 0, inorder.size());
+    }
+};
+
+// 最大二叉树
+class Solution
+{
+public:
+    TreeNode *traverse(vector<int> &nums, int left, int right)
+    {
+        if (left >= right)
+            return nullptr;
+
+        // 获取最大值
+        int deli = left;
+        for (int i = left; i < right; i++)
+        {
+            if (nums[i] > nums[deli])
+                deli = i;
+        }
+
+        TreeNode *root = new TreeNode(nums[deli]);
+
+        if (nums.size() == 1)
+            return root;
+
+        // 重点切割数组
+        root->left = traverse(nums, left, deli);
+        root->right = traverse(nums, deli + 1, right);
+
+        return root;
+    }
+
+    TreeNode *constructMaximumBinaryTree(vector<int> &nums)
+    {
+        return traverse(nums, 0, nums.size());
+    }
+};
+
+// 合并二叉树
+class Solution
+{
+public:
+    TreeNode *mergeTrees(TreeNode *root1, TreeNode *root2)
+    {
+        if (root1 == nullptr)
+            return root2;
+        if (root2 == nullptr)
+            return root1;
+
+        root1->val = root1->val + root2->val;
+
+        root1->left = mergeTrees(root1->left, root2->left);
+        root1->right = mergeTrees(root1->right, root2->right);
+
+        return root1;
+    }
+};
+
+// 二叉搜索树中的搜索-递归法
+class Solution
+{
+public:
+    TreeNode *result;
+
+    TreeNode *searchBST(TreeNode *root, int val)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        if (root->val == val)
+            result = root;
+        else if (root->val < val)
+            searchBST(root->right, val);
+        else
+            searchBST(root->left, val);
+
+        return result;
+    }
+};
+
+// 二叉搜索树中的搜索-迭代法
+class Solution
+{
+public:
+    TreeNode *searchBST(TreeNode *root, int val)
+    {
+        while (root != NULL)
+        {
+            if (root->val > val)
+                root = root->left;
+            else if (root->val < val)
+                root = root->right;
+            else
+                return root;
+        }
+        return NULL;
+    }
+};
