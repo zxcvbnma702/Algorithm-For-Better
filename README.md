@@ -56,9 +56,7 @@ public:
 
 [移除元素](https://leetcode.cn/problems/remove-element/)
 
-> 双指针法 
-
-
+> 双指针法
 
 ## 线性表
 
@@ -448,6 +446,8 @@ public:
 
 #### 递归遍历
 
+##### 前序遍历
+
 [前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
 
 ```c++
@@ -471,6 +471,8 @@ public:
 };
 ```
 
+##### 中序遍历
+
 [中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
 
 ```c++
@@ -491,6 +493,8 @@ void traversal(TreeNode *cur, vector<int> &vec)
     }
 };
 ```
+
+##### 后序遍历
 
 [后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
 
@@ -522,6 +526,8 @@ public:
 > 加入栈时，先将根节点放入栈中，然后放入右孩子，再加入左孩子
 > 这样出栈时存储的就是中左右，即前序遍历的顺序了
 
+##### 前序遍历
+
 [前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
 
 ```c++
@@ -551,6 +557,8 @@ public:
     }
 };
 ```
+
+##### 后序遍历
 
 [后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
 
@@ -586,6 +594,8 @@ public:
     }
 };
 ```
+
+##### 中序遍历
 
 [中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
 
@@ -664,18 +674,26 @@ public:
 };
 ```
 
+##### 逆层序遍历
+
 [逆层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/)
 
 > 将层序遍历结果reserve即可
+
+##### 二叉树的层平均值
 
 [二叉树的层平均值](https://leetcode.cn/problems/average-of-levels-in-binary-tree/)
 
 > 层序时计算平均值即可
 
+##### 二叉树的右视图
+
 [二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/description/)
 
 > 取层序遍历的结果中的最右值即可
 > result.push_back(vec[size-1]);
+
+##### N叉树的遍历
 
 [N叉树的遍历](https://leetcode.cn/problems/n-ary-tree-level-order-traversal/description/)
 
@@ -716,17 +734,25 @@ public:
 };
 ```
 
+##### 在每个树行中找最大值
+
 [在每个树行中找最大值](https://leetcode.cn/problems/find-largest-value-in-each-tree-row/description/)
 
 > 遍历每一层时比较大小，最后将每层的最大值存储即可
+
+##### 二叉树的最大深度
 
 [二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/description/)
 
 > 返回 result.size()
 
+##### 二叉树的最小深度
+
 [二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
 
 > 当找到第一个左右子节点都为空的节点时，就表明找到了最小的深度
+
+##### 填充每个节点的下一个右侧节点指针
 
 [填充每个节点的下一个右侧节点指针](https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/description/)
 
@@ -891,6 +917,8 @@ public:
 > 左右获取到结果，回溯到中来进行汇总
 >![Alt text](assets/image-16.png)
 
+##### 对称二叉树
+
 [对称二叉树](https://leetcode.cn/problems/symmetric-tree/description/)
 
 ```C++
@@ -969,6 +997,8 @@ public:
 };
 ```
 
+##### 相同的树
+
 [相同的树](https://leetcode.cn/problems/same-tree/)
 
 ```c++
@@ -1015,6 +1045,8 @@ public:
 ```
 
 #### 二叉树的深度
+
+##### 二叉树的最大深度
 
 [二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
 
@@ -1082,6 +1114,8 @@ public:
     }
 };
 ```
+
+##### 二叉树的最小深度
 
 [二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/description/)
 
@@ -1262,7 +1296,7 @@ public:
 [左叶子之和](https://leetcode.cn/problems/sum-of-left-leaves/)
 
 > 层序遍历很简单，返回最后一层第一个节点即可
-> 
+>
 
 #### 二叉树的所有路径
 
@@ -1329,7 +1363,9 @@ public:
 > 深度回溯遍历二叉树进行操作
 > 注意注释处的细节问题
 
-[路径总和](https://leetcode.cn/problems/path-sum/description/)
+##### 路径总和1
+
+[路径总和1](https://leetcode.cn/problems/path-sum/description/)
 
 ```c++
 // 路径总和
@@ -1372,6 +1408,8 @@ public:
     }
 };
 ```
+
+##### 路径总和2
 
 [路径总和2](https://leetcode.cn/problems/path-sum-ii/description/)
 
@@ -1476,6 +1514,8 @@ public:
 
 #### 从双序合成二叉树
 
+##### 从中序和后序遍历序列构造二叉树
+
 [从中序和后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
 
 > ![Alt text](assets/image-22.png)
@@ -1545,6 +1585,8 @@ public:
     }
 }
 ```
+
+##### 从前序和中序遍历构造二叉树
 
 [从前序和中序遍历构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
 
@@ -1683,6 +1725,8 @@ public:
 
 #### 二叉搜索树
 
+##### 二叉搜索树中的搜索
+
 [二叉搜索树中的搜索](https://leetcode.cn/problems/search-in-a-binary-search-tree/description/)
 
 ```c++
@@ -1727,6 +1771,8 @@ public:
     }
 };
 ```
+
+##### 验证二叉搜索树
 
 [验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
 
@@ -1788,7 +1834,7 @@ public:
 };
 ```
 
-#### 二叉树的最小绝对差
+##### 二叉树的最小绝对差
 
 [二叉树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
 
@@ -1857,6 +1903,10 @@ public:
     }
 };
 ```
+
+##### 二叉搜索树中的众数
+
+[二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
 
 ### 并查集
 
@@ -2101,6 +2151,8 @@ void backtracking(参数) {
 > 如果是在一个集合中求组合，那么递归参数就需要有startIndex， 例如组合总和，组合问题等
 > 如果在两个集合中求组合，就不需要startIndex，例如电话号码组合
 
+#### 组合
+
 [组合](https://leetcode.cn/problems/combinations/description/)
 
 ```c++
@@ -2135,6 +2187,8 @@ public:
     }
 };
 ```
+
+#### 组合三
 
 [组合三](https://leetcode.cn/problems/combination-sum-iii/description/)
 
@@ -2215,6 +2269,8 @@ public:
 };
 ```
 
+#### 电话号码的字母组合
+
 [电话号码的字母组合](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/)
 
 > 递归深度由数字的多少来确定
@@ -2274,6 +2330,8 @@ public:
 };
 ```
 
+#### 组合总和
+
 [组合总和](https://leetcode.cn/problems/combination-sum/)
 
 ```c++
@@ -2318,6 +2376,8 @@ public:
     }
 };
 ```
+
+#### 组合总和2
 
 [组合总和2](https://leetcode.cn/problems/combination-sum-ii/)
 
@@ -2375,8 +2435,6 @@ public:
 ```
 
 ### 分割问题
-
-
 
 ## 贪心
 
