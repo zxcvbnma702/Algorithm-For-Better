@@ -1707,6 +1707,155 @@ public:
         return result;
     }
 };
+
+// 二叉搜索树中的搜索-迭代法
+class Solution
+{
+public:
+    TreeNode *searchBST(TreeNode *root, int val)
+    {
+        while (root != NULL)
+        {
+            if (root->val > val)
+                root = root->left;
+            else if (root->val < val)
+                root = root->right;
+            else
+                return root;
+        }
+        return NULL;
+    }
+};
+```
+
+[验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
+
+> 双指针法很巧妙，pre最开始为空，然后中序赋值后一开始就是最左面（最小）的节点，然后根据递归不断中序赋值，pre就是当前root的前一个节点。
+> ![Alt text](assets/image-23.png)
+
+```c++
+//验证二叉搜索树-使用数组
+class Solution
+{
+private:
+    vector<int> vec;
+    void traversal(TreeNode *root)
+    {
+        if (root == NULL)
+            return;
+        traversal(root->left);
+        vec.push_back(root->val); // 将二叉搜索树转换为有序数组
+        traversal(root->right);
+    }
+
+public:
+    bool isValidBST(TreeNode *root)
+    {
+        vec.clear(); // 不加这句在leetcode上也可以过，但最好加上
+        traversal(root);
+        for (int i = 1; i < vec.size(); i++)
+        {
+            // 注意要小于等于，搜索树里不能有相同元素
+            if (vec[i] <= vec[i - 1])
+                return false;
+        }
+        return true;
+    }
+};
+
+// 验证二叉搜索树-双指针
+class Solution
+{
+public:
+    // 指向前一个节点
+    TreeNode *pre = nullptr;
+    bool isValidBST(TreeNode *root)
+    {
+        if (root == nullptr)
+            return true;
+
+        bool left = isValidBST(root->left);
+
+        if (pre != nullptr && pre->val >= root->val) 
+            return false;
+        
+        pre = root;
+
+        bool right = isValidBST(root->right);
+
+        return left && right;
+    }
+};
+```
+
+#### 二叉树的最小绝对差
+
+[二叉树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
+
+> 沿用上一题思路，结合二叉搜索树的性质，使用双指针或者数组即可
+> ![Alt text](assets/image-23.png)
+
+```c++
+// 二叉树的最小绝对差-双指针
+class Solution
+{
+public:
+    TreeNode *pre = nullptr;
+    int minSub = INT_MAX;
+
+    void getMinSub(TreeNode *root)
+    {
+        if (root == nullptr)
+            return;
+
+        getMinimumDifference(root->left);
+
+        if (pre != nullptr)
+        {
+            minSub = min(root->val - pre->val, minSub);
+        }
+
+        pre = root;
+
+        getMinimumDifference(root->right);
+    }
+
+    int getMinimumDifference(TreeNode *root)
+    {
+        getMinSub(root);
+        return minSub;
+    }
+};
+
+// 二叉树的最小绝对差-数组
+class Solution
+{
+private:
+    vector<int> vec;
+    void traversal(TreeNode *root)
+    {
+        if (root == NULL)
+            return;
+        traversal(root->left);
+        vec.push_back(root->val); // 将二叉搜索树转换为有序数组
+        traversal(root->right);
+    }
+
+public:
+    int getMinimumDifference(TreeNode *root)
+    {
+        vec.clear();
+        traversal(root);
+        if (vec.size() < 2)
+            return 0;
+        int result = INT_MAX;
+        for (int i = 1; i < vec.size(); i++)
+        { // 统计有序数组的最小差值
+            result = min(result, vec[i] - vec[i - 1]);
+        }
+        return result;
+    }
+};
 ```
 
 ### 并查集
