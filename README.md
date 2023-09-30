@@ -1723,6 +1723,46 @@ public:
 };
 ```
 
+#### 二叉树的最近公共祖先
+
+[二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+> 如果左右都不为空，那此节点就是公共祖先
+> ![Alt text](assets/image-24.png)
+> 如果一边为空，一边不为空，那就返回不为空的节点
+> ![Alt text](assets/image-25.png)
+> 总过程
+> ![Alt text](assets/image-26.png)
+
+```c++
+// 二叉树的最近公共祖先
+class Solution
+{
+public:
+    TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+    {
+        if (root == nullptr || root == p || root == q)
+            return root;
+
+        // 你得先知道子节点有没有pq之后才能判断自己是不是祖先
+        // 所以后序遍历左右中最为合适
+        TreeNode *left = lowestCommonAncestor(root->left, p, q);
+        TreeNode *right = lowestCommonAncestor(root->right, p, q);
+
+        if (left != nullptr && right != nullptr)
+            return root;
+        if (left != nullptr && right == nullptr)
+            return left;
+        if (left == nullptr && right != nullptr)
+            return right;
+        if (left == nullptr && right == nullptr)
+            return nullptr;
+
+        return nullptr;
+    }
+};
+```
+
 #### 二叉搜索树
 
 ##### 二叉搜索树中的搜索
@@ -1907,6 +1947,127 @@ public:
 ##### 二叉搜索树中的众数
 
 [二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
+
+```c++
+// 二叉搜索树中的众数
+class Solution
+{
+private:
+    int maxCount = 0; // 最大频率
+    int count = 0;    // 统计频率
+    TreeNode *pre = NULL;
+    vector<int> result;
+    void searchBST(TreeNode *cur)
+    {
+        if (cur == NULL)
+            return;
+
+        searchBST(cur->left); // 左
+                              // 中
+        if (pre == NULL)
+        { // 第一个节点
+            count = 1;
+        }
+        else if (pre->val == cur->val)
+        { // 与前一个节点数值相同
+            count++;
+        }
+        else
+        { // 与前一个节点数值不同
+            count = 1;
+        }
+        pre = cur; // 更新上一个节点
+
+        if (count == maxCount)
+        { // 如果和最大值相同，放进result中
+            result.push_back(cur->val);
+        }
+
+        if (count > maxCount)
+        {                     // 如果计数大于最大值频率
+            maxCount = count; // 更新最大频率
+            result.clear();   // 很关键的一步，不要忘记清空result，之前result里的元素都失效了
+            result.push_back(cur->val);
+        }
+
+        searchBST(cur->right); // 右
+        return;
+    }
+
+public:
+    vector<int> findMode(TreeNode *root)
+    {
+        count = 0;
+        maxCount = 0;
+        pre = NULL; // 记录前一个节点
+        result.clear();
+
+        searchBST(root);
+        return result;
+    }
+};
+```
+
+##### 二叉搜索树的最小公共祖先
+
+[二叉搜索树的最小公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/description/)
+
+```c++
+// 二叉搜索树的最近公共祖先-递归法
+class Solution
+{
+public:
+    TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+    {
+        if (root == NULL)
+            return NULL;
+
+        if (root->val < p->val && root->val < q->val)
+        {
+            TreeNode *right = lowestCommonAncestor(root->right, p, q);
+            if (right != NULL)
+                return right;
+        }
+        else if (root->val > p->val && root->val > q->val)
+        {
+            TreeNode *left = lowestCommonAncestor(root->left, p, q);
+            if (left != NULL)
+                return left;
+        }
+        else
+        {
+            return root;
+        }
+
+        return NULL;
+    }
+};
+
+// 二叉搜索树的最近公共祖先-迭代法
+class Solution
+{
+public:
+    TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+    {
+        while (root != NULL)
+        {
+            if (root->val > p->val && root->val > q->val)
+            {
+                root = root->left;
+            }
+            else if (root->val < p->val && root->val < q->val)
+            {
+                root = root->right;
+            }
+            else
+            {
+                return root;
+            }
+        }
+        return NULL;
+    }
+};
+```
 
 ### 并查集
 
