@@ -2012,6 +2012,9 @@ public:
 
 [二叉搜索树的最小公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/description/)
 
+> 如果你第一次出现在p,q之间，那么你就是pq的最小的公共祖先
+> 如果你小于p,q，那么你肯定不是公共祖先，就向右子树递归
+
 ```c++
 // 二叉搜索树的最近公共祖先-递归法
 class Solution
@@ -2065,6 +2068,212 @@ public:
             }
         }
         return NULL;
+    }
+};
+```
+
+##### 二叉搜索树的插入操作
+
+[二叉搜索树的插入操作](https://leetcode.cn/problems/insert-into-a-binary-search-tree/)
+
+```c++
+// 二叉搜索树的插入操作
+class Solution
+{
+public:
+    TreeNode *insertIntoBST(TreeNode *root, int val)
+    {
+
+        if (root == nullptr)
+            root = new TreeNode(val);
+
+        if (root->val < val)
+        {
+            if (root->right)
+            {
+                insertIntoBST(root->right, val);
+            }
+            else
+            {
+                root->right = new TreeNode(val);
+            }
+        }
+        else if (root->val > val)
+        {
+            if (root->left)
+            {
+                insertIntoBST(root->left, val);
+            }
+            else
+            {
+                root->left = new TreeNode(val);
+            }
+        }
+
+        return root;
+    }
+};
+```
+
+##### 二叉搜索树的删除操作
+
+[二叉搜索树的删除操作](https://leetcode.cn/problems/delete-node-in-a-bst/)
+
+- 第一种情况：没找到删除的节点，遍历到空节点直接返回了
+- 第二种情况：左右孩子都为空（叶子节点），直接删除节点， 返回NULL为根节点
+- 第三种情况：删除节点的左孩子为空，右孩子不为空，删除节点，右孩子补位，返回右孩子为根节点
+- 第四种情况：删除节点的右孩子为空，左孩子不为空，删除节点，左孩子补位，返回左孩子为根节点
+- 第五种情况：左右孩子节点都不为空，则将删除节点的左子树头结点（左孩子）放到删除节点的右子树的最左面节点的左孩子上，返回删除节点右孩子为新的根节点。
+
+```c++
+// 二叉搜索树的删除操作
+class Solution
+{
+public:
+    TreeNode *deleteNode(TreeNode *root, int key)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        if (root->val == key) // 找到了要删除的节点
+        {
+            // 如果要删除的点是叶子结点，直接删
+            if (root->left == nullptr && root->right == nullptr)
+            {
+                return nullptr;
+            }
+            else if (root->left == nullptr && root->right != nullptr)
+            {
+                return root->right;
+            }
+            else if (root->right == nullptr && root->left != nullptr)
+            {
+                return root->left;
+            }
+            else
+            {
+                TreeNode *cur = root->right;
+                // 注意: cur!=null 到最后指针就指向空了，就没意义了
+                while (cur->left != nullptr)
+                {
+                    cur = cur->left;
+                }
+                cur->left = root->left;
+                return root->right;
+            }
+        }
+
+        if (root->val > key)
+        {
+            root->left = deleteNode(root->left, key);
+        }
+        if (root->val < key)
+        {
+            root->right = deleteNode(root->right, key);
+        }
+
+        return root;
+    }
+};
+```
+
+##### 修剪二叉搜索树
+
+[修剪二叉搜索树](https://leetcode.cn/problems/trim-a-binary-search-tree/description/)
+
+```c++
+// 修剪二叉搜索树
+class Solution
+{
+public:
+    TreeNode *trimBST(TreeNode *root, int low, int high)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        // 比最小值还小,修剪右子树
+        if (root->val < low)
+        {
+            TreeNode *right = trimBST(root->right, low, high);
+            return right;
+        }
+
+        if (root->val > high)
+        {
+            TreeNode *left = trimBST(root->left, low, high);
+            return left;
+        }
+
+        root->left = trimBST(root->left, low, high);   // root->left接入符合条件的左孩子
+        root->right = trimBST(root->right, low, high); // root->right接入符合条件的右孩子
+        return root;
+    }
+};
+```
+
+##### 将有序数组转换为二叉搜索树
+
+[将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/)
+
+> 相较于最大二叉树简单些
+
+```c++
+// 将有序数组转换为二叉搜索树
+class Solution
+{
+private:
+    TreeNode *traversal(vector<int> &nums, int left, int right)
+    {
+        if (left > right)
+            return nullptr;
+        int mid = left + ((right - left) / 2);
+        TreeNode *root = new TreeNode(nums[mid]);
+        root->left = traversal(nums, left, mid - 1);
+        root->right = traversal(nums, mid + 1, right);
+        return root;
+    }
+
+public:
+    TreeNode *sortedArrayToBST(vector<int> &nums)
+    {
+        TreeNode *root = traversal(nums, 0, nums.size() - 1);
+        return root;
+    }
+};
+```
+
+##### 把二叉搜索树转换为累加树
+
+[把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/description/)
+
+> 其实这就是一棵树，大家可能看起来有点别扭，换一个角度来看，这就是一个有序数组[2, 5, 13]，求从后到前的累加数组，也就是[20, 18, 13]，是不是感觉这就简单了。
+> 从树中可以看出累加的顺序是右中左，所以我们需要反中序遍历这个二叉树，然后顺序累加就可以了。
+
+依旧使用验证二叉搜索树的前后指针法，只不过变成
+
+```c++
+//将有序数组转换为二叉搜索树
+class Solution
+{
+public:
+    TreeNode *pre = nullptr;
+    TreeNode *convertBST(TreeNode *root)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        convertBST(root->right);
+
+        if (pre != nullptr)
+        {
+            root->val = pre->val + root->val;
+        }
+
+        pre = root;
+
+        convertBST(root->left);
+
+        return root;
     }
 };
 ```
@@ -2248,6 +2457,21 @@ int textCreateEH()
 
 ![排序算法](assets/image-14.png)
 
+> 稳定：如果a原本在b前面，而a=b时，排序之后a仍然在b的前面。
+> 不稳定：如果a原本在b的前面，而a=b时，排序之后a可能出现在b的后面。
+
+时间复杂度: 最好 最坏 平均
+
+| 类别     | 排序方法     |         时间复杂度         |   空间复杂度    | 稳定性 |
+| -------- | ------------ | :------------------------: | :-------------: | ------ |
+| 插入排序 | 直接插入排序 |     O(n)  O(n²)  O(n²)     |      O(1)       | 稳定   |
+|          | 折半插入排序 |    O(nlogn) O(n²) O(n²)    |      O(1)       | 稳定   |
+|          | 希尔排序     |    none O(n²) O(nlogn)     |      O(1)       | 不稳定 |
+| 交换排序 | 冒泡排序     |      O(n) O(n²) O(n²)      |      O(1)       | 稳定   |
+|          | 快速排序     |  O(nlogn) O(n²) O(nlogn)   | O(n) or O(logn) | 不稳定 |
+| 选择排序 | 简单选择排序 |    O(n²)  O(n²)  O(n²)     |      O(1)       | 不稳定 |
+|          | 堆排序       | O(nlogn) O(nlogn) O(nlogn) |      O(1)       | 不稳定 |
+
 一些小结论：
 
 1. 除上述之外，折半插入排序算法：最坏时间复杂度为O(n²)，平均时间复杂度O(n²)，最好时间复杂度O(nlogn)，空间O(1)，也是一种稳定的排序算法
@@ -2258,7 +2482,7 @@ int textCreateEH()
 
 4. 若n较小，可采用直接插入排序或简单选择排序。又由于直接插入排序所需的记录移动次数较简单选择排序的多，因此当记录本身信息量较大时，用简单选择排序较好。
 
-5. 若文件的初始状态已按关键字基本有序，则选用直接插入排序或冒泡排序
+5. 若文件的初始状态已按关键字**基本有序**，则选用直接插入排序或冒泡排序
 
 6. 若n较大，则应采用时间复杂度为的排序方法：快速排序、堆排序或合并排序。
 
@@ -2276,12 +2500,475 @@ int textCreateEH()
 
 ### 插入排序
 
+| 类别     | 排序方法     |      时间复杂度      | 空间复杂度 | 稳定性 |
+| -------- | ------------ | :------------------: | :--------: | ------ |
+| 插入排序 | 直接插入排序 |  O(n)  O(n²)  O(n²)  |    O(1)    | 稳定   |
+|          | 折半插入排序 | O(nlogn) O(n²) O(n²) |    O(1)    | 稳定   |
+|          | 希尔排序     | none O(n²) O(nlogn)  |    O(1)    | 不稳定 |
+
 #### 直接插入排序
 
 > 双重for循环
 
 ```c++
+#pragma once
+#include <iostream>
 
+#define maxsize 100
+
+int a[maxsize] = {49, 38, 65, 97, 76, 13, 27, 49};
+
+void insertDriect()
+{
+    int n = 8;
+
+    for (int i = 0; i < n; i++)
+    {
+        int temp = a[i];
+
+        int j;
+        // 遇到 <= 就退出，可以保持排序的稳定
+        for (j = i - 1; j >= 0 && a[j] > temp; j--)
+        {
+            a[j + 1] = a[j];
+        }
+        // 注意，在上面的循环退出之前，j会多减一次，例如当a[0] > temp时依旧会进入循环，最终j = -1，
+        // 因此a[j + 1]才是应该插入的位置
+        a[j + 1] = temp;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return;
+}
+```
+
+#### 折半插入排序
+
+> 在上述的直接插入排序中，总是边比较边移动元素，在折半插入中将比较和移动操作分离，即先用二分查找找出元素的待插入位置，然后统一地移动待插入位置之后的所有元素，最后再插入。
+> ① 从第一个元素开始，该元素可以认为已经被排序
+> ② 取出下一个元素，在已经排序的元素序列中二分查找到第一个比它大的数的位置
+> ③ 将新元素插入到该位置后
+> ④ 重复上述两步
+
+```c++
+void binSort()
+{
+    int n = 8;
+    for (int i = 1; i < n; i++) // 开始 以a[0]作为有序序列，从a[1]开始找到当前元素a[i]应该放置的位置
+    {
+        int low = 0, high = i - 1, mid; // 每次寻找a[i]的位置，都要更新这些数据
+        while (low <= high)             // 二分思想循环寻找a[i]的位置
+        {
+            mid = low + ((high - low) / 2);
+            if (a[i] <= a[mid])
+                high = mid - 1; // high指针减小
+            else
+                low = mid + 1; // low指针增加
+        }                      // 循环结束，low就是a[i]应该放置的位置
+
+        int temp = a[i];
+        for (int j = i; j > low; j--) // 将元素向后平移
+            a[j] = a[j - 1];
+        a[low] = temp; // 将元素temp = a[i] 放置到low位置
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    };
+}
+```
+
+#### 希尔排序
+
+> 先将整个待排元素序列分割成若干个子序列（由相隔某个“增量”的元素组成的）分别进行直接插入排序，然后依次缩减增量再进行排序，待整个序列中的元素基本有序（增量足够小）时，再对全体元素进行一次直接插入排序。
+> 因为直接插入排序在元素基本有序的情况下（接近最好情况），效率是很高的，因此希尔排序在时间效率上比前两种方法有较大提高。
+> ![Alt text](assets/image-27.png)
+
+假设有一组｛9, 1, 2, 5, 7, 4, 8, 6, 3, 5｝无需序列。
+
+- 第一趟排序： 设 gap1 = N / 2 = 5，即相隔距离为 5 的元素组成一组，可以分为 5 组。接下来，按照直接插入排序的方法对每个组进行排序。
+- 第二趟排序：将上次的 gap 缩小一半，即 gap2 = gap1 / 2 = 2 (取整数)。这样每相隔距离为 2 的元素组成一组，可以分为2组。按照直接插入排序的方法对每个组进行排序。
+- 第三趟排序：再次把 gap 缩小一半，即gap3 = gap2 / 2 = 1。 这样相隔距离为1的元素组成一组，即只有一组。按照直接插入排序的方法对每个组进行排序。此时，排序已经结束。
+- 注：**需要注意一下的是，图中有两个相等数值的元素5和5。我们可以清楚的看到，在排序过程中，两个元素位置交换了。**
+
+### 交换排序
+
+| 类别     | 排序方法 |       时间复杂度        |   空间复杂度    | 稳定性 |
+| -------- | -------- | :---------------------: | :-------------: | ------ |
+| 交换排序 | 冒泡排序 |    O(n) O(n²) O(n²)     |      O(1)       | 稳定   |
+|          | 快速排序 | O(nlogn) O(n²) O(nlogn) | O(n) or O(logn) | 不稳定 |
+
+#### 冒泡排序
+
+- 比较相邻的元素。如果第一个比第二个大，就交换他们两个。
+- 对每一对相邻元素作同样的工作，从开始第一对到结尾的最后一对。在这一点，最后的元素应该会是最大的数。
+- 针对所有的元素重复以上的步骤，除了最后一个。
+- 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较。
+
+通过两层循环控制：
+
+第一个循环（外循环），负责把需要冒泡的那个数字排除在外；
+第二个循环（内循环），负责两两比较交换。
+
+> 通过设置标志位来记录此次遍历有无数据交换，进而可以判断是否要继续循环，设置一个flag标记，当在一趟序列中没有发生交换，则该序列已排序好，但优化后排序的时间复杂度没有发生量级的改变。
+
+```c++
+void bubbleSort1()
+{
+    int n = 8;
+    bool flag = true;
+    while (flag)
+    {
+        flag = false;
+
+        for (int i = 0; i < n - 1; i++)
+        {
+            if (a[i] > a[i + 1])
+            {
+                flag = true;
+                int temp = a[i];
+                a[i] = a[i + 1];
+                a[i + 1] = temp;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    };
+
+    return;
+}
+```
+
+> 记录某次遍历时最后发生数据交换的位置pos，这个位置之后的数据显然已经有序了。因此通过记录最后发生数据交换的位置就可以确定下次循环的范围了。由于pos位置之后的记录均已交换到位,故在进行下一趟排序时只要扫描到pos位置即可。
+
+```c++
+void bubbleSort2()
+{
+    int n = 8;
+    int BOUND = n - 1; // 记录每趟冒泡的终止位置，由于书上的下标是从1开始，而这里是从0开始的，所以这里初值为n - 1
+
+    while (BOUND) // 在终止位置不为0，即所有元素还未排序完毕之前循环
+    {
+        int t = 0; // t用来记录每次交换元素的位置
+        for (int j = 0; j < BOUND; j++)
+        {
+            // 只有在a[j] > a[j+1]时才交换，可以保证算法的稳定性
+            if (a[j] > a[j + 1])
+            {
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+                t = j; // t = j 表示a[j]和a[j+1]交换了位置
+            }
+        }
+        BOUND = t; // 此时a[BOUND]（不含自身）之后的元素都已经排序完毕
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return;
+}
+```
+
+> 所谓的交替冒泡，就是把大元素上浮（移到后面）和小元素下沉（移到前面）两种操作交替进行，可以改善排序效率，一般情况下交替冒泡排序要优于单纯上浮或下沉的冒泡排序。
+
+```c++
+void bubbleSort3()
+{
+    int n = 8;
+    // i是排在末尾的大元素的指针，j是排在前面的小元素的指针，[i, j]区间内的元素为尚未排序的元素
+    int i = n - 1, j = 0;
+    int tag = -1; // tag为-1时进行大元素的上浮操作，tag为1时进行小元素的下沉操作
+    while (i > j)
+    {
+        int flag = 0;
+        if (tag == -1) // 大元素的上浮操作
+        {
+            for (int k = j; k < i; k++)
+            {
+                if (a[k] > a[k + 1])
+                {
+                    flag = 1;
+                    int temp = a[k];
+                    a[k] = a[k + 1];
+                    a[k + 1] = temp;
+                }
+            }
+            i--; // 每排完一个元素，记得移动指针
+        }
+        else if (tag == 1) // 小元素的下沉操作
+        {
+            for (int k = i; k > j; k--)
+            {
+                if (a[k] < a[k - 1])
+                {
+                    flag = 1;
+                    int temp = a[k];
+                    a[k] = a[k - 1];
+                    a[k - 1] = temp;
+                }
+            }
+            j++; // 每排完一个元素，记得移动指针
+        }
+        tag = -tag; // 更换下次的操作
+        if (!flag)
+            break; // 如果未发生交换，说明已经排序完毕，可以提前退出
+    }
+    
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ", a[i]);
+    }
+    return;
+}
+```
+
+#### 快速排序
+
+快速排序使用分治法（Divide and conquer）策略来把一个序列（list）分为两个子序列（sub-lists）。
+
+① 从数列中挑出一个元素，称为 “基准”（pivot），
+② 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作。
+③ 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+递归到最底部时，数列的大小是零或一，也就是已经排序好了。这个算法一定会结束，因为在每次的迭代（iteration）中，它至少会把一个元素摆到它最后的位置去。
+
+```c++
+int partition(int a[], int low, int high)
+{
+    //这里可以视为在逻辑上移走了low位置的元素，之后low指向的是一个空元素
+    int K = a[low]; //用第一个元素作为枢轴，将待排序序列划分为左右两个部分
+ 
+    //何时移动low指针和high指针是有讲究的
+    //我们每次让指向空元素的指针固定不动，然后移动另外一个指针，再将找到的元素放到空元素位置
+    //因此让指向空元素的指针不动，可以视为用这个指针来记录空元素的位置，然后可以将找到的元素放到这里来
+    //而第一次进入大循环前，a[low]位置是空的，因此先移动high指针，之后每次大循环同理
+    while (low < high)
+    {
+        //在low和high指针移动的过程中，也要随时判断两者的大小关系
+        while (low < high && a[high] >= K)
+        {
+            high--;    //high指针不断左移直到找到一个比枢轴小的元素
+        }
+        //这里可以视为在逻辑上移走了high位置的元素，之后high指向的是一个空元素
+        a[low] = a[high];   //把比枢轴小的元素移动到左端的空元素位置
+ 
+        while (low < high && a[low] <= K)
+        {
+            low++;     //low指针不断右移直到直到一个比枢轴大的元素
+        }
+        //这里可以视为在逻辑上移走了low位置的元素，之后low指向的是一个空元素
+        a[high] = a[low];   //把比枢轴大的元素移动到右端的空元素位置
+    }
+ 
+    //当最终low == high时，a[high]就是枢轴元素应该放置的地方
+    a[high] = K;   //此时a[high]左边的元素都比K小，a[high]右边的元素都比K大，枢轴元素的最终位置已经确定
+    return high;
+}
+ 
+void quicksort(int a[], int low, int high)
+{
+    if (low < high) //递归跳出的条件
+    {
+        int mid = partition(a, low, high);    //划分
+        quicksort(a, low, mid - 1);    //划分左子表
+        quicksort(a, mid + 1, high);   //划分右子表
+    }
+}
+ 
+void quickSort()
+{
+    int n = 8;
+    quicksort(a, 0, n - 1);
+ 
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return ;
+}
+```
+
+```c++
+int partition2(int a[], int low, int high)
+{
+    int m = low;
+    int K = a[low];
+    high++;        //这里可以理解为在a[high + 1]处插入了一个无穷大的数
+    while (low < high)
+    {
+        //和上面的快速排序不一样的地方是，这种方法每趟排序时是先让low进行移动，再让high移动
+        low++;
+        while (a[low] <= K) low++;  //这里很关键，一定要有等于，不然结果会出错，我也不知道为什么
+        high--;
+        while (a[high] > K) high--; //这里不需要等于
+        if (low < high)
+        {
+            int temp = a[low];
+            a[low] = a[high];
+            a[high] = temp;
+        }
+    }
+    int temp = a[high];     //最终low = high - 1，a[m]应该放在high的位置，而不是low，我也不知道为什么
+    a[high] = a[m];
+    a[m] = temp;
+    return high;
+}
+ 
+void quicksort2(int a[], int low, int high)
+{
+    if (low < high) //递归跳出的条件
+    {
+        int mid = partition(a, low, high);    //划分
+        quicksort(a, low, mid - 1);    //划分左子表
+        quicksort(a, mid + 1, high);   //划分右子表
+    }
+}
+ 
+void quickSort2()
+{
+    int n = 8;
+    quicksort2(a, 0, n - 1);
+ 
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return ;
+}
+```
+
+### 选择排序
+
+| 类别     | 排序方法     |         时间复杂度         |   空间复杂度    | 稳定性 |
+| -------- | ------------ | :------------------------: | :-------------: | ------ |
+| 选择排序 | 简单选择排序 |    O(n²)  O(n²)  O(n²)     |      O(1)       | 不稳定 |
+|          | 堆排序       | O(nlogn) O(nlogn) O(nlogn) |      O(1)       | 不稳定 |
+
+#### 简单选择排序
+
+首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
+
+选择排序的思想其实和冒泡排序有点类似，都是在一次排序后把最小的元素放到最前面，或者将最大值放在最后面。但是过程不同，冒泡排序是通过相邻的比较和交换。而选择排序是通过对整体的选择，每一趟从前往后查找出无序区最小值，将最小值交换至无序区最前面的位置。
+
+![Alt text](assets/image-28.png)
+
+① 第一轮从下标为 1 到下标为 n-1 的元素中选取最小值，若小于第一个数，则交换
+② 第二轮从下标为 2 到下标为 n-1 的元素中选取最小值，若小于第二个数，则交换
+③ 依次类推下去……
+
+```c++
+void selectSort()
+{
+    int n = 8;
+    // 每次将后面最小的元素放到前面，所以每趟形成的子序列一定是有序的，只需n - 1次循环
+    for (int i = 0; i < n - 1; i++)
+    {
+        int t = i; // 记录最小元素的下标
+        for (int j = i + 1; j < n; j++)
+        {
+            if (a[j] < a[t])
+            {
+                t = j;
+            }
+        }
+        if (t != i)
+        {
+            int temp = a[t];
+            a[t] = a[i];
+            a[i] = temp;
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return ;
+}
+```
+
+#### 堆排序
+
+堆排序（Heapsort）是指利用堆这种数据结构所设计的一种排序算法。堆积是一个近似完全二叉树的结构，并同时满足堆积的性质：即子结点的键值或索引总是小于（或者大于）它的父节点。
+
+利用大顶堆(小顶堆)堆顶记录的是最大关键字(最小关键字)这一特性，使得每次从无序中选择最大记录(最小记录)变得简单。
+
+① 将待排序的序列构造成一个最大堆，此时序列的最大值为根节点
+② 依次将根节点与待排序序列的最后一个元素交换
+③ 再维护从根节点到该元素的前一个节点为最大堆，如此往复，最终得到一个递增序列
+
+```c++
+//对以元素k为根的子树进行调整，使其符合大根堆的定义：a[k] >= a[2k], a[k] >= a[2k+1]
+void HeapAdjust(int a[], int k, int n)
+{
+    //n是最后一个结点的编号，而⌊n/2⌋就是其父结点的编号
+    //所以k <= n/2是k为分支结点的条件，如果是叶结点就不用调整了
+    while (k <= n / 2)
+    {
+        //m记录关键字较大的儿子结点的下标，能进入这个循环说明k必有左儿子，先赋为左儿子下标
+        int m = 2 * k;
+        //2 * k + 1 <= n是k的右儿子存在的条件，如果右儿子关键字比左儿子的大，就修改m
+        if (2 * k + 1 <= n && a[2 * k] < a[2 * k + 1])
+        {
+            m = 2 * k + 1;
+        }
+        if (a[k] < a[m])
+        {
+            //将k结点和m结点关键字交换，并继续向下调整
+            int temp = a[m];
+            a[m] = a[k];
+            a[k] = temp;
+ 
+            k = m;
+        }
+        else break;
+    }
+}
+ 
+//堆排序
+void HeapSort(int a[], int n)
+{   
+    //建立大根堆
+    //n是最后一个结点的编号，而⌊n/2⌋就是其父结点的编号
+    //i <= n/2是i为分支结点的条件，对所有以分支结点为根的子树进行调整
+    for (int i = n / 2; i >= 1; i--)
+    {
+        HeapAdjust(a, i, n);
+    }
+    //由于每趟排序会确定一个结点的最终位置，因此只要n - 1趟即可排好
+    for (int len = n; len > 1; len--)
+    {
+        //每趟排序将堆顶元素加入有序子序列，即与待排序序列的最后一个元素交换
+        int temp = a[1];
+        a[1] = a[len];
+        a[len] = temp;
+        //再将剩余len - 1个元素调整为大根堆，这里只需调用一次HeapAdjust函数，因为除了根节点外其他分支结点都满足大根堆的定义
+        HeapAdjust(a, 1, len - 1);
+    }
+}
+ 
+void heapSort()
+{
+    //注意二叉树的顺序存储，首元素下标必须从1开始
+    int n = 8;
+    HeapSort(a, n);
+ 
+    for (int i = 1; i <= n; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    return;
+}
 ```
 
 ## 回溯

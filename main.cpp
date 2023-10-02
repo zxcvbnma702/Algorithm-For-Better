@@ -171,7 +171,12 @@ int main()
     // }
 
     // int result = myKMP("tsa", "sadbutsad");
-    insertDriect();
+    // insertDriect();
+    // binSort();
+    // shellSort();
+    // bubbleSort2();
+    // quickSort();
+    selectSort();
     // testCreate();
     // testCreateEH();
     return 0;

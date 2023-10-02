@@ -1314,3 +1314,165 @@ public:
         return NULL;
     }
 };
+
+// 二叉搜索树的插入操作
+class Solution
+{
+public:
+    TreeNode *insertIntoBST(TreeNode *root, int val)
+    {
+
+        if (root == nullptr)
+            root = new TreeNode(val);
+
+        if (root->val < val)
+        {
+            if (root->right)
+            {
+                insertIntoBST(root->right, val);
+            }
+            else
+            {
+                root->right = new TreeNode(val);
+            }
+        }
+        else if (root->val > val)
+        {
+            if (root->left)
+            {
+                insertIntoBST(root->left, val);
+            }
+            else
+            {
+                root->left = new TreeNode(val);
+            }
+        }
+
+        return root;
+    }
+};
+
+// 二叉搜索树的删除操作
+class Solution
+{
+public:
+    TreeNode *deleteNode(TreeNode *root, int key)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        if (root->val == key) // 找到了要删除的节点
+        {
+            // 如果要删除的点是叶子结点，直接删
+            if (root->left == nullptr && root->right == nullptr)
+            {
+                return nullptr;
+            }
+            else if (root->left == nullptr && root->right != nullptr)
+            {
+                return root->right;
+            }
+            else if (root->right == nullptr && root->left != nullptr)
+            {
+                return root->left;
+            }
+            else
+            {
+                TreeNode *cur = root->right;
+                // 注意: cur!=null 到最后指针就指向空了，就没意义了
+                while (cur->left != nullptr)
+                {
+                    cur = cur->left;
+                }
+                cur->left = root->left;
+                return root->right;
+            }
+        }
+
+        if (root->val > key)
+        {
+            root->left = deleteNode(root->left, key);
+        }
+        if (root->val < key)
+        {
+            root->right = deleteNode(root->right, key);
+        }
+
+        return root;
+    }
+};
+
+// 修剪二叉搜索树
+class Solution
+{
+public:
+    TreeNode *trimBST(TreeNode *root, int low, int high)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        // 比最小值还小,修剪右子树
+        if (root->val < low)
+        {
+            TreeNode *right = trimBST(root->right, low, high);
+            return right;
+        }
+
+        if (root->val > high)
+        {
+            TreeNode *left = trimBST(root->left, low, high);
+            return left;
+        }
+
+        root->left = trimBST(root->left, low, high);   // root->left接入符合条件的左孩子
+        root->right = trimBST(root->right, low, high); // root->right接入符合条件的右孩子
+        return root;
+    }
+};
+// 将有序数组转换为二叉搜索树
+class Solution
+{
+private:
+    TreeNode *traversal(vector<int> &nums, int left, int right)
+    {
+        if (left > right)
+            return nullptr;
+        int mid = left + ((right - left) / 2);
+        TreeNode *root = new TreeNode(nums[mid]);
+        root->left = traversal(nums, left, mid - 1);
+        root->right = traversal(nums, mid + 1, right);
+        return root;
+    }
+
+public:
+    TreeNode *sortedArrayToBST(vector<int> &nums)
+    {
+        TreeNode *root = traversal(nums, 0, nums.size() - 1);
+        return root;
+    }
+};
+
+//将有序数组转换为二叉搜索树
+class Solution
+{
+public:
+    TreeNode *pre = nullptr;
+    TreeNode *convertBST(TreeNode *root)
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        convertBST(root->right);
+
+        if (pre != nullptr)
+        {
+            root->val = pre->val + root->val;
+        }
+
+        pre = root;
+
+        convertBST(root->left);
+
+        return root;
+    }
+};
