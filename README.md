@@ -444,6 +444,14 @@ public:
 > 完全二叉树 使用顺序存储 fabulous
 > 如果需要搜索**整棵**二叉树，那么递归函数就**不要返回值**，如果要搜索其中**一条**符合条件的路径，递归函数就需要返回值，因为遇到符合条件的路径了就要及时返回。
 
+![Alt text](assets/image-29.png)
+
+涉及到二叉树的构造，无论普通二叉树还是二叉搜索树一定前序，都是先构造中节点。
+
+求普通二叉树的属性，一般是后序，一般要通过递归函数的返回值做计算。
+
+求二叉搜索树的属性，一定是中序了，要不白瞎了有序性了。
+
 #### 递归遍历
 
 ##### 前序遍历
@@ -2455,8 +2463,6 @@ int textCreateEH()
 
 ## 排序
 
-![排序算法](assets/image-14.png)
-
 > 稳定：如果a原本在b前面，而a=b时，排序之后a仍然在b的前面。
 > 不稳定：如果a原本在b的前面，而a=b时，排序之后a可能出现在b的后面。
 
@@ -2471,6 +2477,8 @@ int textCreateEH()
 |          | 快速排序     |  O(nlogn) O(n²) O(nlogn)   | O(n) or O(logn) | 不稳定 |
 | 选择排序 | 简单选择排序 |    O(n²)  O(n²)  O(n²)     |      O(1)       | 不稳定 |
 |          | 堆排序       | O(nlogn) O(nlogn) O(nlogn) |      O(1)       | 不稳定 |
+| 归并排序 |              | O(nlogn)O(nlogn) O(nlogn)  |      O(n)       | 稳定   |
+| 基数排序 |              |           O(k+N)           |     O(k*N)      | 稳定   |
 
 一些小结论：
 
@@ -2849,10 +2857,10 @@ void quickSort2()
 
 ### 选择排序
 
-| 类别     | 排序方法     |         时间复杂度         |   空间复杂度    | 稳定性 |
-| -------- | ------------ | :------------------------: | :-------------: | ------ |
-| 选择排序 | 简单选择排序 |    O(n²)  O(n²)  O(n²)     |      O(1)       | 不稳定 |
-|          | 堆排序       | O(nlogn) O(nlogn) O(nlogn) |      O(1)       | 不稳定 |
+| 类别     | 排序方法     |         时间复杂度         | 空间复杂度 | 稳定性 |
+| -------- | ------------ | :------------------------: | :--------: | ------ |
+| 选择排序 | 简单选择排序 |    O(n²)  O(n²)  O(n²)     |    O(1)    | 不稳定 |
+|          | 堆排序       | O(nlogn) O(nlogn) O(nlogn) |    O(1)    | 不稳定 |
 
 #### 简单选择排序
 
@@ -2968,6 +2976,308 @@ void heapSort()
         std::cout << a[i] << " ";
     }
     return;
+}
+```
+
+### 归并排序
+
+| 类别     | 排序方法 |        时间复杂度         | 空间复杂度 | 稳定性 |
+| -------- | -------- | :-----------------------: | :--------: | ------ |
+| 归并排序 |          | O(nlogn)O(nlogn) O(nlogn) |    O(n)    | 稳定   |
+
+归并排序，是创建在归并操作上的一种有效的排序算法。算法是采用分治法（Divide and Conquer）的一个非常典型的应用，且各层分治递归可以同时进行。归并排序思路简单，速度仅次于快速排序，为稳定排序算法，一般用于对总体无序，但是各子项相对有序的数列。
+![Alt text](assets/image-30.gif)
+![guibing](assets/image-14.png)
+迭代法
+① 申请空间，使其大小为两个已经排序序列之和，该空间用来存放合并后的序列
+② 设定两个指针，最初位置分别为两个已经排序序列的起始位置
+③ 比较两个指针所指向的元素，选择相对小的元素放入到合并空间，并移动指针到下一位置
+④ 重复步骤③直到某一指针到达序列尾
+⑤ 将另一序列剩下的所有元素直接复制到合并序列尾
+
+```c++
+// 归并排序（C-迭代版）
+int min(int x, int y)
+{
+    return x < y ? x : y;
+}
+void merge_sort(int arr[], int len)
+{
+    int *a = arr;
+    int *b = (int *)malloc(len * sizeof(int));
+    int seg, start;
+    for (seg = 1; seg < len; seg += seg)
+    {
+        for (start = 0; start < len; start += seg + seg)
+        {
+            int low = start, mid = min(start + seg, len), high = min(start + seg + seg, len);
+            int k = low;
+            int start1 = low, end1 = mid;
+            int start2 = mid, end2 = high;
+            while (start1 < end1 && start2 < end2)
+            {
+                b[k++] = a[start1] < a[start2] ? a[start1++] : a[start2++];
+            }
+            while (start1 < end1)
+            {
+                b[k++] = a[start1++];
+            }
+            while (start2 < end2)
+            {
+                b[k++] = a[start2++];
+            }
+        }
+        int *temp = a;
+        a = b;
+        b = temp;
+    }
+    if (a != arr)
+    {
+        int i;
+        for (i = 0; i < len; i++)
+        {
+            b[i] = a[i];
+        }
+        b = a;
+    }
+    free(b);
+}
+```
+
+递归法
+① 将序列每相邻两个数字进行归并操作，形成floor(n/2)个序列，排序后每个序列包含两个元素
+② 将上述序列再次归并，形成floor(n/4)个序列，每个序列包含四个元素
+③ 重复步骤②，直到所有元素排序完毕
+
+```c++
+void merge(int *a, int low, int mid, int hight) // 合并函数
+{
+    int *b = new int[hight - low + 1]; // 用 new 申请一个辅助函数
+    int i = low, j = mid + 1, k = 0;   // k为 b 数组的小标
+    while (i <= mid && j <= hight)
+    {
+        if (a[i] <= a[j])
+        {
+            b[k++] = a[i++]; // 按从小到大存放在 b 数组里面
+        }
+        else
+        {
+            b[k++] = a[j++];
+        }
+    }
+    while (i <= mid) // j 序列结束，将剩余的 i 序列补充在 b 数组中
+    {
+        b[k++] = a[i++];
+    }
+    while (j <= hight) // i 序列结束，将剩余的 j 序列补充在 b 数组中
+    {
+        b[k++] = a[j++];
+    }
+    k = 0;                             // 从小标为 0 开始传送
+    for (int i = low; i <= hight; i++) // 将 b 数组的值传递给数组 a
+    {
+        a[i] = b[k++];
+    }
+    delete[] b; // 辅助数组用完后，将其的空间进行释放（销毁）
+}
+
+void mergesort(int *a, int low, int hight) // 归并排序
+{
+    if (low < hight)
+    {
+        int mid = (low + hight) / 2;
+        mergesort(a, low, mid);       // 对 a[low,mid]进行排序
+        mergesort(a, mid + 1, hight); // 对 a[mid+1,hight]进行排序
+        merge(a, low, mid, hight);    // 进行合并操作
+    }
+}
+
+int main()
+{
+    int n, a[100];
+    cout << "请输入数列中的元素个数 n 为：" << endl;
+    cin >> n;
+    cout << "请依次输入数列中的元素：" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> a[i];
+    }
+    mergesort(a, 0, n - 1);
+    cout << "归并排序结果" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cout << a[i] << " ";
+    }
+    cout << endl;
+    return 0;
+}
+```
+
+```c++
+#define maxsize 100
+ 
+typedef struct node
+{
+    int val;
+    node* next;
+}node;
+ 
+//这里的left和right指的是两条尾节点都指向空的链表，与数组版的合并排序中的left和right的意思不同
+node* merge(node* left, node* right)
+{
+    node* curhead = (node*)malloc(sizeof(node));
+    node* curtail = curhead;
+    node* it1 = left, * it2 = right;
+    while (it1 != NULL && it2 != NULL)
+    {
+        if (it1->val <= it2->val)
+        {
+            curtail->next = it1;
+            curtail = it1;
+            it1 = it1->next;
+        }
+        else
+        {
+            curtail->next = it2;
+            curtail = it2;
+            it2 = it2->next;
+        }
+    }
+    while (it1 != NULL)
+    {
+        curtail->next = it1;
+        curtail = it1;
+        it1 = it1->next;
+    }
+    while (it2 != NULL)
+    {
+        curtail->next = it2;
+        curtail = it2;
+        it2 = it2->next;
+    }
+    curtail->next = NULL;       //记得将合并后的新链表的尾节点指向空
+    return curhead->next;
+}
+ 
+node* mergesort(node* cur)
+{
+    //注意，cur->next为空的时候说明链表中只有一个节点，已经可以返回了
+    //如果判断的是cur是否为空，那么由于这个写法的原因，cur必不可能为NULL，所以会出现无限递归的情况
+    if (cur->next == NULL) return cur;
+    node* slow = cur, * fast = cur;     //快慢指针
+    node* lefttail = slow;      //标志左边的链表的尾节点，方便待会将链表一分为二后，将左边的链表的尾节点指向空
+    //经典的一次遍历找中间结点的方法
+    while (fast != NULL && fast->next != NULL)
+    {
+        lefttail = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    lefttail->next = NULL;          //将左边的链表的尾节点指向空 
+    node* left = mergesort(cur);    //递归排序左边的链表
+    node* right = mergesort(slow);  //递归排序右边的链表
+    return merge(left, right);      //合并左右两条链表
+}
+ 
+int main()
+{
+    int a[maxsize] = { 49, 38, 65, 97, 76, 13, 27 };
+    int n = 7;
+    node* head = (node*)malloc(sizeof(node));
+    node* tail = head;
+    for (int i = 0; i < n; i++)
+    {
+        node* tmp = (node*)malloc(sizeof(node));
+        tmp->val = a[i];
+        tail->next = tmp;
+        tail = tmp;
+    }
+    tail->next = NULL;
+    printf("排序前：\n");
+    for (node* it = head->next; it != NULL; it = it->next)
+    {
+        printf("%d ", it->val);
+    }printf("\n\n");
+ 
+    head->next = mergesort(head->next);
+ 
+    printf("排序后：\n");
+    for (node* it = head->next; it != NULL; it = it->next)
+    {
+        printf("%d ", it->val);
+    }
+    return 0;
+}
+```
+
+### 基数排序
+
+| 类别     | 排序方法     |         时间复杂度         |   空间复杂度    | 稳定性 |
+| -------- | ------------ | :------------------------: | :-------------: | ------ |
+| 基数排序 |              |           O(k+N)           |     O(k*N)      | 稳定   |
+
+原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。基数排序的方式可以采用LSD（Least significant digital）或MSD（Most significant digital），LSD的排序方式由键值的最右边开始，而MSD则相反，由键值的最左边开始。
+
+① 将所有待比较数值（正整数）统一为同样的数位长度，数位较短的数前面补零。
+② 从最低位开始，依次进行一次排序。
+③ 这样从最低位排序一直到最高位排序完成以后, 数列就变成一个有序序列。
+
+>设有数组 array = {53, 3, 542, 748, 14, 214, 154, 63, 616}，对其进行基数排序：
+![Alt text](assets/image-32.png)
+![基数排序](assets/image-31.gif)
+
+```c++
+// 没懂
+int maxbit(int data[], int n) // 辅助函数，求数据的最大位数
+{
+    int maxData = data[0]; ///< 最大数
+    /// 先求出最大数，再求其位数，这样有原先依次每个数判断其位数，稍微优化点。
+    for (int i = 1; i < n; ++i)
+    {
+        if (maxData < data[i])
+            maxData = data[i];
+    }
+    int d = 1;
+    int p = 10;
+    while (maxData >= p)
+    {
+        // p *= 10; // Maybe overflow
+        maxData /= 10;
+        ++d;
+    }
+    return d;
+}
+
+void radixsort(int data[], int n) // 基数排序
+{
+    int d = maxbit(data, n);
+    int *tmp = new int[n];
+    int *count = new int[10]; // 计数器
+    int i, j, k;
+    int radix = 1;
+    for (i = 1; i <= d; i++) // 进行d次排序
+    {
+        for (j = 0; j < 10; j++)
+            count[j] = 0; // 每次分配前清空计数器
+        for (j = 0; j < n; j++)
+        {
+            k = (data[j] / radix) % 10; // 统计每个桶中的记录数
+            count[k]++;
+        }
+        for (j = 1; j < 10; j++)
+            count[j] = count[j - 1] + count[j]; // 将tmp中的位置依次分配给每个桶
+        for (j = n - 1; j >= 0; j--)            // 将所有桶中记录依次收集到tmp中
+        {
+            k = (data[j] / radix) % 10;
+            tmp[count[k] - 1] = data[j];
+            count[k]--;
+        }
+        for (j = 0; j < n; j++) // 将临时数组的内容复制到data中
+            data[j] = tmp[j];
+        radix = radix * 10;
+    }
+    delete[] tmp;
+    delete[] count;
 }
 ```
 
