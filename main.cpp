@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "Sort/Sort.h"
+#include "Graph/BFS.h"
+#include "Graph/DFS.h"
 
 using namespace std;
 
@@ -176,8 +177,13 @@ int main()
     // shellSort();
     // bubbleSort2();
     // quickSort();
-    selectSort();
+    // selectSort();
     // testCreate();
     // testCreateEH();
+
+    // testBFS1();
+    // testBFS2();
+    //  testDFS1();
+     testDFS2();
     return 0;
 }

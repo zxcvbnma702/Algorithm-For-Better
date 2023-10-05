@@ -9,7 +9,8 @@ struct Graph
 {
     char node[maxsize];         // 顶点表, 记录顶点名字
     int edge[maxsize][maxsize]; // 邻接矩阵
-    int nodeNum, edgeNum;       // 顶点数, 边数
+    int nodeNum;        // 顶点数
+    int edgeNum;       // 边数
 };
 
 /*  vector<vector<int>> vec = {

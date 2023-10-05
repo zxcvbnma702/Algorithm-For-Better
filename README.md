@@ -2286,11 +2286,300 @@ public:
 };
 ```
 
-### 并查集
+## 并查集
+
+1. 用 parent 数组记录每个节点的父节点，相当于指向父节点的指针，所以 parent 数组内实际存储着一个森林（若干棵多叉树）。
+
+2. 用 size 数组记录着每棵树的重量，目的是让 union 后树依然拥有平衡性，保证各个 API 时间复杂度为 O(logN)，而不会退化成链表影响操作效率。
+
+3. 在 find 函数中进行路径压缩，保证任意树的高度保持在常数，使得各个 API 时间复杂度为 O(1)。使用了路径压缩之后，可以不使用 size 数组的平衡优化。
+
+![sousuoguocehng](assets/image-33.png)
+
+> 并查集的核心作用就是判断图中有没有环
+
+```c++
+int n = 1005;                           // n根据题目中节点数量而定，一般比节点数量大一点就好
+vector<int> father = vector<int>(n, 0); // C++里的一种数组结构
+
+// 并查集初始化
+void init()
+{
+    for (int i = 0; i < n; ++i)
+    {
+        father[i] = i; //默认自己指向自己
+    }
+}
+// 并查集里寻根的过程
+int find(int u)
+{
+    return u == father[u] ? u : father[u] = find(father[u]); // 路径压缩
+}
+
+// 判断 u 和 v是否找到同一个根
+bool isSame(int u, int v)
+{
+    u = find(u);
+    v = find(v);
+    return u == v;
+}
+
+// 将v->u 这条边加入并查集
+void join(int u, int v)
+{
+    u = find(u); // 寻找u的根
+    v = find(v); // 寻找v的根
+    if (u == v)
+        return; // 如果发现根相同，则说明在一个集合，不用两个节点相连直接返回
+    father[v] = u;
+}
+```
+
+### 寻找图中是否存在路径
+
+[寻找图中是否存在路径](https://leetcode.cn/problems/find-if-path-exists-in-graph/description/)
+
+```c++
+/// 寻找图中是否存在路径
+class Solution
+{
+private:
+    int n = 200005;                         // n根据题目中节点数量而定，一般比节点数量大一点就好
+    vector<int> father = vector<int>(n, 0); // C++里的一种数组结构
+
+    // 并查集初始化
+    void init()
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            father[i] = i;
+        }
+    }
+    // 并查集里寻根的过程
+    int find(int u)
+    {
+        return u == father[u] ? u : father[u] = find(father[u]); // 路径压缩
+    }
+
+    // 判断 u 和 v是否找到同一个根
+    bool isSame(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+        return u == v;
+    }
+
+    // 将v->u 这条边加入并查集
+    void join(int u, int v)
+    {
+        u = find(u); // 寻找u的根
+        v = find(v); // 寻找v的根
+        if (u == v)
+            return; // 如果发现根相同，则说明在一个集合，不用两个节点相连直接返回
+        father[v] = u;
+    }
+
+public:
+    bool validPath(int n, vector<vector<int>> &edges, int source, int destination)
+    {
+        init();
+        for (int i = 0; i < edges.size(); i++)
+        {
+            join(edges[i][0], edges[i][1]);
+        }
+        return isSame(source, destination);
+    }
+};
+```
+
+### 冗余链接1
+
+[冗余链接1](https://leetcode.cn/problems/redundant-connection/description/)
+
+> 使用并查集判断，如果并查集里已经有了，就代表已经连接了，新链接就是冗余的
+> 核心就是判断环，冗余的那个链接就是形成环的那最后一条边，而如果新加入的两个点已经联通，那么你再将其连上，就形成了环
+
+```c++
+// 冗余链接1
+class Solution
+{
+private:
+    int n = 1005; // 节点数目
+    vector<int> father = vector<int>(n, 0);
+
+    void init()
+    {
+        for (int i = 0; i < n; i++)
+        {
+            father[i] = i;
+        }
+    }
+
+    int find(int u)
+    {
+        return u == father[u] ? u : father[u] = find(father[u]);
+    }
+
+    bool isSame(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+        return u == v;
+    }
+
+    void join(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+        if (u == v)
+            return;
+
+        father[v] = u;
+    }
+
+public:
+    vector<int> findRedundantConnection(vector<vector<int>> &edges)
+    {
+        init();
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if (isSame(edges[i][0], edges[i][1]))
+                return edges[i];
+            else
+                (join(edges[i][0], edges[i][1]));
+        }
+        return {};
+    }
+};
+```
+
+### 冗余链接2
+
+[冗余链接2](https://leetcode.cn/problems/redundant-connection-ii/description/)
+
+> 并查集的核心作用就是判断图中有没有环
+
+![Alt text](assets/image-34.png)
+
+如果有入度为2的节点，那么一定是两条边里删一个，看删哪个可以构成树
+
+![Alt text](assets/image-35.png)
+
+明确没有入度为2的情况，那么一定有有向环，找到构成环的边返回就可以了，同冗余链接1
+
+```c++
+// 冗余链接2
+class Solution
+{
+private:
+    static const int N = 1010; // 如题：二维数组大小的在3到1000范围内
+    int father[N];
+    int n; // 边的数量
+    // 并查集初始化
+    void init()
+    {
+        for (int i = 1; i <= n; ++i)
+        {
+            father[i] = i;
+        }
+    }
+    // 并查集里寻根的过程
+    int find(int u)
+    {
+        return u == father[u] ? u : father[u] = find(father[u]);
+    }
+    // 将v->u 这条边加入并查集
+    void join(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+        if (u == v)
+            return;
+        father[v] = u;
+    }
+    // 判断 u 和 v是否找到同一个根
+    bool same(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+        return u == v;
+    }
+    // 在有向图里找到删除的那条边，使其变成树
+    vector<int> getRemoveEdge(const vector<vector<int>> &edges)
+    {
+        init(); // 初始化并查集
+        for (int i = 0; i < n; i++)
+        { // 遍历所有的边
+            if (same(edges[i][0], edges[i][1]))
+            { // 构成有向环了，就是要删除的边
+                return edges[i];
+            }
+            join(edges[i][0], edges[i][1]);
+        }
+        return {};
+    }
+    // 删一条边之后判断是不是树
+    bool isTreeAfterRemoveEdge(const vector<vector<int>> &edges, int deleteEdge)
+    {
+        init(); // 初始化并查集
+        for (int i = 0; i < n; i++)
+        {
+            if (i == deleteEdge)
+                continue;
+            if (same(edges[i][0], edges[i][1]))
+            { // 构成有向环了，一定不是树
+                return false;
+            }
+            join(edges[i][0], edges[i][1]);
+        }
+        return true;
+    }
+
+public:
+    vector<int> findRedundantDirectedConnection(vector<vector<int>> &edges)
+    {
+        int inDegree[N] = {0}; // 记录节点入度
+        n = edges.size();      // 边的数量
+        for (int i = 0; i < n; i++)
+        {
+            inDegree[edges[i][1]]++; // 统计入度
+        }
+        
+        vector<int> vec; // 记录入度为2的边（如果有的话就两条边）
+        // 找入度为2的节点所对应的边，注意要倒序，因为优先返回最后出现在二维数组中的答案
+        for (int i = n - 1; i >= 0; i--)
+        {
+            if (inDegree[edges[i][1]] == 2)
+            {
+                vec.push_back(i);
+            }
+        }
+
+        // 处理图中情况1 和 情况2
+        // 如果有入度为2的节点，那么一定是两条边里删一个，看删哪个可以构成树
+        if (vec.size() > 0)
+        {
+            if (isTreeAfterRemoveEdge(edges, vec[0]))
+            {
+                return edges[vec[0]];
+            }
+            else
+            {
+                return edges[vec[1]];
+            }
+        }
+        // 处理图中情况3
+        // 明确没有入度为2的情况，那么一定有有向环，找到构成环的边返回就可以了
+        return getRemoveEdge(edges);
+    }
+};
+```
 
 ## 图
 
 ### 存储结构
+
+#### 有向图
 
 邻接矩阵(边多)
   
@@ -2430,15 +2719,418 @@ int textCreateEH()
 }
 ```
 
+#### 无向图
+
+```c++
+#pragma once
+#include <iostream>
+using namespace std;
+
+#define maxsize 100
+#define inf 999999
+// 邻接矩阵
+struct Graph
+{
+    char node[maxsize];         // 顶点表, 记录顶点名字
+    int edge[maxsize][maxsize]; // 邻接矩阵
+    int nodeNum;        // 顶点数
+    int edgeNum;       // 边数
+};
+
+/*  vector<vector<int>> vec = {
+    {1, 2, 5}, {2, 3, 4}, {3, 1, 8},
+    {3, 6, 9}, {4, 3, 5}, {4, 6, 6},
+    {5, 4, 5}, {6, 1, 3}, {6, 5, 1} };
+每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值 */
+
+Graph *create(vector<vector<int>> &vec, int nodeNum)
+{
+    Graph *g = new Graph;
+    g->nodeNum = nodeNum;
+
+    for (int i = 0; i < maxsize; i++)
+    {
+        for (int j = 0; j < maxsize; j++)
+        {
+            g->edge[i][j] = 0; // 对角线, 自己指自己
+        }
+    }
+    for (int i = 0; i < vec.size(); i++)
+    {
+        // 一条a<->b，权值为w的边
+        int a = vec[i][0];
+        int b = vec[i][1];
+        int w = vec[i][2];
+        g->edge[a][b] = w;
+        g->edge[b][a] = w;
+        g->edgeNum++;
+    }
+    return g;
+}
+
+int testCreate()
+{
+    // 每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = {{1, 2, 5}, {2, 3, 4}, {3, 1, 8}, {3, 6, 9}, {4, 3, 5}, {4, 6, 6}, {5, 4, 5}, {6, 1, 3}, {6, 5, 1}};
+    Graph *g = create(vec, 6);
+    // 打印邻接矩阵
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        for (int j = 1; j < g->nodeNum + 1; j++)
+        {
+            cout << g->edge[i][j];
+            cout << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+
+// 邻接表
+struct EdgeNode // 边表节点
+{
+    int b; // 节点序号
+    int w; // 节点权值
+    EdgeNode *next = nullptr;
+};
+
+struct HeadNode
+{
+    char data; // 节点信息
+    EdgeNode *first = nullptr;
+};
+
+struct GraphEH
+{
+    HeadNode adjlist[maxsize];
+    int nodeNum, edgeNum;
+};
+
+void insertEdge(HeadNode &hn, EdgeNode *en)
+{
+    en->next = hn.first;
+    hn.first = en;
+}
+
+GraphEH *createEH(vector<vector<int>> &vec, int nodeNum)
+{
+    GraphEH *g = new GraphEH;
+    g->nodeNum = nodeNum;
+
+    for (int i = 0; i < vec.size(); i++)
+    {
+        // 一条a<->b，权值为w的边
+        int a = vec[i][0];
+        int b = vec[i][1];
+        int w = vec[i][2];
+
+        EdgeNode *node = new EdgeNode;
+        node->b = b;
+        node->w = w;
+
+        insertEdge(g->adjlist[a], node);
+
+        node = new EdgeNode;
+        node->b = a;
+        node->w = w;
+
+        insertEdge(g->adjlist[b], node);
+    }
+    return g;
+}
+
+int testCreateEH()
+{
+    // 每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = {{1, 2, 5}, {2, 3, 4}, {3, 1, 8}, {3, 6, 9}, {4, 3, 5}, {4, 6, 6}, {5, 4, 5}, {6, 1, 3}, {6, 5, 1}};
+    GraphEH *g = createEH(vec, 6);
+    // 打印邻接表
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        cout << i;
+        EdgeNode *temp = g->adjlist[i].first;
+        while (temp != nullptr)
+        {
+            cout << " -> " << temp->b << "," << temp->w;
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    return 0;
+}
+```
+
 ### 遍历算法
 
 #### 深度优先遍历
 
 ![深度优先遍历](assets/image-4.png)
 
+```c++
+void dfs(参数) {
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+
+    for (选择：本节点所连接的其他节点) {
+        处理节点;
+        dfs(图，选择的节点); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
+
+> 邻接矩阵实现
+
+```c++
+#pragma once
+
+#include "graphND.h"
+
+void DFS1(Graph *g, int v, bool visited[])
+{
+    std::cout << v << " "; // 访问初始顶点v
+    visited[v] = true;     // 将顶点v标记已访问
+    for (int b = 1; b < g->nodeNum + 1; b++)
+    {
+        int a = v;
+        if (g->edge[a][b] != 0) // 如果a-b这条边存在
+        {
+            if (!visited[b]) // 如果顶点b还未被访问过
+            {
+                DFS1(g, b, visited);
+            }
+        }
+    }
+}
+
+void testDFS1()
+{
+    // 每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = {{1, 2, 1}, {1, 5, 1}, {2, 6, 1}, {6, 3, 1}, {6, 7, 1}, {3, 7, 1}, {3, 4, 1}, {4, 7, 1}, {4, 8, 1}, {7, 8, 1}};
+    Graph *g = create(vec, 8); // 构造图
+
+    bool visited[maxsize]; // 辅助函数，用于判断某顶点是否被访问过
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点1出发得到的深度优先遍历：";
+    DFS1(g, 1, visited); // 从顶点1开始进行深度优先遍历
+    std::cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点2出发得到的深度优先遍历：";
+    DFS1(g, 2, visited); // 从顶点2开始进行深度优先遍历
+    std::cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点3出发得到的深度优先遍历：";
+    DFS1(g, 3, visited); // 从顶点3开始进行深度优先遍历
+    return;
+}
+```
+
+> 邻接矩阵实现
+
+```c++
+void DFS2(GraphEH *g, int start, bool visited[])
+{
+    std::cout << start << " ";
+    visited[start] = true;
+    int a = start;
+    for (EdgeNode *it = g->adjlist[a].first; it != nullptr; it = it->next)
+    {
+        int b = it->b;
+        if (!visited[b])
+        {
+            DFS2(g, b, visited);
+        }
+    }
+}
+
+void testDFS2()
+{
+    vector<vector<int>> vec = {{1, 2, 0}, {1, 5, 0}, {2, 6, 0}, {6, 3, 0}, {6, 7, 0}, {3, 7, 0}, {3, 4, 0}, {4, 7, 0}, {4, 8, 0}, {7, 8, 0}};
+    GraphEH *g = createEH(vec, 8); // 构造图
+
+    bool visited[maxsize]; // 辅助函数，用于判断某顶点是否被访问过
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点1出发得到的深度优先遍历：";
+    DFS2(g, 1, visited); // 从顶点1开始进行深度优先遍历
+    std::cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点2出发得到的深度优先遍历：";
+    DFS2(g, 2, visited); // 从顶点2开始进行深度优先遍历
+    std::cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点3出发得到的深度优先遍历：";
+    DFS2(g, 3, visited); // 从顶点3开始进行深度优先遍历
+    return;
+}
+```
+
 #### 广度优先遍历
 
 ![广度优先遍历](assets/image-10.png)
+
+> 邻接矩阵实现
+
+```c++
+#pragma once
+
+#include "graphND.h"
+#include <queue>
+
+// 邻接矩阵实现
+void BFS1(Graph *g, int start, bool visited[])
+{
+    queue<int> que;
+    std::cout << start << " ";
+    visited[start] = true;
+    que.push(start);
+
+    while (!que.empty())
+    {
+        int a = que.front();
+        que.pop();
+        for (int b = 1; b < g->nodeNum + 1; b++)
+        {
+            if (g->edge[a][b] != 0 && !visited[b])
+            {
+                std::cout << b << " ";
+                visited[b] = true;
+                que.push(b);
+            }
+        }
+    }
+}
+
+void testBFS()
+{
+    vector<vector<int>> vec = {{1, 2, 1}, {1, 5, 1}, {2, 6, 1}, {6, 3, 1}, {6, 7, 1}, {3, 7, 1}, {3, 4, 1}, {4, 7, 1}, {4, 8, 1}, {7, 8, 1}};
+    Graph *g = create(vec, 8); // 构造图
+
+    bool visited[maxsize]; // 辅助函数，用于判断某顶点是否被访问过
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    cout << "从顶点1出发得到的广度优先遍历：";
+    BFS1(g, 1, visited); // 从顶点1开始进行广度优先遍历
+    cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    cout << "从顶点2出发得到的广度优先遍历：";
+    BFS1(g, 2, visited); // 从顶点2开始进行广度优先遍历
+    cout << endl;
+
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    cout << "从顶点3出发得到的广度优先遍历：";
+    BFS1(g, 3, visited); // 从顶点3开始进行广度优先遍历
+    return;
+}
+```
+
+> 邻接表实现
+
+```c++
+// 邻接表实现
+void BFS2(GraphEH *g, int start, bool visited[])
+{
+    queue<int> que;
+    std:cout<< start << " ";
+    visited[start] = true;
+    que.push(start);
+    while (!que.empty())
+    {
+        int a = que.front();
+        que.pop();
+        for(EdgeNode* it = g->adjlist[a].first; it != nullptr; it = it->next)
+        {
+            int b = it->b;
+            if(!visited[b])
+            {
+                std::cout<<b<<" ";
+                visited[b] = true;
+                que.push(b);
+            }
+        }
+    }
+}
+
+void testBFS2()
+{
+     //每个一维的数组表示一条边的信息，依次是头结点、尾结点、权值
+    vector<vector<int>> vec = { {1, 2, 0}, {1, 5, 0}, {2, 6, 0}, {6, 3, 0}, {6, 7, 0}, {3, 7, 0}, {3, 4, 0}, {4, 7, 0}, {4, 8, 0}, {7, 8, 0}};
+    GraphEH* g = createEH(vec, 8);
+    //打印邻接矩阵
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        std::cout << i;
+        EdgeNode* temp = g->adjlist[i].first;
+        while (temp != nullptr)
+        {
+            std::cout << " -> " << temp->b;
+            temp = temp->next;
+        }std::cout << endl;
+    }std::cout << endl;
+ 
+    bool visited[maxsize];    //辅助函数，用于判断某顶点是否被访问过
+ 
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点1出发得到的广度优先遍历：";
+    BFS2(g, 1, visited);    //从顶点1开始进行广度优先遍历
+    std::cout << endl;
+ 
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点2出发得到的广度优先遍历：";
+    BFS2(g, 2, visited);    //从顶点2开始进行广度优先遍历
+    std::cout << endl;
+ 
+    for (int i = 1; i < g->nodeNum + 1; i++)
+    {
+        visited[i] = false;
+    }
+    std::cout << "从顶点3出发得到的广度优先遍历：";
+    BFS2(g, 3, visited);    //从顶点3开始进行广度优先遍历
+ 
+    return;
+}
+```
 
 #### 连通分量的计算
 
@@ -2454,6 +3146,8 @@ int textCreateEH()
 > 加权图的最小生成树是他的一颗权值最小的生成树
 
 #### Prim算法
+
+
 
 #### Kruskal算法
 
@@ -3212,9 +3906,9 @@ int main()
 
 ### 基数排序
 
-| 类别     | 排序方法     |         时间复杂度         |   空间复杂度    | 稳定性 |
-| -------- | ------------ | :------------------------: | :-------------: | ------ |
-| 基数排序 |              |           O(k+N)           |     O(k*N)      | 稳定   |
+| 类别     | 排序方法 | 时间复杂度 | 空间复杂度 | 稳定性 |
+| -------- | -------- | :--------: | :--------: | ------ |
+| 基数排序 |          |   O(k+N)   |   O(k*N)   | 稳定   |
 
 原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。基数排序的方式可以采用LSD（Least significant digital）或MSD（Most significant digital），LSD的排序方式由键值的最右边开始，而MSD则相反，由键值的最左边开始。
 
