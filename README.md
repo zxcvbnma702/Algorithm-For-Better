@@ -2575,6 +2575,84 @@ public:
 };
 ```
 
+### 等式方程的可满足性
+
+[等式方程的可满足性](https://leetcode.cn/problems/satisfiability-of-equality-equations/description/)
+
+```c++
+// 等式方程的可满足性
+class Solution
+{
+private:
+    int n = 26;                             // n根据题目中节点数量而定，一般比节点数量大一点就好
+    vector<int> father = vector<int>(n, 0); // C++里的一种数组结构
+
+    // 并查集初始化
+    void init()
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            father[i] = i; // 默认自己指向自己
+        }
+    }
+    // 并查集里寻根的过程
+    int find(int u)
+    {
+        return u == father[u] ? u : father[u] = find(father[u]); // 路径压缩
+    }
+
+    // 判断 u 和 v是否找到同一个根
+    bool isSame(int u, int v)
+    {
+        u = find(u);
+        v = find(v);
+
+        return u == v;
+    }
+
+    // 将v->u 这条边加入并查集
+    void join(int u, int v)
+    {
+        u = find(u); // 寻找u的根
+        v = find(v); // 寻找v的根
+        if (u == v)
+            return; // 如果发现根相同，则说明在一个集合，不用两个节点相连直接返回
+        father[v] = u;
+    }
+
+public:
+    bool equationsPossible(vector<string> &equations)
+    {
+        init();
+        // 把联通的等式形成图
+        for (string q : equations)
+        {
+            if (q[1] == '=')
+            {
+                int index1 = q[0] - 'a';
+                int index3 = q[3] - 'a';
+                join(index1, index3);
+            }
+        }
+
+        for (string q : equations)
+        {
+            if (q[1] == '!')
+            {
+                int index1 = q[0] - 'a';
+                int index3 = q[3] - 'a';
+                if (isSame(index1, index3))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+};
+```
+
 ## 图
 
 ### 存储结构
@@ -2939,7 +3017,7 @@ void testDFS1()
 }
 ```
 
-> 邻接矩阵实现
+> 邻接表实现
 
 ```c++
 void DFS2(GraphEH *g, int start, bool visited[])
@@ -3139,6 +3217,287 @@ void testBFS2()
 ### 拓扑排序
 
 > 有向无环图的逆后序
+
+#### 课程表1
+
+[课程表](https://leetcode.cn/problems/course-schedule/description/)
+
+> 检测有向无环图的中的环，在dfs时，使用一个path数组来保存递归调用期间栈上的所有顶点。当它找到一条边v→w且w在栈中时，它就找到了一个有向环。
+
+```c++
+// 课程表-dfs
+class Solution
+{
+public:
+    vector<bool> onPath;
+    vector<bool> visited;
+
+    bool hasCycle = false;
+
+    void traverse(vector<vector<int>> &graph, int start)
+    {
+        // 有环，循环回来了
+        if (onPath[start])
+        {
+            hasCycle = true;
+        }
+
+        // 节点已经遍历过或者已经检测出环
+        if (visited[start] || hasCycle)
+        {
+            return;
+        }
+
+        visited[start] = true;
+        onPath[start] = true;
+
+        for (int t : graph[start])
+        {
+            traverse(graph, t);
+        }
+
+        onPath[start] = false;
+    }
+
+    bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+    {
+        vector<vector<int>> adj(numCourses);
+
+        onPath = vector<bool>(numCourses);
+        visited = vector<bool>(numCourses);
+
+        for (auto &p : prerequisites)
+        {
+            // 先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1
+            int from = p[1];
+            int to = p[0];
+            adj[from].push_back(to);
+        }
+
+        for (int i = 0; i < numCourses; i++)
+        {
+            traverse(adj, i);
+        }
+
+        return !hasCycle;
+    }
+};
+```
+
+> 使用bfs，具体步骤如下，不断入队入度为0的节点，队列顺序就是拓扑排序结果。
+
+1. 构建邻接表，和之前一样，边的方向表示「被依赖」关系。
+
+2. 构建一个 indegree 数组记录每个节点的入度，即 indegree[i] 记录节点 i 的入度。
+
+3. 对 BFS 队列进行初始化，将入度为 0 的节点首先装入队列。
+
+4. 开始执行 BFS 循环，不断弹出队列中的节点，减少相邻节点的入度，并将入度变为 0 的节点加入队列。
+
+5. 如果最终所有节点都被遍历过（count 等于节点数），则说明不存在环，反之则说明存在环。
+
+> **如果所有节点都被遍历了，就说明不存在环**
+
+```c++
+// 课程表-bfs
+class Solution
+{
+private:
+    vector<vector<int>> edges;
+    vector<int> indegree;
+public:
+    bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+    {
+        edges.resize(numCourses);
+        indegree.resize(numCourses);
+        for (const auto &info : prerequisites)
+        {
+            // 先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1
+            int from = info[1];
+            int to = info[0];
+            edges[from].push_back(to);
+            indegree[to]++;
+        }
+
+        queue<int> que;
+        // 将所有入度为0的节点入队
+        for (int i = 0; i < numCourses; ++i)
+        {
+            if (indegree[i] == 0)
+            {
+                que.push(i);
+            }
+        }
+
+        int visited = 0;
+        while (!que.empty())
+        {
+            ++visited;
+            int u = que.front();
+            que.pop();
+            for (int v : edges[u])
+            {
+                // 将u指向的所有节点的入度减一
+                indegree[v]--;
+                // 将入度为0的节点入队
+                if (indegree[v] == 0)
+                {
+                    que.push(v);
+                }
+            }
+        }
+
+        return visited == numCourses;
+    }
+};
+```
+
+#### 课程表2
+
+[课程表2](https://leetcode.cn/problems/course-schedule-ii/description/)
+
+> 有向无环图的逆后序
+
+```c++
+// 课程表2-dfs
+class Solution
+{
+public:
+    vector<bool> onPath;
+    vector<bool> visited;
+    vector<int> postorder;
+    bool hasCycle = false;
+
+    void traverse(vector<vector<int>> &graph, int start)
+    {
+        if (onPath[start])
+        {
+            hasCycle = true;
+        }
+
+        // 节点已经遍历过或者已经检测出环
+        if (visited[start] || hasCycle)
+        {
+            return;
+        }
+
+        visited[start] = true;
+        onPath[start] = true;
+
+        for (int t : graph[start])
+        {
+            traverse(graph, t);
+        }
+
+        postorder.push_back(start);
+        onPath[start] = false;
+    }
+    vector<int> findOrder(int numCourses, vector<vector<int>> &prerequisites)
+    {
+        vector<vector<int>> adj(numCourses);
+
+        onPath = vector<bool>(numCourses);
+        visited = vector<bool>(numCourses);
+
+        for (auto &p : prerequisites)
+        {
+            // 先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1
+            int from = p[1];
+            int to = p[0];
+            adj[from].push_back(to);
+        }
+
+        for (int i = 0; i < numCourses; i++)
+        {
+            traverse(adj, i);
+        }
+
+        if (hasCycle)
+        {
+            return {};
+        }
+
+        reverse(postorder.begin(), postorder.end());
+
+        return postorder;
+    }
+};
+```
+
+> 使用队列，直观的存储
+
+1. 构建邻接表，和之前一样，边的方向表示「被依赖」关系。
+
+2. 构建一个 indegree 数组记录每个节点的入度，即 indegree[i] 记录节点 i 的入度。
+
+3. 对 BFS 队列进行初始化，将入度为 0 的节点首先装入队列。
+
+4. 开始执行 BFS 循环，不断弹出队列中的节点，减少相邻节点的入度，并将入度变为 0 的节点加入队列。
+
+5. 如果最终所有节点都被遍历过（count 等于节点数），则说明不存在环，反之则说明存在环。
+
+```c++
+// 课程表2-bfs
+class Solution
+{
+private:
+    vector<vector<int>> edges;
+    vector<int> indegree;
+
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>> &prerequisites)
+    {
+        edges.resize(numCourses);
+        indegree.resize(numCourses);
+        vector<int> result;
+        for (const auto &info : prerequisites)
+        {
+            // 先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1
+            int from = info[1];
+            int to = info[0];
+            edges[from].push_back(to);
+            indegree[to]++;
+        }
+
+        queue<int> que;
+        // 将所有入度为0的节点入队
+        for (int i = 0; i < numCourses; ++i)
+        {
+            if (indegree[i] == 0)
+            {
+                que.push(i);
+            }
+        }
+
+        int visited = 0;
+        while (!que.empty())
+        {
+            ++visited;
+            int u = que.front();
+            que.pop();
+            result.push_back(u);
+            for (int v : edges[u])
+            {
+                // 将u指向的所有节点的入度减一
+                indegree[v]--;
+                // 将入度为0的节点入队
+                if (indegree[v] == 0)
+                {
+                    que.push(v);
+                }
+            }
+        }
+
+        // 如果不存在环
+        if (visited == numCourses)
+        {
+            return result;
+        }
+
+        return {};
+    }
+};
+```
 
 ### 最小生成树
 
