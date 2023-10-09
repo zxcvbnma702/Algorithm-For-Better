@@ -4,6 +4,8 @@
 
 ## 数组
 
+![Alt text](assets/image-36.png)
+
 ### 二分搜索
 
 [二分查找](https://leetcode.cn/problems/binary-search/)
@@ -56,7 +58,154 @@ public:
 
 [移除元素](https://leetcode.cn/problems/remove-element/)
 
-> 双指针法
+> 双指针，快指针比对值，如果和目标值并不相等，就将值赋给慢指针，然后慢指针右移
+
+```c++
+// 移除元素
+class Solution
+{
+public:
+    int removeElement(vector<int> &nums, int val)
+    {
+        int slow = 0;
+        // 快指针寻找和目标值不相等的元素
+        for (int fast = 0; fast < nums.size(); fast++)
+        {
+            if (nums[fast] != val)
+            {
+                nums[slow] = nums[fast];
+                slow++;
+            }
+        }
+        return slow;
+    }
+};
+```
+
+### 有序数组的平方
+
+[有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
+
+```c++
+// 有序数组的平方
+class Solution
+{
+public:
+    vector<int> sortedSquares(vector<int> &A)
+    {
+        int k = A.size() - 1;
+        vector<int> result(A.size(), 0);
+        for (int i = 0, j = A.size() - 1; i <= j;)
+        { // 注意这里要i <= j，因为最后要处理两个元素
+            if (A[i] * A[i] < A[j] * A[j])
+            {
+                result[k--] = A[j] * A[j];
+                j--;
+            }
+            else
+            {
+                result[k--] = A[i] * A[i];
+                i++;
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 长度最小的子数组
+
+[长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/description/)
+
+> 利用双指针，模拟滑动窗口
+> 右指针不断右移，当大于目标和时，保存区间长度，左指针右移，循环往复
+
+```c++
+// 长度最小的子数组
+class Solution
+{
+public:
+    int minSubArrayLen(int target, vector<int> &nums)
+    {
+        int left = 0;
+        int sum = 0;
+        int len = 0; // 子序列长度
+        int result = INT32_MAX;
+        for (int right = 0; right < nums.size(); right++)
+        {
+            // 累计目标值
+            sum += nums[right];
+            // 当大于目标值，移动左指针
+            while (sum >= target)
+            {
+                len = right - left + 1; // 获取区间长度
+                sum -= nums[left]; // 缩减总和值
+                left++; // 左指针右移
+                result = min(len, result); // 保存最小的长度区间值
+            }
+        }
+        return result == INT32_MAX ? 0 : result;
+    }
+};
+```
+
+### 螺旋矩阵2
+
+[螺旋矩阵2](https://leetcode.cn/problems/spiral-matrix-ii/)
+
+>![Alt text](assets/image-37.png)
+
+```c++
+// 螺旋矩阵2
+class Solution
+{
+public:
+    vector<vector<int>> generateMatrix(int n)
+    {
+        int t = 0;     // top
+        int b = n - 1; // bottom
+        int l = 0;     // left
+        int r = n - 1; // right
+        vector<vector<int>> ans(n, vector<int>(n));
+        // for循环中变量定义成i或j的细节：按照通常的思维，i代表行，j代表列
+        // 这样，就可以很容易区分出来变化的量应该放在[][]的第一个还是第二个
+        // 对于变量的边界怎么定义：
+        // 从左向右填充：填充的列肯定在[left,right]区间
+        // 从上向下填充：填充的行肯定在[top,bottom]区间
+        // 从右向左填充：填充的列肯定在[right,left]区间
+        // 从下向上填充：填充的行肯定在[bootom,top]区间
+        // 通过上面的总结会发现边界的起始和结束与方向是对应的
+        int k = 1;
+
+        while (k <= n * n)
+        {
+            // 从左到右填充，相当于缩小上边界
+            for (int i = l; i <= r; ++i, ++k)
+                ans[t][i] = k;
+            // 缩小上边界
+            ++t;
+            // 从上向下填充，相当于缩小右边界
+            for (int i = t; i <= b; ++i, ++k)
+                ans[i][r] = k;
+            // 缩小右边界
+            --r;
+            // 从右向左填充，相当于缩小下边界
+            for (int i = r; i >= l; --i, ++k)
+                ans[b][i] = k;
+            // 缩小下边界
+            --b;
+            // 从下向上填充，相当于缩小左边界
+            for (int i = b; i >= t; --i, ++k)
+                ans[i][l] = k;
+            // 缩小左边界
+            ++l;
+
+
+        }
+        return ans;
+    }
+};
+```
 
 ## 线性表
 
@@ -235,6 +384,74 @@ void reserseList(Node *head)
 
 给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串的第一个匹配项的下标（下标从 0 开始）。如果 needle 不是 haystack 的一部分，则返回  -1 。
 
+### 翻转字符串
+
+[翻转字符串](https://leetcode.cn/problems/reverse-string/)
+
+> 双指针
+> **使用栈**
+
+```c++
+// 翻转字符串
+class Solution
+{
+public:
+    void reverseString(vector<char> &s)
+    {
+        for (int i = 0, j = s.size() - 1; i < s.size() / 2; i++, j--)
+        {
+            swap(s[i], s[j]);
+        }
+    }
+};
+```
+
+### 翻转字符串2
+
+[反转字符串2](https://leetcode.cn/problems/reverse-string-ii/)
+
+> 翻转前k个字符
+> 以2k倍加，翻转k个字符，如果i+k小于数组总大小就表明2k区间成立,就只翻转前k个就行，即i 到 i+k
+> 然后末尾剩下的字符一定小于等于k，就全部翻转
+
+```c++
+// 翻转字符串2
+class Solution
+{
+public:
+    void reverse(string &s, int start, int end)
+    {
+        for (int i = start, j = end - 1; i < j; i++, j--)
+        {
+            swap(s[i], s[j]);
+        }
+    }
+
+    string reverseStr(string s, int k)
+    {
+        for (int i = 0; i < s.size(); i += 2 * k)
+        {
+            // 如果剩余字符小于 2k 但大于或等于 k 个
+            // 则反转前 k 个字符，其余字符保持原样。
+            if (i + k <= s.size())
+            {
+                reverse(s, i, i + k);
+                continue;
+            }
+            // 如果剩余字符少于 k 个，则将剩余字符全部反转。
+            reverse(s, i, s.size());
+        }
+        return s;
+    }
+};
+```
+
+### 翻转字符串里的单词
+
+[翻转字符串里的单词](https://leetcode.cn/problems/reverse-words-in-a-string/)
+
+> 将原字符串整体翻转，再将字母反转 
+
 ### 暴力匹配
 
 ```c++
@@ -265,8 +482,10 @@ int mySearch(string pat, string txt)
 
 前缀表特性 一个字符串的最长相等的前后缀
 
-> 前缀是包含首字符不包含尾字母的所有子串
-> 后缀是包含尾字符不包含首字母的所有子串
+> 前缀是指不包含最后一个字符的所有以第一个字符开头的连续子串。
+> 后缀是指不包含第一个字符的所有以最后一个字符结尾的连续子串。
+> 前缀后缀都是从左往右读的
+> 记录下标i之前（包括i）的字符串中，有多大长度的相同前缀后缀。
 > [理论知识](https://www.bilibili.com/video/BV1PD4y1o7nd/?spm_id_from=333.337.search-card.all.click&vd_source=7e92ec9131757560b71f0a6be9839426) + [代码实现](https://www.bilibili.com/video/BV1M5411j7Xx/?p=22&spm_id_from=pageDriver)
 
 求目标串的最长**相等**的前后缀得到目标串的**前缀表**
@@ -401,6 +620,76 @@ public:
         return -1;
     }
 };
+```
+
+#### 找出字符串中第一个匹配项的下标
+
+[找出字符串中第一个匹配项的下标
+](https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/description/)
+
+> KMP算法的直接应用
+
+```c++
+class Solution
+{
+public:
+    int strStr(string haystack, string needle)
+    {
+        string S = haystack;
+        string T = needle;
+        int n = S.size(), m = T.size();
+
+        vector<int> fail(m); // fail数组
+        fail[0] = -1;        // 起始时，先将fail[0]赋为-1
+
+        // 当j == 0，且T[i] != T[j]时，就说明无相等前后缀，最大相等前后缀长度为0
+        for (int i = 1, j = 0; i < m; i++)
+        {
+            // 如果T[i] != T[j]，就将j指针指向前一位置的fail数组所对应的值，即j = fail[j - 1] + 1
+            while (j > 0 && T[i] != T[j])
+                j = fail[j - 1] + 1;
+
+            // 如果T[i] == T[j]，就令fail[i] = j，指针i和j同时后移
+            if (T[i] == T[j])
+            {
+                fail[i] = j;
+                j++;
+            }
+            // 如果j == 0，且T[i] != T[j]，说明不存在相等前后缀
+            else
+            {
+                fail[i] = -1;
+            }
+        }
+
+        // 以下为kmp匹配过程
+        int i = 0, j = 0; // i是主串S中的指针，j是模式串T中的指针
+        while (i < n && j < m)
+        {
+            if (S[i] == T[j])
+            {
+                i++;
+                j++;
+            }
+            else
+            {
+                // 如果主串S中的S[i]与串T中的第一个字符T[0]就匹配失败，那么主串中的指针i直接移动到下一位
+                if (j == 0)
+                    i++;
+                else
+                {
+                    j = fail[j - 1] + 1;
+                }
+            }
+        }
+        // 这里可以这么想：如果主串的第一个子串就匹配成功的话，那么最终i和j的值是相等的，于是返回的下标是i - j
+        if (j == m)
+        {
+            return i - j;
+        }
+        return -1;
+    }
+}
 ```
 
 ## 树
