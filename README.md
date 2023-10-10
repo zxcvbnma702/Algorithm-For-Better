@@ -319,65 +319,327 @@ int main()
 }
 ```
 
-### 递归算法, 删除不带头节点的单链表中所有值为x的点
+### 移除链表元素
+
+[移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/)
 
 ```c++
-Node *deleteNode(int x, Node *cur)
+// 移除链表元素-不使用虚拟头结点
+class Solution
 {
-    if (cur != nullptr)
+public:
+    ListNode *removeElements(ListNode *head, int val)
     {
-        if (cur->data == x)
+        // 没有虚拟头结点
+        while (head != nullptr && head->val == val)
         {
-            // 递归出口
-            Node *temp = cur->next;
-            delete cur;
-            // 如果下一个值是x, 那么就会反复执行, 直到 cur == nullptr 或 到达下面的else分支
-            return deleteNode(x, temp);
+            ListNode *tmp = head;
+            head = head->next;
+            delete tmp;
+        }
+
+        ListNode *current = head;
+        while (current != nullptr && current->next != nullptr)
+        {
+            if (current->next->val == val)
+            {
+                ListNode *temp = current->next;
+                current->next = current->next->next;
+                delete (temp);
+            }
+            else
+            {
+                current = current->next;
+            }
+        }``
+        return head;
+    }
+};
+
+// 移除链表元素-使用虚拟头结点
+class Solution
+{
+public:
+    ListNode *removeElements(ListNode *head, int val)
+    {
+        ListNode *dummyHead = new ListNode(0); // 设置一个虚拟头结点
+        dummyHead->next = head;                // 将虚拟头结点指向head，这样方面后面做删除操作
+        ListNode *cur = dummyHead;
+        while (cur->next != NULL)
+        {
+            if (cur->next->val == val)
+            {
+                ListNode *tmp = cur->next;
+                cur->next = cur->next->next;
+                delete tmp;
+            }
+            else
+            {
+                cur = cur->next;
+            }
+        }
+        head = dummyHead->next;
+        delete dummyHead;
+        return head;
+    }
+};
+
+// 移除链表元素-递归法
+class Solution
+{
+public:
+    ListNode *removeElements(ListNode *head, int val)
+    {
+        if (head == nullptr)
+            return nullptr;
+
+        head->next = removeElements(head->next, val);
+
+        // 递归到最后一个节点
+        if (head->val == val)
+        {
+            return head->next;
         }
         else
         {
-            // 如果下一个节点为空, 则会返回nullptr
-            // 如果下一个节点为x, 则执行上面的if分支得到返回值
-            // 如果下一个节点不为x, 那么会不断递归, next连接的节点不变
-            cur->next = deleteNode(x, cur->next);
-            return cur;
+            return head;
         }
     }
-    return nullptr;
+};
+```
+
+### 设计链表
+
+[设计链表](https://leetcode.cn/problems/design-linked-list/description/)
+
+> 注意遍历后index下标所对应的节点
+
+```c++
+// temp指向虚拟头结点的下一个节点
+LinkedNode *temp = dummyHead->next;
+// 循环后正好到达index下标所指节点
+while (index--)
+{
+    temp = temp->next;
+}
+
+// temp指向虚拟头结点
+LinkedNode *temp = dummyHead;
+// 循环后正好到达index下标所指的前一个节点
+while (index--)
+{
+    temp = temp->next;
 }
 ```
 
-### 链表逆置
+```c++
+// 设计链表
+class MyLinkedList
+{
+public:
+    struct LinkedNode
+    {
+        int val;
+        LinkedNode *next;
+        LinkedNode(int val) : val(val), next(nullptr){};
+    };
 
-迭代写法
+    MyLinkedList()
+    {
+        dummyHead = new LinkedNode(0);
+        size = 0;
+    }
+
+    int get(int index)
+    {
+        // 非法情况
+        if (index < 0 || index > size - 1)
+        {
+            return -1;
+        }
+
+        // temp指向虚拟头结点的下一个节点
+        LinkedNode *temp = dummyHead->next;
+        // 循环后正好到达index下标所指节点
+        while (index)
+        {
+            temp = temp->next;
+            index--;
+        }
+        return temp->val;
+    }
+
+    void addAtHead(int val)
+    {
+        LinkedNode *node = new LinkedNode(val);
+        node->next = dummyHead->next;
+        dummyHead->next = node;
+        size++;
+    }
+
+    void addAtTail(int val)
+    {
+        // 尾插，插入到next为空的那个节点之后
+        LinkedNode *node = new LinkedNode(val);
+        LinkedNode *temp = dummyHead;
+        while (temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+        temp->next = node;
+        size++;
+    }
+
+    void addAtIndex(int index, int val)
+    {
+        if (index > size)
+            return;
+        if (index < 0)
+            addAtHead(val);
+
+        LinkedNode *node = new LinkedNode(val);
+
+        // temp指向虚拟头结点
+        LinkedNode *temp = dummyHead;
+        // 循环后正好到达index下标所指的前一个节点
+        while (index--)
+        {
+            temp = temp->next;
+        }
+
+        node->next = temp->next;
+        temp->next = node;
+        size++;
+    }
+
+    void deleteAtIndex(int index)
+    {
+        if (index < 0 || index >= size)
+        {
+            return;
+        }
+        // temp指向虚拟头结点
+        LinkedNode *temp = dummyHead;
+        // 循环后正好到达index下标所指的前一个节点
+        while (index--)
+        {
+            temp = temp->next;
+        }
+        LinkedNode *de = temp->next;
+        temp->next = temp->next->next;
+
+        delete (de);
+        de = nullptr;
+        size--;
+    }
+
+private:
+    LinkedNode *dummyHead;
+    int size;
+};
+```
+
+### 翻转链表
+
+[反转链表](https://leetcode.cn/problems/reverse-linked-list/description/)
 
 ```c++
-void reserseList(Node *head)
+// 翻转链表
+class Solution
 {
-    // 判空
-    Node *left = head->next;
-    if (left == nullptr)
-        return;
-
-    // 第二个节点赋值给right
-    Node *right = left->next;
-    left->next = nullptr;
-
-    /*
-    将left暂存起来, 作为转换后的主体链
-    将最新的顺序元素赋值给left
-    右指针右移
-    让最新的顺序元素left接上逆置的主体链
-    */
-    while (right != nullptr)
+public:
+    ListNode *reverseList(ListNode *head)
     {
-        Node *temp = left;
-        left = right;
-        right = right->next;
-        left->next = temp;
+        ListNode *temp;
+        ListNode *pre = nullptr;
+        ListNode *cur = head;
+
+        while (cur)
+        {
+            temp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = temp;
+        }
+
+        return pre;
     }
-    head->next = left;
-}
+};
+
+// 翻转链表-递归法
+class Solution
+{
+public:
+    ListNode *traverse(ListNode *pre, ListNode *cur)
+    {
+        if (cur == nullptr)
+            return pre;
+
+        ListNode *temp = cur->next;
+
+        cur->next = pre;
+        // 用递归来代替迭代中指针的后移
+        // 如下递归的写法，其实就是做了这两步
+        // pre = cur;
+        // cur = temp;
+        return traverse(cur, temp);
+    }
+
+    ListNode *reverseList(ListNode *head)
+    {
+        // 和双指针法初始化是一样的逻辑
+        // ListNode* cur = head;
+        // ListNode* pre = NULL;
+        return traverse(nullptr, head);
+    }
+};
+```
+
+### 反转链表2
+
+[反转链表2](https://leetcode.cn/problems/reverse-linked-list-ii/solutions/1992226/you-xie-cuo-liao-yi-ge-shi-pin-jiang-tou-teqq/)
+
+> ![Alt text](assets/image-38.png)
+
+```c++
+// 反转链表2
+class Solution
+{
+public:
+    ListNode *reverseBetween(ListNode *head, int left, int right)
+    {
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+
+        ListNode *p0 = dummyHead;
+
+        // 到达了翻转的前一个节点
+        for (int i = 0; i < left - 1; i++)
+        {
+            p0 = p0->next;
+        }
+
+        // 把这一段当成悬空的来翻转
+        ListNode *pre = nullptr;
+        ListNode *cur = p0->next;
+        for (int i = 0; i < right - left + 1; i++)
+        {
+            ListNode *temp = cur->next;
+            cur->next = pre;
+
+            // 后移
+            pre = cur;
+            cur = temp;
+        }
+
+        // 此时cur指向的就是翻转后的后一个节点
+        p0->next->next = cur;
+        // 此时pre就是翻转后的链表的头节点
+        p0->next = pre;
+
+        return dummyHead->next;
+    }
+};
 ```
 
 ## 字符串
