@@ -286,3 +286,107 @@ public:
         return dummyHead->next;
     }
 };
+
+// 两两翻转链表
+class Solution
+{
+public:
+    ListNode *swapPairs(ListNode *head)
+    {
+
+        // 统计节点个数
+        int n = 0;
+        for (ListNode *cur = head; cur; cur = cur->next)
+        {
+            n++;
+        }
+
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+
+        ListNode *cur = head;
+        ListNode *pre = nullptr;
+
+        // 指向翻转部分之前的一个节点的指针
+        ListNode *p0 = dummyHead;
+        while (n >= 2)
+        {
+            n -= 2;
+            // 做翻转链表2的操作
+            for (int i = 0; i < 2; i++)
+            {
+                ListNode *temp = cur->next;
+                cur->next = pre;
+                pre = cur;
+                cur = temp;
+            }
+
+            // 存下反转部分链表的最后一个结点
+            // 用于为下次循环之前给p0指向下次要反转部分
+            // 指向翻转部分之前的一个节点做准备
+            ListNode *temp = p0->next;
+
+            // 把翻转后的部分链表的指针指正
+            p0->next->next = cur;
+            p0->next = pre;
+
+            // 此时p0指向下次循环要反转的部分的前一个节点
+            // 也是这次反转部分
+            p0 = temp;
+        }
+        return dummyHead->next;
+    }
+};
+
+// K个一组翻转链表
+class Solution
+{
+public:
+    ListNode *reverseKGroup(ListNode *head, int k)
+    {
+        // 获取链表数目
+        int n = 0;
+        for (ListNode *cur = head; cur; cur = cur->next)
+            ++n; // 统计节点个数
+
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+        ListNode *p0 = dummyHead;
+
+        // 在每一个子区间里面进行翻转链表2
+        // 然后将p0指向翻转完的最后一个节点
+        ListNode *pre = nullptr;
+        ListNode *cur = head;
+        while (n >= k)
+        {
+            n -= k;
+
+            for (int i = 0; i < k; i++)
+            {
+                ListNode *temp = cur->next;
+                cur->next = pre;
+                // 指针后移
+                pre = cur;
+                cur = temp;
+            }
+
+            // 此时p0.next 是翻转部分的最后一个结点
+            // 也就是下一轮要反转的节点的前一个节点
+            ListNode *next = p0->next;
+
+            // 此时cur指向的就是翻转后的链表的后一个节点
+            // 而p0.next是翻转部分链表的最后一个节点
+            // 所以要给他们接上
+            p0->next->next = cur;
+            // pre翻转完指向的是翻转部分链表的第一个节点
+            // 然后将p0.next指向pre完成翻转
+            p0->next = pre;
+
+            // 将p0指向翻转部分的最后一个结点
+            // 也就是下一轮要反转的节点的前一个节点
+            p0 = next;
+        }
+
+        return dummyHead->next;
+    }
+};
