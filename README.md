@@ -209,6 +209,8 @@ public:
 
 ## 线性表
 
+![Alt text](assets/image-47.png)
+
 ### 链表的初始化
 
 单链表
@@ -653,7 +655,6 @@ class Solution
 public:
     ListNode *swapPairs(ListNode *head)
     {
-
         // 统计节点个数
         int n = 0;
         for (ListNode *cur = head; cur; cur = cur->next)
@@ -756,6 +757,157 @@ public:
         }
 
         return dummyHead->next;
+    }
+};
+```
+
+### 删除链表的倒数第n个节点
+
+[删除链表的倒数第n个节点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/description/)
+
+> 双指针的经典应用，如果要删除倒数第n个节点，让fast移动n步，然后让fast和slow同时移动，直到fast指向链表末尾。删掉slow所指向的节点就可以了。
+
+![Alt text](assets/image-44.png)
+![Alt text](assets/image-45.png)
+
+```c++
+// 删除链表的倒数第n个节点
+class Solution
+{
+public:
+    ListNode *removeNthFromEnd(ListNode *head, int n)
+    {
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+
+        ListNode *slow = dummyHead;
+        ListNode *fast = dummyHead;
+
+        while (n-- && fast != NULL)
+        {
+            fast = fast->next;
+        }
+
+        fast = fast->next; // fast再提前走一步，因为需要让slow指向删除节点的上一个节点
+
+        while (fast != NULL)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        slow->next = slow->next->next;
+
+        // ListNode *tmp = slow->next;  C++释放内存的逻辑
+        // slow->next = tmp->next;
+        // delete nth;
+
+        return dummyHead->next;
+    }
+};
+```
+
+### 链表相交
+
+[链表相交](https://leetcode.cn/problems/intersection-of-two-linked-lists-lcci/description/)
+
+```c++
+// 链表香蕉
+class Solution
+{
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+    {
+        ListNode *curA = headA;
+        ListNode *curB = headB;
+
+        int lenA = 0;
+        int lenB = 0;
+
+        // 获取链长度
+        while (curA != nullptr)
+        {
+            curA = curA->next;
+            lenA++;
+        }
+
+        while (curB != nullptr)
+        {
+            curB = curB->next;
+            lenB++;
+        }
+        // 指针归位
+        curA = headA;
+        curB = headB;
+
+        // 让curA为最长链表的头，lenA为其长度
+        if (lenB > lenA)
+        {
+            swap(lenA, lenB);
+            swap(curA, curB);
+        }
+
+        // 求长度差
+        int gap = lenA - lenB;
+        // 让curA和curB在同一起点上（末尾位置对齐）
+        while (gap--)
+        {
+            curA = curA->next;
+        }
+        // 遍历curA 和 curB，遇到相同则直接返回
+        while (curA != NULL)
+        {
+            if (curA == curB)
+            {
+                return curA;
+            }
+            curA = curA->next;
+            curB = curB->next;
+        }
+        return NULL;
+    }
+};
+```
+
+### 环形链表2
+
+[环形链表2](https://leetcode.cn/problems/linked-list-cycle-ii/description/)
+
+![Alt text](assets/image-46.png)
+
+```c++
+// 环形链表2
+class Solution
+{
+public:
+    ListNode *detectCycle(ListNode *head)
+    {
+        ListNode *fast = head;
+        ListNode *slow = head;
+
+        // 快指针走两步，慢指针走一步
+        //  第一次相遇后，再拿两个指针从头结点和相遇的点同步移动
+        //  汇合后就是目标点
+
+        while (fast != NULL && fast->next != NULL)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if (fast == slow)
+            {
+                ListNode *index1 = head;
+                ListNode *index2 = fast;
+
+                while (index1 != index2)
+                {
+                    index1 = index1->next;
+                    index2 = index2->next;
+                }
+
+                return index1;
+            }
+        }
+        return nullptr;
     }
 };
 ```
@@ -4185,7 +4337,113 @@ public:
 
 ![Alt text](assets/image-41.png)
 
-##### 链接所有点的最小费用
+```c
+// 模板代码-不是很好理解
+int n;          // n表示点数
+int g[N][N];    // 邻接矩阵，存储所有边
+int dist[N];    // 存储其他点到当前最小生成树的距离
+bool marked[N]; // 存储每个点是否已经在生成树中
+
+// 如果图不连通，则返回INF(值是0x3f3f3f3f), 否则返回最小生成树的树边权重之和
+int prim()
+{
+    memset(dist, 0x3f, sizeof dist);
+
+    int res = 0;
+    for (int i = 0; i < n; i++)
+    {
+        int t = -1;
+        for (int j = 1; j <= n; j++)
+        {
+            if (!marked[j] && (t == -1 || dist[t] > dist[j]))
+            {
+                t = j;
+            }
+        }
+
+        // 无联通情况
+        if (i && dist[t] == INF)
+        {
+            return INF;
+        }
+
+        if (i)
+        {
+            res += dist[t];
+        }
+        marked[t] = true;
+
+        // 以最近的节点为中心,将其邻边加入优先队列
+        for (int j = 1; j <= n; j++)
+        {
+            dist[j] = min(dist[j], g[t][j]);
+        }
+    }
+
+    return res;
+}
+```
+
+#### Kruskal算法
+
+> Kruskal 需要对所有的边进行排序，然后从小到大，依次遍历每条边，同时判断每条边是否同源，如果同源，跳过；如果不同源，将两个连通分量合并，直到所有顶点属于同一个连通分量，算法结束。
+
+![Alt text](assets/image-43.png)
+
+![Alt text](assets/image-42.png)
+
+```c
+// 代码模板
+int n, m; // n是点数，m是边数
+int p[N]; // 并查集的父节点数组
+
+struct Edge // 存储边
+{
+    int a, b, w;
+
+    bool operator<(const Edge &W) const
+    {
+        return w < W.w;
+    }
+} edges[M];
+
+int find(int x) // 并查集核心操作
+{
+    return p[x] == x ? x : p[x] = find(p[x]);
+}
+
+int kruskal()
+{
+    // 给边排序
+    sort(edges, edges + m);
+
+    for (int i = 1; i <= n; i++)
+        p[i] = i; // 初始化并查集
+
+    // 最小生成树长 连通分量
+    int res = 0, cnt = 0;
+    for (int i = 0; i < m; i++)
+    {
+        int a = edges[i].a, b = edges[i].b, w = edges[i].w;
+
+        a = find(a), b = find(b);
+        if (a != b) // 如果两个连通块不连通，则将这两个连通块合并
+        {
+            p[a] = b;
+            res += w;
+            cnt++;
+        }
+    }
+
+    if (cnt < n - 1)
+        return INF;
+    return res;
+}
+```
+
+#### 链接所有点的最小费用
+
+[链接所有点的最小费用](https://leetcode.cn/problems/min-cost-to-connect-all-points/)
 
 ```c++
 // 最小生成树-prim
@@ -4259,14 +4517,6 @@ public:
     }
 };
 ```
-
-#### Kruskal算法
-
-> Kruskal 需要对所有的边进行排序，然后从小到大，依次遍历每条边，同时判断每条边是否同源，如果同源，跳过；如果不同源，将两个连通分量合并，直到所有顶点属于同一个连通分量，算法结束。
-
-![Alt text](assets/image-43.png)
-
-![Alt text](assets/image-42.png)
 
 ```c++
 // 最小生成树-kruskal-c++
@@ -4442,6 +4692,8 @@ int minCostConnectPoints(int **points, int pointsSize, int *pointsColSize)
     return ret;
 }
 ```
+
+### 最大生成树
 
 ### 最短路径
 
@@ -4735,6 +4987,22 @@ void bubbleSort3()
 ③ 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
 
 递归到最底部时，数列的大小是零或一，也就是已经排序好了。这个算法一定会结束，因为在每次的迭代（iteration）中，它至少会把一个元素摆到它最后的位置去。
+
+```c
+void quick_sort(int q[], int l, int r)
+{
+    if (l >= r) return;
+
+    int i = l - 1, j = r + 1, x = q[l + r >> 1];
+    while (i < j)
+    {
+        do i ++ ; while (q[i] < x);
+        do j -- ; while (q[j] > x);
+        if (i < j) swap(q[i], q[j]);
+    }
+    quick_sort(q, l, j), quick_sort(q, j + 1, r);
+}
+```
 
 ```c++
 int partition(int a[], int low, int high)

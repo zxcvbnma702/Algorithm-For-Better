@@ -390,3 +390,129 @@ public:
         return dummyHead->next;
     }
 };
+
+// 删除链表的倒数第n个节点
+class Solution
+{
+public:
+    ListNode *removeNthFromEnd(ListNode *head, int n)
+    {
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+
+        ListNode *slow = dummyHead;
+        ListNode *fast = dummyHead;
+
+        while (n-- && fast != NULL)
+        {
+            fast = fast->next;
+        }
+
+        fast = fast->next; // fast再提前走一步，因为需要让slow指向删除节点的上一个节点
+
+        while (fast != NULL)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        slow->next = slow->next->next;
+
+        // ListNode *tmp = slow->next;  C++释放内存的逻辑
+        // slow->next = tmp->next;
+        // delete nth;
+
+        return dummyHead->next;
+    }
+};
+
+// 链表香蕉
+class Solution
+{
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+    {
+        ListNode *curA = headA;
+        ListNode *curB = headB;
+
+        int lenA = 0;
+        int lenB = 0;
+
+        // 获取链长度
+        while (curA != nullptr)
+        {
+            curA = curA->next;
+            lenA++;
+        }
+
+        while (curB != nullptr)
+        {
+            curB = curB->next;
+            lenB++;
+        }
+        // 指针归位
+        curA = headA;
+        curB = headB;
+
+        // 让curA为最长链表的头，lenA为其长度
+        if (lenB > lenA)
+        {
+            swap(lenA, lenB);
+            swap(curA, curB);
+        }
+
+        // 求长度差
+        int gap = lenA - lenB;
+        // 让curA和curB在同一起点上（末尾位置对齐）
+        while (gap--)
+        {
+            curA = curA->next;
+        }
+        // 遍历curA 和 curB，遇到相同则直接返回
+        while (curA != NULL)
+        {
+            if (curA == curB)
+            {
+                return curA;
+            }
+            curA = curA->next;
+            curB = curB->next;
+        }
+        return NULL;
+    }
+};
+
+// 环形链表2
+class Solution
+{
+public:
+    ListNode *detectCycle(ListNode *head)
+    {
+        ListNode *fast = head;
+        ListNode *slow = head;
+
+        // 快指针走两步，慢指针走一步
+        //  第一次相遇后，再拿两个指针从头结点和相遇的点同步移动
+        //  汇合后就是目标点
+
+        while (fast != NULL && fast->next != NULL)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if (fast == slow)
+            {
+                ListNode *index1 = head;
+                ListNode *index2 = fast;
+
+                while (index1 != index2)
+                {
+                    index1 = index1->next;
+                    index2 = index2->next;
+                }
+
+                return index1;
+            }
+        }
+        return nullptr;
+    }
+};
