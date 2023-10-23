@@ -6,22 +6,24 @@ class Solution
 {
 public:
     vector<vector<int>> result; // 最终结果
-    vector<int> combine;        // 每一层组合结果
+    vector<int> combines;       // 每一层组合结果
 
     void backTracing(int n, int k, int startIndex)
     {
         // 递归终止条件
-        if (combine.size() == k)
+        if (combines.size() == k)
         {
-            result.push_back(combine);
+            result.push_back(combines);
             return;
         }
 
-        for (int i = startIndex; i <= n; i++)
+        // for循环用来进行树的横向遍历
+        for (int i = startIndex; i <= n - (k - combines.size()) + 1; i++)
         {
-            combine.push_back(i);
-            backTracing(n, k, i + 1);
-            combine.pop_back();
+            combines.push_back(i);
+            // 递归进行树的纵向遍历
+            backTracing(n, k, i + 1); // i+1 是为了防止出现[1, 1] 类似情况
+            combines.pop_back();
         }
     }
 

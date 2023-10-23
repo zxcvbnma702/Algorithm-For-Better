@@ -6152,6 +6152,7 @@ void radixsort(int data[], int n) // 基数排序
 ## 回溯
 
 组合问题，切割问题，子集问题，排列问题，棋盘问题
+![Alt text](assets/image-51.png)
 
 ![回溯](assets/image-13.png)
 
@@ -6181,28 +6182,36 @@ void backtracking(参数) {
 
 [组合](https://leetcode.cn/problems/combinations/description/)
 
+![Alt text](assets/image-52.png)
+
+在集合[1,2,3,4]取1之后，下一层递归，就要在[2,3,4]中取数了，那么下一层递归如何知道从[2,3,4]中取数呢，靠的就是startIndex。
+所以需要startIndex来记录**下一层递归搜索的起始位置**。
+
 ```c++
 // 组合问题
 class Solution
 {
 public:
     vector<vector<int>> result; // 最终结果
-    vector<int> combine;        // 每一层组合结果
+    vector<int> combines;       // 每一层组合结果
 
+    // startIndex 就是防止出现重复的组合
     void backTracing(int n, int k, int startIndex)
     {
         // 递归终止条件
-        if (combine.size() == k)
+        if (combines.size() == k)
         {
-            result.push_back(combine);
+            result.push_back(combines);
             return;
         }
-        // i <= n - (k - combines.size()) + 1 剪枝
-        for (int i = startIndex; i <= n; i++)
+
+        // for循环用来进行树的横向遍历
+        for (int i = startIndex; i <= n - (k - combines.size()) + 1; i++)
         {
-            combine.push_back(i);
-            backTracing(n, k, i + 1);// i+1，组合问题，防止集合数字重复
-            combine.pop_back();
+            combines.push_back(i);
+            // 递归进行树的纵向遍历
+            backTracing(n, k, i + 1); // i+1 是为了防止出现[1, 1] 类似情况
+            combines.pop_back();
         }
     }
 
@@ -6218,7 +6227,10 @@ public:
 
 [组合三](https://leetcode.cn/problems/combination-sum-iii/description/)
 
-> 在递归出口判断下总和即可, 也可以在递归时加减总和
+![Alt text](assets/image-53.png)
+
+> 在递归出口判断下总和即可，也可以在递归时加减总和
+> 不能取重复的值，所以startIndex是必须的，用于指出下一层递归的起始位置
 
 ```c++
 // 在递归出口判断总和是否为n
@@ -6461,6 +6473,10 @@ public:
 ```
 
 ### 分割问题
+
+### 排列问题
+
+
 
 ## 贪心
 
