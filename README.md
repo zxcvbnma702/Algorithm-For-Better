@@ -1316,6 +1316,7 @@ public:
         int next[s.size()];
         getNext(next, s);
         int len = s.size();
+        // len % (len - (next[len - 1] + 1)) == 0 ，则说明数组的长度正好可以被 (数组长度-最长相等前后缀的长度) 整除 ，说明该字符串有重复的子字符串。
         if (next[len - 1] != -1 && len % (len - (next[len - 1] + 1)) == 0)
         {
             return true;
@@ -5533,6 +5534,8 @@ void insertDriect()
 > ③ 将新元素插入到该位置后
 > ④ 重复上述两步
 
+因为前0 ~ i个元素已经有序，所以每次for循环以第i个元素为目标在0 ~ i-1的范围内进行二分查找，low就是要插入的下标值，然后将low ~ i-1的元素后移，将第i个元素插入到low的位置
+
 ```c++
 void binSort()
 {
@@ -6596,8 +6599,6 @@ public:
 
 ### 排列问题
 
-
-
 ## 贪心
 
 - 将问题分解为若干个子问题
@@ -6632,6 +6633,138 @@ public:
             }
         }
         return result;
+    }
+};
+```
+
+## 动态规划
+
+![Alt text](assets/image-55.png)
+
+1. 确定dp数组（dp table）以及下标的含义
+2. 确定递推公式
+3. dp数组如何初始化
+4. 确定遍历顺序
+5. 举例推导dp数组
+
+### 基础问题
+
+#### 斐波那契数
+
+[斐波那契数](https://leetcode.cn/problems/fibonacci-number/)
+
+```c++
+// 斐波那契数
+class Solution
+{
+public:
+    int fib(int n)
+    {
+        if (n <= 1)
+            return n;
+
+        // dp数组的意义就是第n个斐波那契数的值
+        vector<int> dp(n + 1, 0);
+
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+
+        return dp[n];
+    }
+};
+```
+
+#### 爬楼梯
+
+[爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
+
+```c++
+// 爬楼梯
+class Solution
+{
+public:
+    int climbStairs(int n)
+    {
+        if (n <= 1)
+            return n;
+
+        // dp[i]： 爬到第i层楼梯，有dp[i]种方法
+        vector<int> dp(n + 1, 0);
+
+        // dp数组初始化
+        dp[0] = 1;
+        dp[1] = 1;
+
+        // 从递推公式dp[i] = dp[i - 1] + dp[i - 2];中可以看出，遍历顺序一定是从前向后遍历的
+        for (int i = 2; i <= n; i++)
+        {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+
+        return dp[n];
+    }
+};
+```
+
+#### 不同路径
+
+[不同路径](https://leetcode.cn/problems/unique-paths/description/)
+
+![Alt text](assets/image-56.png)
+
+```c++
+// 不同路径-二维dp
+class Solution
+{
+public:
+    int uniquePaths(int m, int n)
+    {
+        // dp数组代表了到达这一点的路径条数
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+
+        // 机器人只能向下右移动 所以递推公式dp[i, j] = dp[i-1, j] + dp[i, j-1]
+        // 第一行和第一列路径条数都是1
+        for (int i = 0; i < m; i++)
+            dp[i][0] = 1;
+        for (int j = 0; j < n; j++)
+            dp[0][j] = 1;
+
+        // 遍历顺序 从左上到右下
+        for (int i = 1; i < m; i++)
+        {
+            for (int j = 1; j < n; j++)
+            {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+![Alt text](assets/image-57.png)
+
+```c++
+// 不同路径-递归
+class Solution
+{
+public:
+    int traverse(int i, int j, int m, int n)
+    {
+        if (i > m || j > n)
+            return 0;
+        if (i == m && j == n)
+            return 1;
+        return traverse(i + 1, j, m, n) + traverse(i, j + 1, m, n);
+    }
+
+    int uniquePaths(int m, int n)
+    {
+        return traverse(1, 1, m, n);
     }
 };
 ```
