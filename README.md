@@ -1326,6 +1326,87 @@ public:
 };
 ```
 
+### 回文子串
+
+[回文子串](https://leetcode.cn/problems/a7VOhD/)
+
+给定一个字符串 s ，请计算这个字符串中有多少个回文子字符串。
+
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+
+```c++
+// 回文子串
+class Solution
+{
+public:
+    bool isPalindrome(string &s, int l, int r)
+    {
+        while (l < r)
+        {
+            if (s[l] == s[r])
+            {
+                l++;
+                r--;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    int countSubstrings(string s)
+    {
+        // 单个字符也是回文子串 "a"
+        int result = s.size();
+
+        for (int i = 0; i < s.size(); i++)
+        {
+            // 取一种极端情况 0 + n
+            for (int j = 2; i + j - 1 < s.size(); j++)
+            {
+                if (isPalindrome(s, i, i + j - 1))
+                    result++;
+            }
+        }
+        return result;
+    }
+};
+```
+
+> 把每一个字符设为中心向两边扩展
+
+```c++
+// 回文子串-中心扩展法
+class Solution
+{
+public:
+    int extend(string &s, int left, int right)
+    {
+        int count = 0;
+        while (left >= 0 && right < s.size() && s[left] == s[right])
+        {
+            count++;
+            left--;
+            right++;
+        }
+        return count;
+    }
+
+    int countSubstrings(string s)
+    {
+        int result = 0;
+        for (int i = 0; i < s.size(); i++)
+        {
+            result += extend(s, i, i);
+            result += extend(s, i, i + 1);
+        }
+        return result;
+    }
+};
+```
+
 ## 栈与队列
 
 ### 用栈实现队列
@@ -4502,6 +4583,43 @@ void testDFS2()
 }
 ```
 
+##### 所有可能的路径
+
+[所有可能的路径](https://leetcode.cn/problems/all-paths-from-source-to-target/description/)
+
+```c++
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> path;
+    void dfs(vector<vector<int>> &graph, int n)
+    {
+        // 终止条件
+        if (n == graph.size() - 1)
+        {
+            result.push_back(path);
+            return;
+        }
+
+        for (int i = 0; i < graph[n].size(); i++)
+        {
+            // 把和n相邻的节点全都分叉出去
+            path.push_back(graph[n][i]);
+            dfs(graph, graph[n][i]); // 进入下一层递归
+            path.pop_back();         // 回溯，撤销本节点
+        }
+    }
+
+    vector<vector<int>> allPathsSourceTarget(vector<vector<int>> &graph)
+    {
+        path.push_back(0);
+        dfs(graph, 0);
+        return result;
+    }
+};
+```
+
 #### 广度优先遍历
 
 ![广度优先遍历](assets/image-10.png)
@@ -6830,3 +6948,68 @@ public:
 };
 ```
 
+#### 整数拆分
+
+[整数拆分](https://leetcode.cn/problems/integer-break/)
+
+```c++
+// 整数拆分
+class Solution
+{
+public:
+    int integerBreak(int n)
+    {
+
+        // dp数组代表了第i个数的拆分最大值
+        vector<int> dp(n + 1);
+        dp[2] = 1;
+
+        // 先知道前面的值,后面递推更大的数的时候会用到
+        for (int i = 3; i <= n; i++)
+        {
+            for (int j = 1; j < i - 1; j++)
+            {
+                // 一个是j * (i - j) 直接相乘; 一个是j * dp[i - j]，相当于是拆分(i - j)
+                // 简单的数j*(i-j)就完成了拆分
+                // 复杂的数利用之前拆分好的数dp[i]来减少计算量
+                dp[i] = max(dp[i], max((i - j) * j, dp[i - j] * j));
+            }
+        }
+        return dp[n];
+    }
+};
+```
+
+#### 不同的二叉搜索树
+
+[不同的二叉搜索树](https://leetcode.cn/problems/unique-binary-search-trees/)
+
+![Alt text](assets/image-58.png)
+
+```c++
+// 不同的二叉搜索树
+class Solution
+{
+public:
+    int numTrees(int n)
+    {
+        // dp[i]数组表示的是由i个节点所组成的二叉搜索树的种数
+        int dp[n + 1];
+
+        memset(dp, 0, sizeof(dp));
+
+        dp[0] = 1;
+
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= i; j++)
+            {
+                // j-1 为j为头结点左子树节点数量，i-j 为以j为头结点右子树节点数量
+                dp[i] += dp[j - 1] * dp[i - j];
+            }
+        }
+
+        return dp[n];
+    }
+};
+```

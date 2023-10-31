@@ -333,7 +333,7 @@ int main()
 - fseek()函数：
 该函数可以从定位位置的偏移量处开始读写；
 `int fseek( FILE *stream, long offset, int origin );`
-                     文件流          偏移量    起始位置 
+                     文件流          偏移量    起始位置
 返回值：
   如果成功，fseek返回0；
     否则，它返回一个非零值；
@@ -424,6 +424,387 @@ int main()
     printf("插值: %lf", abs(total1 - total2));
 
     return 0;
+}
+```
+
+### 转换字符串并写入文件
+
+```c
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+// 使用格式化输入输出
+int main()
+{
+    FILE *fpin = fopen("in.txt", "r");
+    FILE *fpout = fopen("out.txt", "w");
+
+    char str[20];
+    // 格式化读，注意"%s"的格式无法读取空格和回车，遇到就结束
+    fscanf(fpin, "%s", str);
+
+    // 转换
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if ('a' <= str[i] && str[i] <= 'z')
+        {
+            str[i] = 'A' + (str[i] - 'a');
+        }
+    }
+
+    // 格式化写
+    fprintf(fpout, "%s", str);
+
+    fclose(fpin);
+    fclose(fpout);
+
+    return 0;
+}
+
+// 使用字符输入输出
+int main()
+{
+    FILE *fpin = fopen("in.txt", "r");
+    FILE *fpout = fopen("out.txt", "w");
+
+    char str[20];
+
+    // 字符读 可以读空格 回车
+    int i = 0;
+    char ch;
+    while ((ch = fgetc(fpin)) != EOF)
+    {
+        if(ch == ' ') continue;
+        str[i] = (ch - 'a') + 'A';
+        i++;
+    }
+    str[i] = '\0';
+
+    
+    
+    for(int i = 0; str[i] != '\0'; i++)
+    {
+        fputc(str[i], fpout);
+    }
+
+    fclose(fpin);
+    fclose(fpout);
+
+    return 0;
+}
+
+// 使用字符串输入输出
+int main()
+{
+    FILE *fpin = fopen("in.txt", "r");
+    FILE *fpout = fopen("out.txt", "w");
+
+    char str[20];
+
+    // 字符串读 可以读空格 不能读回车
+    fgets(str, 20, fpin);
+
+    int i = 0;
+    while (str[i] != '\0')
+    {
+        str[i] = (str[i] - 'a') + 'A';
+        i++;
+    }
+    
+    fputs(str, fpout);
+    
+    fclose(fpin);
+    fclose(fpout);
+
+    return 0;
+}
+```
+
+## 真题
+
+### 分解质因数
+
+```c
+int main()
+{
+    int n;
+    scanf("%d", &n);
+
+    for (int i = 2; i < n; i++)
+    {
+        while (i != n)
+        {
+            if (n % i == 0)
+            {
+                printf("%d * ", i);
+                n = n / i;
+            }
+            else
+                break;
+        }
+    }
+
+    printf("%d", n);
+
+    return 0;
+}
+```
+
+### 编程题
+
+#### 20软专
+
+将二维数组中加起来最大的那一行删除,不数组改变原有结构
+
+#### 19软专
+
+以实数形式打印前20项, 第一项为2/1, 从第二项开始每一项的分子为前一项分子分母之和, 分母为前一项的分子
+
+```c
+int main()
+{
+    int n = 20;
+
+    int fz = 2;
+    int fm = 1;
+
+    while (n > 0)
+    {
+        printf("%d/%d ", fz, fm);
+        int temp = fz;
+        fz = fz + fm;
+        fm = temp;
+
+        n--;
+    }
+
+    return 0;
+}
+```
+
+输出前20组孪生素数对
+
+```c
+bool isSu(int n)
+{
+    if (n < 2)
+        return false;
+    for (int i = 2; i < n; i++)
+    {
+        if (n % i == 0)
+            return false;
+    }
+    return true;
+}
+
+int main()
+{
+    int count = 0;
+
+    for (int i = 0; count != 20; i++)
+    {
+        if (isSu(i) && isSu(i + 2))
+        {
+            printf("{%d %d}", i, i + 2);
+            count++;
+        }
+    }
+    return 0;
+}
+```
+
+判断M和N是否是友好数, 如果M和N的约数和相等, 友好数
+
+```c
+int sumY(int n)
+{
+    int sum = 0;
+    for (int i = 1; i < n; i++)
+    {
+        if (n % i == 0)
+            sum += i;
+    }
+    return sum;
+}
+
+bool friendNum(int m, int n)
+{
+    return sumY(m) == sumY(n);
+}
+
+int main()
+{
+    int M, N;
+    scanf("%d %d", &M, &N);
+
+    if (friendNum(M, N))
+    {
+        printf("True");
+    }
+    else
+    {
+        printf("False");
+    }
+
+    return 0;
+}
+```
+
+#### 18软专
+
+![Alt text](assets/image-c15.png)
+> 思路: 首先拆分单个数字到数组中,然后进行排序, 倒序输出即可
+
+```c
+int main()
+{
+    int n;
+    scanf("%d", &n);
+
+    int a[9] = {0};
+    int i = 0;
+
+    while (n / 10 != 0 && i < 9)
+    {
+        a[i] = n % 10;
+        n = n / 10;
+        i++;
+    }
+    a[i] = n;
+
+    for (int i = 0; i < 9; i++)
+    {
+        int temp = a[i];
+        int j = 0;
+
+        for (j = i - 1; j >= 0 && a[j] > temp; j--)
+        {
+            a[j + 1] = a[j];
+        }
+        a[j + 1] = temp;
+    }
+
+    for (int i = 8; i >= 0; i--)
+    {
+        if (a[i] == 0)
+            continue;
+        printf("%d", a[i]);
+    }
+
+    return 0;
+}   
+```
+
+![Alt text](assets/image-c16.png)
+> 遍历一遍根据ASCKALL判断即可
+
+```c
+int main()
+{
+    char a[100];
+
+    scanf("%s", a);
+    int d, b, c;
+
+    for (int i = 0; a[i] != '\0'; i++)
+    {
+        if (a[i] >= 'a' && a[i] <= 'z')
+        {
+            d = 1;
+        }
+        else if (a[i] >= 'A' && a[i] <= 'Z')
+        {
+            b = 1;
+        }
+        else if (a[i] >= '0' && a[i] <= '9')
+        {
+            c = 1;
+        }
+    }
+
+    if (d + b + c >= 2)
+        printf("至少包含两类字符");
+    else
+        printf("不包含两类字符");
+
+    return 0;
+}
+```
+
+![Alt text](assets/image-c17.png)
+> 这道题就是从两边取值比较大小，较小的乘以系数，不断循环得到加权和
+
+```c
+int main(int a[], int n)
+{
+    int i = 0;
+    int j = n - 1;
+
+    int sum = 0;
+    int t = 1;
+
+    while (i <= j)
+    {
+        if (a[i] < a[j])
+        {
+            sum += a[i] * t;
+            i++;
+        }
+        else
+        {
+            sum += a[t] * t;
+            j--;
+        }
+        t++;
+    }
+
+    return sum;
+}
+```
+
+![Alt text](assets/image-c18.png)
+
+> 深度优先搜索 注意图的表示形式
+
+```c++
+void dfs(int a[10][10], int n, int i, int k, int visited[], int arraved[])
+{
+    // 终止条件
+    if (k == 0)
+    {
+        arraved[i] = 1;
+        return;
+    }
+
+    // 分叉所有相邻的节点
+    for (int t = 0; t < n; t++)
+    {
+        if (visited[t] == 0 && a[i][t])
+        {
+            visited[t] = 1;
+            dfs(a, n, t, k--, visited, arraved);
+            visited[t] = 0;
+        }
+    }
+}
+
+void distance_k(int a[10][10], int n, int i, int k)
+{
+    // 记录遍历过的节点
+    int visited[n];
+    // 记录结果
+    int arraved[n];
+    memset(visited, 0, sizeof(visited));
+    memset(arraved, 0, sizeof(arraved));
+
+    dfs(a, n, i, k, visited, arraved);
+
+    for (int i = 0; i < n; i++)
+    {
+        if (arraved[i])
+            printf("%d " arraved[i]);
+    }
 }
 ```
 
@@ -1027,8 +1408,6 @@ int main()
 ```
 
 ### 成绩转换
-
-![Alt text](image-c12.png)
 
 ```c
 #include <stdio.h>

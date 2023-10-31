@@ -98,3 +98,34 @@ void testDFS2()
     DFS2(g, 3, visited); // 从顶点3开始进行深度优先遍历
     return;
 }
+
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> path;
+    void dfs(vector<vector<int>> &graph, int n)
+    {
+        // 终止条件
+        if (n == graph.size() - 1)
+        {
+            result.push_back(path);
+            return;
+        }
+
+        for (int i = 0; i < graph[n].size(); i++)
+        {
+            // 把和n相邻的节点全都分叉出去
+            path.push_back(graph[n][i]);
+            dfs(graph, graph[n][i]); // 进入下一层递归
+            path.pop_back();         // 回溯，撤销本节点
+        }
+    }
+
+    vector<vector<int>> allPathsSourceTarget(vector<vector<int>> &graph)
+    {
+        path.push_back(0);
+        dfs(graph, 0);
+        return result;
+    }
+};

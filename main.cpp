@@ -2,63 +2,35 @@
 #include <math.h>
 #include <stdlib.h>
 
-typedef struct Shop
+int sumY(int n)
 {
-    char name[20];
-    double price;
-    int num;
-    double totalprice;
-    Shop *next;
-} Shop;
-
-Shop *create(FILE *fp)
-{
-    Shop *head = (Shop *)malloc(sizeof(Shop));
-    Shop *tail = head;
-
-    while (1)
+    int sum = 0;
+    for (int i = 1; i < n; i++)
     {
-        Shop *temp = (Shop *)malloc(sizeof(Shop));
-        fscanf(fp, "%s %lf %d %lf", &temp->name, &temp->price, &temp->num, &temp->totalprice);
-        tail->next = temp;
-        tail = temp;
-        if (feof(fp))
-            break;
+        if (n % i == 0)
+            sum += i;
     }
-    tail->next = NULL;
-    return head;
+    return sum;
+}
+
+bool friendNum(int m, int n)
+{
+    return sumY(m) == sumY(n);
 }
 
 int main()
 {
-    FILE *fp1 = fopen("file1.txt", "r");
-    FILE *fp2 = fopen("file2.txt", "r");
+    int M, N;
+    scanf("%d %d", &M, &N);
 
-    Shop *shop1 = create(fp1);
-    Shop *shop2 = create(fp2);
-
-    double total1, total2;
-
-    printf("first people\n");
-    Shop *first = shop1->next;
-    while (first)
+    if (friendNum(M, N))
     {
-        total1 += first->totalprice;
-        printf("%s -> ", first->name);
-
-        first = first->next;
+        printf("True");
     }
-    printf("\nfirst: %lf\n", total1);
-
-    printf("second people\n");
-    for (Shop *it = shop2->next; it != nullptr; it = it->next)
+    else
     {
-        total2 += it->totalprice;
-        printf("%s -> ", it->name);
+        printf("False");
     }
-    printf("\nsecond: %lf\n", total2);
-
-    printf("插值: %lf", abs(total1 - total2));
 
     return 0;
 }

@@ -195,3 +195,70 @@ public:
         return false;
     }
 };
+
+// 回文子串-暴力算法
+class Solution
+{
+public:
+    bool isPalindrome(string &s, int l, int r)
+    {
+        while (l < r)
+        {
+            if (s[l] == s[r])
+            {
+                l++;
+                r--;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    int countSubstrings(string s)
+    {
+        // 单个字符也是回文子串 "a"
+        int result = s.size();
+
+        for (int i = 0; i < s.size(); i++)
+        {
+            // 取一种极端情况 0 + n
+            for (int j = 2; i + j - 1 < s.size(); j++)
+            {
+                if (isPalindrome(s, i, i + j - 1))
+                    result++;
+            }
+        }
+        return result;
+    }
+};
+
+// 回文子串-中心扩展法
+class Solution
+{
+public:
+    int extend(string &s, int left, int right)
+    {
+        int count = 0;
+        while (left >= 0 && right < s.size() && s[left] == s[right])
+        {
+            count++;
+            left--;
+            right++;
+        }
+        return count;
+    }
+
+    int countSubstrings(string s)
+    {
+        int result = 0;
+        for (int i = 0; i < s.size(); i++)
+        {
+            result += extend(s, i, i);
+            result += extend(s, i, i + 1);
+        }
+        return result;
+    }
+};

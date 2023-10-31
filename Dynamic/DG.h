@@ -142,3 +142,55 @@ public:
         return dp[m - 1][n - 1];
     }
 };
+
+// 整数拆分
+class Solution
+{
+public:
+    int integerBreak(int n)
+    {
+
+        // dp数组代表了第i个数的拆分最大值
+        vector<int> dp(n + 1);
+        dp[2] = 1;
+
+        // 先知道前面的值,后面递推更大的数的时候会用到
+        for (int i = 3; i <= n; i++)
+        {
+            for (int j = 1; j < i - 1; j++)
+            {
+                // 一个是j * (i - j) 直接相乘; 一个是j * dp[i - j]，相当于是拆分(i - j)
+                // 简单的数j*(i-j)就完成了拆分
+                // 复杂的数利用之前拆分好的数dp[i]来减少计算量
+                dp[i] = max(dp[i], max((i - j) * j, dp[i - j] * j));
+            }
+        }
+        return dp[n];
+    }
+};
+
+// 不同的二叉搜索树
+class Solution
+{
+public:
+    int numTrees(int n)
+    {
+        // dp[i]数组表示的是由i个节点所组成的二叉搜索树的种数
+        int dp[n + 1];
+
+        memset(dp, 0, sizeof(dp));
+
+        dp[0] = 1;
+
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= i; j++)
+            {
+                // j-1 为j为头结点左子树节点数量，i-j 为以j为头结点右子树节点数量
+                dp[i] += dp[j - 1] * dp[i - j];
+            }
+        }
+
+        return dp[n];
+    }
+};
