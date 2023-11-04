@@ -557,6 +557,87 @@ int main()
 
 将二维数组中加起来最大的那一行删除,不数组改变原有结构
 
+```c
+int main()
+{
+    int m = 3, n = 4;
+    int a[m][n] = {1, 1, 1, 1, 3, 3, 3, 1, 2, 2, 2, 1};
+
+    int sum[m];
+    memset(sum, 0, sizeof(sum));
+    int maxIndex = 0;
+
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            sum[i] += a[i][j];
+        }
+        printf("%d\n", sum[i]);
+    }
+
+    int maxSum = sum[0];
+    for (int i = 0; i < m; i++)
+    {
+        if (maxSum < sum[i])
+        {
+            maxIndex = i;
+            maxSum = sum[i];
+        }
+    }
+
+    printf("第%d行和最大, 为%d\n", maxIndex, maxSum);
+
+    // 删除对应行, 并且移动元素
+    for (int i = maxIndex; i < m - 1; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+
+            a[i][j] = a[i + 1][j];
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        a[m - 1][i] = 0;
+    }
+
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%d", a[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+```
+
+把字符串空格后面的小写字符变成大写的
+
+```c
+int main()
+{
+    char s[20];
+    scanf("%s", &s);
+
+    for (int i = 0; i < 20; i++)
+    {
+        if (s[i] == ' ' && s[i + 1] >= 'a' && s[i + 1] <= 'z')
+        {
+            s[i + 1] = (s[i + 1] - 'a') + 'A';
+        }
+    }
+
+    std::cout << s << std::endl;
+
+    return 0;
+}
+```
+
 #### 19软专
 
 以实数形式打印前20项, 第一项为2/1, 从第二项开始每一项的分子为前一项分子分母之和, 分母为前一项的分子
@@ -647,6 +728,139 @@ int main()
         printf("False");
     }
 
+    return 0;
+}
+```
+
+文件+链表合并排序
+
+```c
+
+typedef struct student
+{
+    int index;
+    char name[20];
+    double grade;
+    student *next;
+} Student;
+
+Student *Build()
+{
+    Student *head = (Student *)malloc(sizeof(student));
+    int n = 6;
+    Student *ptr = head;
+
+    while (n--)
+    {
+        Student *temp = (Student *)malloc(sizeof(student));
+        scanf("%d %s %d", &temp->index, &temp->name, &temp->grade);
+        ptr->next = temp;
+        ptr = temp;
+    }
+    ptr->next = NULL;
+    return head;
+}
+
+Student *Build2(FILE *file)
+{
+    Student *head = (Student *)malloc(sizeof(student));
+    Student *p = head;
+
+    if (file)
+    {
+        // 文件读到末尾返回true
+        while (!feof(file))
+        {
+            Student *temp = (Student *)malloc(sizeof(student));
+            fscanf(file, "%d %s %d", &temp->index, &temp->name, &temp->grade);
+            p->next = temp;
+            p = temp;
+        }
+        p->next = NULL;
+    }
+    else
+    {
+        printf("Error!!");
+    }
+
+    return head;
+}
+
+void Sort(Student *head)
+{
+    Student *p = head->next;
+    Student *q;
+
+    while (p != nullptr)
+    {
+        q = p->next;
+
+        while (q != nullptr)
+        {
+            if (p->grade > q->grade)
+            {
+                Student tem = *p;
+                *p = *q;
+                *q = tem;
+
+                tem.next = p->next;
+                p->next = q->next;
+                q->next = tem.next;
+            }
+            q = q->next;
+        }
+        p = p->next;
+    }
+}
+
+Student *Merge(Student *head1, Student *head2)
+{
+    if (head1 == NULL)
+    {
+        return head2;
+    }
+    else if (head2 == NULL)
+    {
+        return head1;
+    }
+    else if (head1->grade < head2->grade)
+    {
+        head1->next = Merge(head1->next, head2);
+        return head1;
+    }
+    else
+    {
+        head2->next = Merge(head2->next, head1);
+        return head2;
+    }
+}
+
+void print(Student *head)
+{
+    Student *p = head->next;
+    while (p)
+    {
+        printf("%d %s %d\n", p->index, p->name, p->grade);
+        p = p->next;
+    }
+}
+
+int main()
+{
+    Student *res = Build();
+    FILE *fp = fopen("student.txt", "r");
+    Student *res2 = Build2(fp);
+    Sort(res);
+    Sort(res2);
+    print(res);
+    printf("\n");
+    print(res2);
+    printf("\n");
+    Student *res3 = Merge(res->next, res2->next);
+
+    print(res3);
+
+    printf("\n");
     return 0;
 }
 ```
