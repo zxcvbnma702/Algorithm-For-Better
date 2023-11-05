@@ -1022,6 +1022,103 @@ void distance_k(int a[10][10], int n, int i, int k)
 }
 ```
 
+### 算法题
+
+#### 18软专
+
+![Alt text](assets/image-c19.png)
+
+> 首先将两个链表翻转
+> 然后让头指针指向较大的链表头结点
+> 然后再定义一个指针进行循环比较合并
+
+```c++
+typedef struct ListNode
+{
+    int val;
+    ListNode *next;
+} Lis;
+
+// 利用双指针进行逆置
+Lis *Reverse(Lis *head)
+{
+    Lis *pre = nullptr;
+    Lis *cur = head;
+    Lis *temp;
+
+    while (cur != nullptr)
+    {
+        temp = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = temp;
+    }
+
+    return pre;
+}
+
+Lis *Merge(Lis *head1, Lis *head2)
+{
+    Lis *p = Reverse(head1);
+    Lis *q = Reverse(head2);
+
+    Lis *head, *rear;
+
+    if (p == nullptr)
+    {
+        return q;
+    }
+    else if (q == nullptr)
+    {
+        return p;
+    }
+
+    if (p->val > q->val)
+    {
+        head = p;
+        p = p->next;
+    }
+    else
+    {
+        head = q;
+        q = q->next;
+    }
+
+    rear = head;
+
+    while (q != nullptr && p != nullptr)
+    {
+        if (p->val > q->val)
+        {
+            rear->next = p;
+            p = p->next;
+        }
+        else
+        {
+            rear->next = q;
+            q = q->next;
+        }
+        rear = rear->next;
+    }
+
+    if(p != nullptr)
+    {
+        rear->next = p;
+    }
+
+    if(q != nullptr)
+    {
+        rear ->next = q;
+    }
+
+    return head;
+}
+```
+
+![Alt text](assets/image-c20.png)
+
+> 使用深度优先搜索, 将
+
 ## PTA
 
 ### Programming in C is fun

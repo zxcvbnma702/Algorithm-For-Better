@@ -541,6 +541,86 @@ private:
 };
 ```
 
+### 链表排序
+
+[链表排序](https://leetcode.cn/problems/sort-list/)
+
+1. 找到链表的中点，以中点为分界，将链表拆分成两个子链表。寻找链表的中点可以使用快慢指针的做法，快指针每次移动 222 步，慢指针每次移动 111 步，当快指针到达链表末尾时，慢指针指向的链表节点即为链表的中点。
+
+2. 对两个子链表分别排序。
+
+3. 将两个排序后的子链表合并，得到完整的排序后的链表。可以使用「21. 合并两个有序链表」的做法，将两个有序的子链表进行合并。
+
+```c
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+ // 合并两个有序链表
+struct ListNode* merge(struct ListNode* head1, struct ListNode* head2) {
+    struct ListNode* dummyHead  = malloc(sizeof(struct ListNode));
+    dummyHead->val = 0;
+    struct ListNode*temp = dummyHead, *temp1 = head1, *temp2 = head2;
+    while(temp1 != NULL && temp2!= NULL)
+    {
+        if(temp1->val < temp2 ->val)
+        {
+            temp->next = temp1;
+            temp1 = temp1->next;
+        }else{
+            temp->next = temp2;
+            temp2 = temp2->next;
+        }
+        temp = temp->next;
+    }
+    if(temp1 != NULL) temp->next = temp1;
+    if(temp2 != NULL) temp->next = temp2;
+    return dummyHead->next;
+}
+
+// 采用左闭右开区间  [head, mid) [mid, tail)
+struct ListNode* toSortList(struct ListNode* head, struct ListNode* tail)
+{
+    // 不存在节点
+    if(head == NULL) return head;
+
+    // 只有一个节点
+    if(head->next == tail)
+    {
+        head->next = NULL;
+        return head;
+    }
+
+    // 通过快慢指针寻找链表中点
+    // 快指针走两步慢指针走一步
+    struct ListNode *slow = head, *fast = head;
+
+    while(fast != tail)
+    {
+        fast = fast->next;
+        slow = slow->next;
+
+        // 快指针走两步没走成情况
+        if(fast != tail)
+        {
+            fast = fast->next;
+        }
+    }
+
+    // 找到中点开始归并
+    struct ListNode* mid = slow;
+    return merge(toSortList(head, mid), toSortList(mid, tail));
+}
+
+struct ListNode* sortList(struct ListNode* head)
+{
+    return toSortList(head, NULL);
+}
+```
+
 ### 翻转链表
 
 [反转链表](https://leetcode.cn/problems/reverse-linked-list/description/)

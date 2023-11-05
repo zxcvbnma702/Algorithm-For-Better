@@ -5,130 +5,83 @@
 
 #include <iostream>
 
-typedef struct student
+typedef struct ListNode
 {
-    int index;
-    char name[20];
-    double grade;
-    student *next;
-} Student;
+    int val;
+    ListNode *next;
+} Lis;
 
-Student *Build()
+// 利用双指针进行逆置
+Lis *Reverse(Lis *head)
 {
-    Student *head = (Student *)malloc(sizeof(student));
-    int n = 6;
-    Student *ptr = head;
+    Lis *pre = nullptr;
+    Lis *cur = head;
+    Lis *temp;
 
-    while (n--)
+    while (cur != nullptr)
     {
-        Student *temp = (Student *)malloc(sizeof(student));
-        scanf("%d %s %d", &temp->index, &temp->name, &temp->grade);
-        ptr->next = temp;
-        ptr = temp;
+        temp = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = temp;
     }
-    ptr->next = NULL;
-    return head;
+
+    return pre;
 }
 
-Student *Build2(FILE *file)
+Lis *Merge(Lis *head1, Lis *head2)
 {
-    Student *head = (Student *)malloc(sizeof(student));
-    Student *p = head;
+    Lis *p = Reverse(head1);
+    Lis *q = Reverse(head2);
 
-    if (file)
+    Lis *head, *rear;
+
+    if (p == nullptr)
     {
-        // 文件读到末尾返回true
-        while (!feof(file))
-        {
-            Student *temp = (Student *)malloc(sizeof(student));
-            fscanf(file, "%d %s %d", &temp->index, &temp->name, &temp->grade);
-            p->next = temp;
-            p = temp;
-        }
-        p->next = NULL;
+        return q;
+    }
+    else if (q == nullptr)
+    {
+        return p;
+    }
+
+    if (p->val > q->val)
+    {
+        head = p;
+        p = p->next;
     }
     else
     {
-        printf("Error!!");
+        head = q;
+        q = q->next;
     }
 
-    return head;
-}
+    rear = head;
 
-void Sort(Student *head)
-{
-    Student *p = head->next;
-    Student *q;
-
-    while (p != nullptr)
+    while (q != nullptr && p != nullptr)
     {
-        q = p->next;
-
-        while (q != nullptr)
+        if (p->val > q->val)
         {
-            if (p->grade > q->grade)
-            {
-                Student tem = *p;
-                *p = *q;
-                *q = tem;
-
-                tem.next = p->next;
-                p->next = q->next;
-                q->next = tem.next;
-            }
+            rear->next = p;
+            p = p->next;
+        }
+        else
+        {
+            rear->next = q;
             q = q->next;
         }
-        p = p->next;
+        rear = rear->next;
     }
-}
 
-Student *Merge(Student *head1, Student *head2)
-{
-    if (head1 == NULL)
+    if(p != nullptr)
     {
-        return head2;
+        rear->next = p;
     }
-    else if (head2 == NULL)
-    {
-        return head1;
-    }
-    else if (head1->grade < head2->grade)
-    {
-        head1->next = Merge(head1->next, head2);
-        return head1;
-    }
-    else
-    {
-        head2->next = Merge(head2->next, head1);
-        return head2;
-    }
-}
 
-void print(Student *head)
-{
-    Student *p = head->next;
-    while (p)
+    if(q != nullptr)
     {
-        printf("%d %s %d\n", p->index, p->name, p->grade);
-        p = p->next;
+        rear ->next = q;
     }
-}
 
-int main()
-{
-    Student *res = Build();
-    FILE *fp = fopen("student.txt", "r");
-    Student *res2 = Build2(fp);
-    Sort(res);
-    Sort(res2);
-    print(res);
-    printf("\n");
-    print(res2);
-    printf("\n");
-    Student *res3 = Merge(res->next, res2->next);
-
-    print(res3);
-
-    printf("\n");
-    return 0;
+    return head;
 }
