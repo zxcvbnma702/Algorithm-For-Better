@@ -992,6 +992,156 @@ public:
 };
 ```
 
+## 哈希表
+
+### 有效的字母异位词
+
+[有效的字母异位词](https://leetcode.cn/problems/valid-anagram/)
+
+```c
+// 有效的字母异位词
+bool isAnagram(char *s, char *t)
+{
+    int hashtable[26];
+    for (int i = 0; i < 26; i++)
+    {
+        hashtable[i] = 0;
+    }
+
+    int i;
+    while (s[i] != '\0')
+    {
+        hashtable[s[i] - 'a']++;
+        i++;
+    }
+
+    int j;
+    while (t[j] != '\0')
+    {
+        hashtable[t[j] - 'a']--;
+        j++;
+    }
+
+    for (int i = 0; i < 26; i++)
+    {
+        if (hashtable[i] != 0)
+            return false;
+    }
+
+    return true;
+}
+```
+
+### 两个数组的交集
+
+[两个数组的交集](https://leetcode.cn/problems/intersection-of-two-arrays/)
+
+```c
+// 两个数组的交集
+int *intersection(int *nums1, int nums1Size, int *nums2, int nums2Size, int *returnSize)
+{
+    int hashtable[1001] = {0};
+    int lessSize = nums1Size < nums2Size ? nums1Size : nums2Size;
+    int *result = (int *)malloc(sizeof(int) * lessSize);
+
+    int index = 0;
+
+    int i;
+    for (int i = 0; i < nums1Size; i++)
+    {
+        hashtable[nums1[i]]++;
+    }
+
+    for (int i = 0; i < nums2Size; i++)
+    {
+        if (hashtable[nums2[i]] > 0)
+        {
+            result[index] = nums2[i];
+            index++;
+
+            hashtable[nums2[i]] = 0;
+        }
+    }
+
+    *returnSize = index; // 结果数组的截止下标存下来
+    return result;
+}
+```
+
+### 快乐数
+
+[快乐数](https://leetcode.cn/problems/happy-number)
+
+> “快指针” 每次走两步，“慢指针” 每次走一步，当二者相等时，即为一个循环周期。此时，判断是不是因为 1 引起的循环，是的话就是快乐数，否则不是快乐数
+
+```c++
+class Solution
+{
+public:
+    int bitSquareSum(int n)
+    {
+        int sum = 0;
+        while (n > 0)
+        {
+            int bit = n % 10;
+            sum += bit * bit;
+            n = n / 10;
+        }
+        return sum;
+    }
+
+    bool isHappy(int n)
+    {
+        int slow = n, fast = n;
+        do
+        {
+            slow = bitSquareSum(slow);
+            fast = bitSquareSum(fast);
+            fast = bitSquareSum(fast);
+        } while (slow != fast);
+
+        return slow == 1;
+    }
+};
+```
+
+// 最大也就是810
+
+```c
+int getSum(int n)
+{
+    int sum = 0;
+    while (n)
+    {
+        int t = n % 10;
+        sum += t * t;
+        n = n / 10;
+    }
+    return sum;
+}
+
+bool isHappy(int n)
+{
+    int hashtable[820] = {0};
+    int sum = getSum(n);
+    while (sum != 1)
+    {
+        // 循环到了重复值
+        if (hashtable[sum] == 1)
+        {
+            return false;
+        }
+        else
+        {
+            hashtable[sum]++;
+        }
+        sum = getSum(sum);
+    }
+
+    return true;
+}
+```
+
 ## 字符串
 
 给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串的第一个匹配项的下标（下标从 0 开始）。如果 needle 不是 haystack 的一部分，则返回  -1 。
@@ -2074,6 +2224,26 @@ public:
 };
 ```
 
+```c
+void preorder(struct TreeNode *root, int *res, int *resSize)
+{
+    if (root == NULL)
+        return;
+
+    res[(*resSize)++] = root->val;
+    preorder(root->left, res, resSize);
+    preorder(root->right, res, resSize);
+}
+
+int *preorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    preorder(root, res, returnSize);
+    return res;
+}
+```
+
 ##### 中序遍历
 
 [中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
@@ -2095,6 +2265,25 @@ void traversal(TreeNode *cur, vector<int> &vec)
         return vec;
     }
 };
+```
+
+```c
+void inorder(struct TreeNode *root, int *res, int *returnSize)
+{
+    if (root == NULL)
+        return;
+    inorder(root->left, res, returnSize);
+    res[(*returnSize)++] = root->val;
+    inorder(root->right, res, returnSize);
+}
+
+int *inorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    inorder(root, res, returnSize);
+    return res;
+}
 ```
 
 ##### 后序遍历
@@ -2120,6 +2309,26 @@ public:
         return vec;
     }
 };
+```
+
+```c
+void postorder(struct TreeNode *root, int *res, int *returnSize)
+{
+    if (root == NULL)
+        return;
+    postorder(root->left, res, returnSize);
+
+    postorder(root->right, res, returnSize);
+    res[(*returnSize)++] = root->val;
+}
+
+int *postorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    postorder(root, res, returnSize);
+    return res;
+}
 ```
 
 #### 非递归遍历
@@ -4666,6 +4875,42 @@ void testDFS2()
 ##### 所有可能的路径
 
 [所有可能的路径](https://leetcode.cn/problems/all-paths-from-source-to-target/description/)
+
+```c
+int **ans; // 结果二维数组
+int stk[15];
+int stkSize;
+
+void dfs(int x, int n, int **graph, int *graphColSize, int *returnSize, int **returnColumnSizes)
+{
+    if (x == n)
+    {
+        int *tmp = malloc(sizeof(int) * stkSize);
+        memcpy(tmp, stk, sizeof(int) * stkSize);
+        ans[*returnSize] = tmp;
+        (*returnColumnSizes)[(*returnSize)++] = stkSize;
+        return;
+    }
+
+    for (int i = 0; i < graphColSize[x]; i++)
+    {
+        int y = graph[x][i];
+        stk[stkSize++] = y;
+        dfs(y, n, graph, graphColSize, returnSize, returnColumnSizes);
+        stkSize--;
+    }
+}
+int **allPathsSourceTarget(int **graph, int graphSize, int *graphColSize, int *returnSize, int **returnColumnSizes)
+{
+    stkSize = 0;
+    stk[stkSize++] = 0;
+    ans = malloc(sizeof(int *) * 16384);
+    *returnSize = 0;
+    *returnColumnSizes = malloc(sizeof(int) * 16384);
+    dfs(0, graphSize - 1, graph, graphColSize, returnSize, returnColumnSizes);
+    return ans;
+}
+```
 
 ```c++
 class Solution

@@ -29,6 +29,25 @@ public:
         return vec;
     }
 };
+
+void preorder(struct TreeNode *root, int *res, int *resSize)
+{
+    if (root == NULL)
+        return;
+
+    res[(*resSize)++] = root->val;
+    preorder(root->left, res, resSize);
+    preorder(root->right, res, resSize);
+}
+
+int *preorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    preorder(root, res, returnSize);
+    return res;
+}
+
 // 中序遍历
 class Solution
 {
@@ -48,6 +67,23 @@ public:
         return vec;
     }
 };
+
+void inorder(struct TreeNode *root, int *res, int *returnSize)
+{
+    if (root == NULL)
+        return;
+    inorder(root->left, res, returnSize);
+    res[(*returnSize)++] = root->val;
+    inorder(root->right, res, returnSize);
+}
+
+int *inorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    inorder(root, res, returnSize);
+    return res;
+}
 // 后序遍历
 class Solution
 {
@@ -67,6 +103,24 @@ public:
         return vec;
     }
 };
+
+void postorder(struct TreeNode *root, int *res, int *returnSize)
+{
+    if (root == NULL)
+        return;
+    postorder(root->left, res, returnSize);
+
+    postorder(root->right, res, returnSize);
+    res[(*returnSize)++] = root->val;
+}
+
+int *postorderTraversal(struct TreeNode *root, int *returnSize)
+{
+    int *res = malloc(sizeof(int) * 2000);
+    *returnSize = 0;
+    postorder(root, res, returnSize);
+    return res;
+}
 // 前序非递归遍历
 class Solution
 {
@@ -1452,7 +1506,7 @@ public:
     }
 };
 
-//将有序数组转换为二叉搜索树
+// 将有序数组转换为二叉搜索树
 class Solution
 {
 public:

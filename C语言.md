@@ -1022,6 +1022,46 @@ void distance_k(int a[10][10], int n, int i, int k)
 }
 ```
 
+#### 17软专
+
+![Alt text](assets/image-c21.png)
+
+```c
+int main()
+{
+    int n;
+    scanf("%d", &n);
+
+    int count;
+    if (n > 0)
+    {
+        while (n != 1)
+        {
+            if (n % 2 == 0)
+            {
+                n = n / 2;
+            }
+            else
+            {
+                n = n * 3 + 1;
+            }
+            count++;
+        }
+        printf("经过了%d次变换", count);
+    }
+    else
+    {
+        printf("输入必须大于0");
+        return 0;
+    }
+    return 0;
+}
+```
+
+![Alt text](assets/image-c22.png)
+
+
+
 ### 算法题
 
 #### 18软专
@@ -1117,7 +1157,76 @@ Lis *Merge(Lis *head1, Lis *head2)
 
 ![Alt text](assets/image-c20.png)
 
-> 使用深度优先搜索, 将
+> 使用深度优先搜索, 将路径全部遍历出来,在存进二维数组里
+
+```c
+// 边表
+typedef struct ArcNode
+{
+    int adjvex; // 节点值
+    int info;   // 边值
+    ArcNode *next;
+} Arcnode;
+
+// 顶点表
+typedef struct VNode
+{
+    int data;
+    struct ArcNode *first;
+} VNode;
+
+type struct
+{
+    VNode adjlist[maxnum];
+    int n, e; // 顶点数和边数
+} AGraph;
+
+//@parma index
+void dfs(AGraph *g, int u, int v, int **result, int *size, int **num, int *path, int *visited, int index)
+{
+    path[index] = u;
+    if (u == v)
+    {
+        result[*size] = (int *)malloc(sizeof(int) * (index) + 1);
+        num[*size] = index + 1;
+        for (int i = 0; i <= index; i++)
+        {
+            result[*size][i] = path[i];
+        }
+        (*size)++; // 结果路径的数目
+
+        return;
+    }
+
+    ArcNode *p = g->adjlist[u];
+
+    while (p)
+    {
+        if (visited[p - adjvex] == 0)
+        {
+            visited[p->adjvex] = 1;
+            dfs(g, p, v, result, size, num, path, visited, index + 1);
+            visited[p->adjvex] = 0;
+        }
+        p = p->next;
+    }
+}
+
+int **FindAllPath(AGraph *g, int u, int v, int *size, int **num)
+{
+    int **result = (int **)malloc(sizeof(int *) * maxnum); // 结果数组
+    *num = (int *)malloc(sizeof(int) * maxnum);            // 结果数组的每一行的路径大小;
+    intvisited[g->n], path[maxnum];
+    for (int i = 0; i < g->n; i++)
+    {
+        visited[i] = 0;
+    }
+    *size = 0;
+    visited[u] = 1;
+    dfs(g, u, v, result, size, numpath, visited, 0);
+    return result;
+}
+```
 
 ## PTA
 
