@@ -1060,7 +1060,186 @@ int main()
 
 ![Alt text](assets/image-c22.png)
 
+> 使用哈希表, 记录下s表值, 再把结果存到数组返回就行, 函数返回数组只能返回指针, 动态分配内存
 
+```c
+int *search(char *s, char a[20], int n)
+{
+    int hashtable[255] = {0};
+    int *res = (int *)malloc(sizeof(int) * n);
+
+    int i = 0;
+    while (s[i] != '\0')
+    {
+        hashtable[s[i]]++;
+        i++;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        res[i] = hashtable[a[i]];
+    }
+
+    return res;
+}
+
+int main()
+{
+    char *s = "aaabbbddddeeeeyyy";
+    char a[5] = {'a', 'b', 'c', 'd', 'e'};
+    int *res = search(s, a, 5);
+    for (int i = 0; i < 5; i++)
+    {
+        printf("%d", res[i]);
+    }
+}
+```
+
+![Alt text](assets/image-c23.png)
+
+> 不要想复杂了, 遍历一遍就行了
+
+```c
+int hasSeven(int n)
+{
+    while (n)
+    {
+        if (n % 10 == 7)
+        {
+            return 1;
+        }
+        n = n / 10;
+    }
+}
+
+int main()
+{
+    int n;
+    scanf("%d", &n);
+    if (n < 7)
+        return 0;
+    
+    for(int i = 1; i< n; i++)
+    {
+        if(i % 7 == 0 || hasSeven(i))
+        {
+            printf("%d, ", i);
+        }
+    }
+    return 0;
+}
+```
+
+![Alt text](assets/image-c24.png)
+
+> 遍历二维数组, 每当小于等于0时, 就将该行该列第一个元素置为0;
+> 如果第一行或者第一列有小于等于0元素, 用标志位记录下来, 不然置为0后记不清是否有0了
+
+```c
+void setZero(int a[5][5], int m, int n)
+{
+    bool row0 = false, col0 = false;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (a[i][j] <= 0)
+            {
+                if (i == 0)
+                {
+                    row0 = true;
+                }
+                if (j == 0)
+                {
+                    col0 = true;
+                }
+                a[0][j] = 0;
+                a[i][0] = 0;
+            }
+        }
+    }
+
+    for (int i = 1; i < m; i++)
+    {
+        for (int j = 1; j < n; j++)
+        {
+            if (a[i][0] == 0 || a[0][j] == 0)
+                a[i][j] = 0;
+        }
+        if (col0)
+        {
+            for (int i = 0; i < m; i++)
+            {
+                a[i][0] = 0;
+            }
+        }
+        if (row0)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                a[0][i] = 0;
+            }
+        }
+    }
+}
+```
+
+#### 16软专
+
+![Alt text](assets/image-c25.png)
+
+> 直接排序, 第k大的数就是第m-k个数
+
+```c
+int portition(int a[], int low, int high)
+{
+    int k = a[low];
+    while (low < high)
+    {
+        while (low < high && a[high] > k)
+        {
+            high--;
+        }
+
+        a[low] = a[high];
+
+        while (low < high && a[low] < k)
+        {
+            low++;
+        }
+        a[high] = a[low];
+    }
+    a[high] = k;
+    return high;
+}
+
+void quick_Soct(int a[], int low, int high)
+{
+    if (low < high)
+    {
+        int mid = portition(a, low, high);
+        quick_Soct(a, low, mid - 1);
+        quick_Soct(a, mid + 1, high);
+    }
+}
+
+int main()
+{
+    int a[10] = {19, 2, 39, 4, 59, 6, 79, 8, 9};
+    quick_Soct(a, 0, 9);
+    for (int i = 0; i < 10; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+    printf("%d", a[10 - 2]);
+}
+```
+
+![Alt text](assets/image-c26.png)
+
+![Alt text](assets/image-c27.png)
+
+![Alt text](assets/image-c28.png)
 
 ### 算法题
 
