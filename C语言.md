@@ -1237,9 +1237,224 @@ int main()
 
 ![Alt text](assets/image-c26.png)
 
+> 如果末尾是0, 加一即可
+> 如果末尾是1, 从后往前找到第一个0, 记录其位置并将其置一
+> 然后将其后的元素全置为0
+> 注意边界问题
+
+```c
+void plusOne(int a[], int n)
+{
+    if (a[n - 1] == 0)
+    {
+        a[n - 1] += 1;
+        return;
+    }
+
+    int flag = -1;
+
+    for (int i = n; i >= 0; i--)
+    {
+        if (a[i] == 0)
+        {
+            flag = i;
+            a[i] = 1;
+        }
+    }
+
+    for (int i = n; i > flag; i--)
+    {
+        a[i] = 0;
+    }
+
+    // if(flag == -1) a[0] = 0;
+}
+
+int main()
+{
+    int a[4] = {1, 1, 1, 1};
+    plusOne(a, 4);
+    for (int i = 0; i < 4; i++)
+    {
+        std::cout << a[i] << " ";
+    }
+}
+```
+
 ![Alt text](assets/image-c27.png)
 
+```c
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <memory.h>
+
+#include <iostream>
+
+int *unions(int a[], int an, int b[], int bn, int *size)
+{
+    *size = 0;
+    int maxN = 0;
+    int minN = 0;
+    if (an < bn)
+    {
+        maxN = bn;
+        minN = an;
+    }
+    else
+    {
+        minN = bn;
+        maxN = an;
+    }
+
+    int *res = (int *)malloc(sizeof(int) * maxN);
+
+    for (int i = 0; i < minN; i++)
+    {
+        if (a[i] == 1 || b[i] == 1)
+        {
+            res[i] = 1;
+        }
+        else if (a[i] == 0 && b[i] == 0)
+        {
+            res[i] = 0;
+        }
+        (*size)++;
+    }
+
+    if (bn > an)
+    {
+        for (int i = minN; i < bn; i++)
+        {
+            res[i] = b[i];
+            (*size)++;
+        }
+    }
+    else
+    {
+        for (int i = minN; i < an; i++)
+        {
+            (*size)++;
+            res[i] = a[i];
+        }
+    }
+    return res;
+}
+
+int *intersection(int a[], int an, int b[], int bn, int *size)
+{
+    int minN;
+    *size = 0;
+    if (an < bn)
+    {
+        minN = an;
+    }
+    else
+    {
+        minN = bn;
+    }
+
+    // 结果数组
+    int *res = (int *)malloc(sizeof(int) * minN);
+
+    for (int i = 0; i < minN; i++)
+    {
+        if (a[i] == 1 && b[i] == 1)
+        {
+            res[i] = a[i];
+        }
+        else{
+            res[i] = 0;
+        }
+        (*size)++;
+    }
+
+    return res;
+}
+
+int main()
+{
+    int a[9] = {0, 0, 0, 1, 1, 0, 1, 0, 1};
+    int b[7] = {0, 0, 1, 1, 1, 1, 1};
+
+    int *sizeU;
+    int *un = unions(a, 9, b, 7, sizeU);
+    int *sizeI;
+    int *in = intersection(a, 9, b, 7, sizeI);
+    for (int i = 0; i < (*sizeU); i++)
+    {
+        std::cout << un[i] << " ";
+    }
+    for (int i = 0; i < (*sizeI); i++)
+    {
+        std::cout << in[i] << " ";
+    }
+}
+```
+
 ![Alt text](assets/image-c28.png)
+
+```c
+// 开头一定为Y/N/2
+// Y/N 后面肯定是 Y/N/2
+// 2之后一定是y/n/1
+// y/n之后一定是 y/n/1
+// 1之后只能是Y/N/2
+bool idTrue(char *s)
+{
+    if (s[0] != 'Y' && s[0] 'N' && s[0] != '2')
+    {
+        return false;
+    }
+
+    int i = 1;
+    while (s[i] != '\0')
+    {
+        if (s[i] == 'Y' || s[i] == 'N')
+        {
+            if (s[i + 1] != 'Y' && s[i + 1] != 'N' && s[i + 1] != '2')
+                return false;
+        }
+        else if (s[i] == '2')
+        {
+            if (s[i + 1] == '\0')
+            {
+                break;
+            }
+            if (s[i + 1] != 'y' && s[i + 1] != 'n' && s[i + 1] != '1')
+            {
+                return false;
+            }
+        }
+        else if (s[i] == 'y' || s[i] == 'n')
+        {
+            if (s[i + 1] != 'y' && s[i + 1] != 'n' && s[i + 1] != '1')
+                return false;
+        }
+        else if (s[i] == '1')
+        {
+            if (s[i + 1] == '\0')
+            {
+                break;
+            }
+            if (s[i + 1] != 'Y' && s[i + 1] != 'N' && s[i + 1] != '2')
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        i++;
+    }
+    return true;
+}
+```
+
+#### 15软专
+
+
 
 ### 算法题
 

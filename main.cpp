@@ -5,45 +5,62 @@
 
 #include <iostream>
 
-int portition(int a[], int low, int high)
+// 开头一定为Y/N/2
+// Y/N 后面肯定是 Y/N/2
+// 2之后一定是y/n/1
+// y/n之后一定是 y/n/1
+// 1之后只能是Y/N/2
+bool idTrue(char *s)
 {
-    int k = a[low];
-    while (low < high)
+    if (s[0] != 'Y' && s[0] 'N' && s[0] != '2')
     {
-        while (low < high && a[high] > k)
-        {
-            high--;
-        }
-
-        a[low] = a[high];
-
-        while (low < high && a[low] < k)
-        {
-            low++;
-        }
-        a[high] = a[low];
+        return false;
     }
-    a[high] = k;
-    return high;
-}
 
-void quick_Soct(int a[], int low, int high)
-{
-    if (low < high)
+    int i = 1;
+    while (s[i] != '\0')
     {
-        int mid = portition(a, low, high);
-        quick_Soct(a, low, mid - 1);
-        quick_Soct(a, mid + 1, high);
+        if (s[i] == 'Y' || s[i] == 'N')
+        {
+            if (s[i + 1] != 'Y' && s[i + 1] != 'N' && s[i + 1] != '2')
+                return false;
+        }
+        else if (s[i] == '2')
+        {
+            if (s[i + 1] == '\0')
+            {
+                break;
+            }
+            if (s[i + 1] != 'y' && s[i + 1] != 'n' && s[i + 1] != '1')
+            {
+                return false;
+            }
+        }
+        else if (s[i] == 'y' || s[i] == 'n')
+        {
+            if (s[i + 1] != 'y' && s[i + 1] != 'n' && s[i + 1] != '1')
+                return false;
+        }
+        else if (s[i] == '1')
+        {
+            if (s[i + 1] == '\0')
+            {
+                break;
+            }
+            if (s[i + 1] != 'Y' && s[i + 1] != 'N' && s[i + 1] != '2')
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        i++;
     }
+    return true;
 }
 
 int main()
 {
-    int a[10] = {19, 2, 39, 4, 59, 6, 79, 8, 9};
-    quick_Soct(a, 0, 9);
-    for (int i = 0; i < 10; i++)
-    {
-        std::cout << a[i] << " ";
-    }
-    printf("%d", a[10 - 2]);
 }
