@@ -7042,6 +7042,44 @@ public:
 
 ### 排列问题
 
+### 子集问题
+
+#### 子集
+
+[子集](https://leetcode.cn/problems/subsets/description/)
+
+![Alt text](assets/image-59.png)
+
+> 那么组合问题和分割问题都是收集树的叶子节点，而子集问题是找树的所有节点！
+
+```c++
+// 子集
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> row;
+
+    void backTracing(vector<int> &nums, int startIndex)
+    {
+        result.push_back(row);
+
+        for (int i = startIndex; i < nums.size(); i++)
+        {
+            row.push_back(nums[i]);
+            backTracing(nums, i + 1);
+            row.pop_back();
+        }
+    }
+
+    vector<vector<int>> subsets(vector<int> &nums)
+    {
+        backTracing(nums, 0);
+        return result;
+    }
+};
+```
+
 ## 贪心
 
 - 将问题分解为若干个子问题

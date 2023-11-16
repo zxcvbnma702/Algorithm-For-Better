@@ -246,3 +246,29 @@ public:
         return result;
     }
 };
+
+// 子集
+class Solution
+{
+public:
+    vector<vector<int>> result;
+    vector<int> row;
+
+    void backTracing(vector<int> &nums, int startIndex)
+    {
+        result.push_back(row);
+
+        for (int i = startIndex; i < nums.size(); i++)
+        {
+            row.push_back(nums[i]);
+            backTracing(nums, i + 1);
+            row.pop_back();
+        }
+    }
+
+    vector<vector<int>> subsets(vector<int> &nums)
+    {
+        backTracing(nums, 0);
+        return result;
+    }
+};

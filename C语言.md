@@ -1454,7 +1454,374 @@ bool idTrue(char *s)
 
 #### 15软专
 
+![Alt text](assets/image-c29.png)
 
+> 哈希一遍就行
+> 注意表初始化0
+
+```c
+void CountChar(char *s)
+{
+    int i = 0;
+    int count = 0;
+
+    int hashtable[26] = {0};
+
+    while (s[i] != '\0')
+    {
+        if (s[i] >= 'a' && s[i] <= 'z')
+        {
+            hashtable[s[i] - 'a']++;
+        }
+        i++;
+    }
+
+    for (int i = 0; i < 26; i++)
+    {
+        printf("%c has %d ", i + 'a', hashtable[i]);
+    }
+}
+
+int main()
+{
+    char *s = "abcdefgghijklmnopqrstuvwx";
+    CountChar(s);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c30.png)
+
+```c
+void check(char *s)
+{
+    int i = 0;
+    int sum = 0;
+
+    while (s[i] != '\0')
+    {
+        if (s[i] >= '0' && s[i] <= '9')
+        {
+            sum = sum * 10 + s[i] - '0';
+        }
+        else
+        {
+            printf("Wrong");
+            return;
+        }
+        i++;
+    }
+
+    printf("%d", sum);
+}
+
+int main()
+{
+    char *s = "20Y14";
+    check(s);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c31.png)
+
+```c
+void curb(int n)
+{
+    n = 10;
+    int l = 0, r = n - 1, t = 0, b = n - 1;
+    int count = 1;
+    int a[n][n];
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            a[i][j] = 0;
+        }
+    }
+
+    while (count <= n * n)
+    {
+        for (int i = l; i <= r; i++)
+        {
+            a[t][i] = count;
+            count++;
+        }
+        t++;
+        for (int i = t; i <= b; i++)
+        {
+            a[i][r] = count;
+            count++;
+        }
+        r--;
+        for (int i = r; i >= l; i--)
+        {
+            a[b][i] = count;
+            count++;
+        }
+        b--;
+        for (int i = b; i >= t; i--)
+        {
+            a[i][l] = count;
+            count++;
+        }
+        l++;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%d ", a[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main()
+{
+    curb(10);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c32.png)
+
+```c
+void dfs(int A[], int n, int **res, int *size,
+         int **num, int path[], int pathSize, int start, int M)
+{
+    if (pathSize == M)
+    {
+        // 二位数组分配内存
+        res[*size] = (int *)malloc(sizeof(int) * pathSize);
+        // 用一个二维数组将对应的行path的大小存下来
+        (*num)[*size] = pathSize;
+        // 将path存到res里
+        for (int i = 0; i < pathSize; i++)
+        {
+            res[*size][i] = path[i];
+        }
+        // 将二位数组行指针下移
+        (*size)++;
+        return;
+    }
+
+    for (int i = start; i < n; i++)
+    {
+        path[pathSize] = A[i];
+        dfs(A, n, res, size, num, path, pathSize + 1, i + 1, M);
+    }
+}
+
+int **subset(int A[], int n, int *size, int **num, int M)
+{
+    int **res = (int **)malloc(sizeof(int *) * 100);
+    *num = (int *)malloc(sizeof(int) * 100);
+    int path[n];
+    *size = 0;
+    dfs(A, n, res, size, num, path, 0, 0, M);
+    return res;
+}
+
+int main()
+{
+    int A[4] = {1, 2, 3, 4};
+    int n;
+    int *num;
+    int *size;
+    int **result = subset(A, 4, size, &num, 2);
+    for (int i = 0; i < *size; i++)
+    {
+        for (int j = 0; j < num[i]; j++)
+        {
+            printf("%d ", result[i][j]);
+        }
+        printf("\n");
+    }
+}
+```
+
+#### 14软专
+
+![Alt text](assets/image-c33.png)
+
+```c
+bool IsPrime(int n)
+{
+    if(n <= 1)
+    {
+        return false;
+    }
+    for(int i = 2; i< n; i++)
+    {
+        if(n%i == 0)
+        {
+            return false;
+        } 
+    }
+    return true;
+}
+
+void Find(int n)
+{
+    for(int i = 2; i<n;i++ )
+    {
+        if(IsPrime(i) && IsPrime(n-i))
+        {
+            printf("%d = %d + %d", n, i, n-i);
+            break;
+        }
+    }
+
+}
+
+int main()
+{
+    Find(16);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c34.png)
+
+```c
+typedef struct Point
+{
+    int x, y;
+} Point;
+
+double dist(Point a, Point b)
+{
+    return (double)sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+double Area(Point a, Point b, Point c)
+{
+    double ab = dist(a, b);
+    double bc = dist(b, c);
+    double ac = dist(a, c);
+
+    double h = (ab + bc + ac) / 2;
+
+    return (double)sqrt(h * (h - ab) * (h - ac) * (h - bc));
+}
+
+void Cheek()
+{
+    Point a, b, c, d;
+    scanf("%d %d", &a.x, &a.y);
+    scanf("%d %d", &b.x, &b.y);
+    scanf("%d %d", &c.x, &c.y);
+    scanf("%d %d", &d.x, &d.y);
+
+    double abc = Area(a, b, c);
+    double abd = Area(a, b, d);
+    double bcd = Area(b, d, c);
+    double acd = Area(a, c, d);
+
+    if (abc == abd + acd + bcd)
+    {
+        printf("Yes");
+    }
+    else
+    {
+        printf("No");
+    }
+}
+
+int main()
+{
+    Cheek();
+    return 0;
+}
+```
+
+![Alt text](assets/image-c35.png)
+
+> 将a数组的第i位于b数组的第j位相乘的结果存到c数组的第i+j位
+> 将c数组中大于等于10的数的个位留存, 十位往上加到第i+1位上去
+
+```c
+void mul(int a[], int an, int b[], int bn, int c[100], int *k)
+{
+    for (int i = 0; i < 100; i++)
+        c[i] = 0;
+    for (int i = 0; i < an; i++)
+    {
+        for (int j = 0; j < bn; j++)
+        {
+            c[i + j] += a[i] * b[i];
+        }
+    }
+
+    for (int i = 0; i < 100; i++)
+    {
+        if (c[i] >= 10)
+        {
+            c[i + 1] += c[i] / 10;
+            c[i] = c[i] % 10;
+        }
+
+        if (c[i] != 0)
+        {
+            *k = i;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c36.png)
+
+```c
+typedef struct Point
+{
+    int x, y;
+} Point;
+
+double dist(Point a, Point b)
+{
+    return (double)sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+double Area(Point a, Point b, Point c)
+{
+    double ab = dist(a, b);
+    double bc = dist(b, c);
+    double ac = dist(a, c);
+
+    double h = (ab + bc + ac) / 2;
+
+    return (double)sqrt(h * (h - ab) * (h - ac) * (h - bc));
+}
+
+double MaxArea()
+{
+    int n = 100;
+    double maxArea = 0;
+    Point[100];
+    for(int i =0 ; i< n; i++)
+    {
+        scanf("%d %d", &(Point[i].x), &(Point[i].y));
+    }
+
+    for(int i = 0; i< n; i++)
+    {
+        for(int j = 0; j < n; j++)
+        {
+            for(int k = 0; k< n; k++)
+            {
+                if(maxArea < Area(Point[i], Point[j], Point[k]))
+                {
+                    maxArea = Area(Point[i], Point[j], Point[k]);
+                }
+            }
+        }
+    }
+    return maxArea;
+}
+```
 
 ### 算法题
 
