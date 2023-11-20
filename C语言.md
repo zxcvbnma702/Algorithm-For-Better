@@ -1823,6 +1823,346 @@ double MaxArea()
 }
 ```
 
+#### 13软专
+
+![Alt text](assets/image-c37.png)
+
+```c
+int main(void)
+{
+    double sum, t, x;
+    int i;
+
+    scanf("%lf", &x);
+
+    sum = x;
+    i = 1;
+    t = x;
+    while (fabs(t) >= 1e-8)
+    {
+        t = -x * x * t / ((2 * i + 1) * (i * 2));
+        sum = sum + t;
+        i++;
+    }
+    printf("%f\n", sum);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c38.png)
+
+```c
+void bubleSort(int a[], int n)
+{
+    bool flag = true;
+    while (flag)
+    {
+        flag = false;
+        for (int i = 0; i < n - 1; i++)
+        {
+            if (a[i] > a[i + 1])
+            {
+                flag = true;
+                int temp = a[i];
+                a[i] = a[i + 1];
+                a[i + 1] = temp;
+            }
+        }
+    }
+    return;
+}
+
+void sumUp()
+{
+    int score[10];
+    for (int i = 0; i < 10; i++)
+    {
+        scanf("%d", &score[i]);
+    }
+
+    bubleSort(score, 10);
+
+    int sum = 0;
+    for (int i = 1; i < 9; i++)
+    {
+        sum += score[i];
+    }
+    printf("%d", sum / 8);
+}
+
+int main(void)
+{
+    sumUp();
+    return 0;
+}
+```
+
+![Alt text](assets/image-c39.png)
+
+```c
+int main()
+{
+    int n;
+    scanf("%d", &n);
+
+    for (int i = 2; i < n; i++)
+    {
+        while (i != n)
+        {
+            if (n % i == 0)
+            {
+                printf("%d * ", i);
+                n = n / i;
+            }
+            else
+                break;
+        }
+    }
+
+    printf("%d", n);
+
+    return 0;
+}
+```
+
+![Alt text](assets/image-c40.png)
+
+> 法雷序列
+> 首尾为0/1 1/1 中间元素就是 1/2
+
+```c
+
+typedef struct LinkedNode
+{
+    int up, down;
+    LinkedNode *next;
+} LinkNode;
+
+void tracing(LinkNode *a, LinkNode *b, int n)
+{
+    if (a->down + b->down > n)
+        return;
+
+    LinkNode *p = (LinkNode *)malloc(sizeof(LinkedNode));
+
+    p->up = a->up + b->up;
+    p->down = a->down + b->down;
+
+    a->next = p;
+    p->next = b;
+
+    tracing(a, p, n);
+    tracing(p, b, n);
+    return;
+}
+
+void Create()
+{
+    int n;
+    scanf("%d", &n);
+
+    LinkNode *head = (LinkNode *)malloc(sizeof(LinkedNode));
+    head->up = 0;
+    head->down = 1;
+
+    LinkNode *tail = (LinkNode *)malloc(sizeof(LinkedNode));
+    tail->up = 1;
+    tail->down = 1;
+
+    head->next = tail;
+    tracing(head, tail, n);
+
+    LinkNode *p = head->next;
+    while (p !=tail)
+    {
+        printf("%d/%d ", p->up, p->down);
+        p = p->next;
+    }
+}
+
+int main()
+{
+    Create();
+}
+```
+
+#### 12软专
+
+![Alt text](assets/image-c41.png)
+
+```c
+void ttoe()
+{
+    int n;
+    scanf("%d", &n);
+    int a[99] = {0};
+
+    int i = 0;
+    while (n)
+    {
+        a[i++] = n % 8;
+        n = n / 8;
+    }
+
+    for (int j = i - 1; j >= 0; j--)
+    {
+        printf("%d", a[j]);
+    }
+}
+
+int main()
+{
+    ttoe();
+}
+```
+
+![Alt text](assets/image-c42.png)
+
+> 注意化简分数要除以最大公因数
+> 分数用结构体储存
+
+```c
+typedef struct Fn
+{
+    int up, down;
+    Fn *next;
+} LinkNode;
+
+int gcd(int a, int b)
+{
+    if (b == 0)
+    {
+        return a;
+    }
+    else
+    {
+        return gcd(b, a % b);
+    }
+}
+
+void bubble(LinkNode a[], int n)
+{
+    for (int i = n - 1; i > 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (1.0 * a[j].up / a[j].down > 1.0 * a[j].up / a[j].down)
+            {
+                LinkNode p = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = p;
+            }
+        }
+    }
+}
+
+void simply()
+{
+    LinkNode a[100];
+
+    for (int i = 0; i < 100; i++)
+    {
+        scanf("%d %d", &a[i].up, &a[i].down);
+    }
+
+    for (int i = 0; i < 100; i++)
+    {
+        int gcds = gcd(a[i].up, a[i].down);
+        a[i].up /= gcds;
+        a[i].down /= gcds;
+    }
+
+    bubble(a, 100);
+
+    for (int i = 0; i < 100; i++)
+    {
+        printf("%d %d", a[i].up, a[i].down);
+    }
+}
+
+int main()
+{
+    simply();
+}
+```
+
+![Alt text](assets/image-c43.png)
+
+> 使用哈希表
+
+```c
+bool IsTrue(char *s)
+{
+    int hashtable[26] = {0};
+    int i = 0;
+    while (s[i] != '\0')
+    {
+        hashtable[s[i] - 'a']++;
+        i++;
+    }
+
+    for (int i = 4; i < 26; i++)
+    {
+        if (hashtable[i] > 0)
+        {
+            return false;
+        }
+    }
+
+    if (hashtable[0] > 0 && hashtable[3] > 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+int main()
+{
+    char *s = "bbbiidd";
+    if (IsTrue(s))
+    {
+        printf("Y");
+    }
+    else
+    {
+        printf("N");
+    }
+    return 0;
+}
+```
+
+![Alt text](assets/image-c44.png)
+
+> 前缀转后缀, 运算符号入栈, 左括号和其他数字直接输出, 遇到右括号输出并出一次栈
+
+```c
+void IntoPost()
+{
+    char s[50];
+    scanf("%s", s);
+    char stack[40];
+    int top = -1, i = 0;
+    while (s[i] != '\0')
+    {
+        if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/')
+        {
+            stack[++top] = s[i];
+        }
+        else if (s[i] == ')')
+        {
+            printf(")");
+            printf("%c", stack[top--]);
+        }
+        else
+        {
+            printf("%c", s[i]);
+        }
+        i++;
+    }
+}
+```
+
 ### 算法题
 
 #### 18软专
@@ -1986,6 +2326,264 @@ int **FindAllPath(AGraph *g, int u, int v, int *size, int **num)
     visited[u] = 1;
     dfs(g, u, v, result, size, numpath, visited, 0);
     return result;
+}
+```
+
+#### 14软专
+
+![Alt text](assets/image-c48.png)
+
+> 使用栈进行存储节点, 然后出栈序列就是题目所要求的
+> 注意操作上还是需要队列来进行层序遍历然后取节点加入栈中, 因为直接只用栈无法实现要求操作,在人脑中倒可以
+
+```c
+typedef struct TreeNode
+{
+    int val;
+    TreeNode *left, *right;
+} TreeNode;
+
+void InvertLevelOrder(TreeNode *root)
+{
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+    int front = -1, rear = -1;
+    TreeNode **stack = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+    in top = -1;
+
+    queue[++rear] = root;
+    while (front != rear)
+    {
+        TreeNode *p = queue[++front];
+        stack[++top] = p;
+        if (p->left != NULL)
+        {
+            queue[++rear] = p->left;
+        }
+        if (p->right != NULL)
+        {
+            queue[++rear] = p->right;
+        }
+    }
+
+    while (top != -1)
+    {
+        printf("%d", stack[top--]->val);
+    }
+}
+```
+
+![Alt text](assets/image-c49.png)
+
+```c
+typedef struct TreeNode
+{
+    int val;
+    TreeNode *left, *right;
+} TreeNode;
+
+int IsBanlanceTree(TreeNode *root)
+{
+    if (root->left == NULL && root->right == NULL)
+        return 0;
+
+    int left = IsBanlanceTree(root->left);
+    int right = IsBanlanceTree(root->right);
+
+    if (left == -1 || right == -1)
+    {
+        return -1;
+    }
+
+    if (abs(left - right) > 1)
+    {
+        return -1;
+    }
+
+    return max(left, right) + 1;
+}
+```
+
+#### 13软专
+
+![Alt text](assets/image-c46.png)
+
+```c
+void binSort(int a[], int n, int target)
+{
+    int low = 0, high = n - 1;
+
+    while (low <= high)
+    {
+        int mid = low + ((high - low) / 2);
+        if (a[mid] > target)
+        {
+            high = mid - 1;
+        }
+        else if (a[mid] < target)
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            for (int i = mid; i < n - 1; i++)
+            {
+                a[i] = a[i + 1];
+            }
+        }
+    }
+}
+
+int main()
+{
+    int a[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    binSort(a, 9, 4);
+    for (int i = 0; i < 9; i++)
+    {
+        printf("%d", a[i]);
+    }
+}
+```
+
+![Alt text](assets/image-c47.png)
+
+```c
+typedef struct LinkNode
+{
+    int val;
+    LinkNode *next;
+} LinkNode;
+
+// 合并过程就是将链表按从小到大的顺序合并
+LinkNode *Merge(LinkNode *head1, LinkNode *head2)
+{
+    LinkNode *dummyHead = (LinkNode *)malloc(sizeof(LinkNode));
+    LinkNode *rear = dummyHead;
+
+    while (head1 != NULL && head2 != NULL)
+    {
+        if (head1->val > head2->val)
+        {
+            rear->next = head2;
+            rear = rear->next;
+            head2 = head2->next;
+        }
+        else
+        {
+            rear->next = head1;
+            rear = rear->next;
+            head1 = head1->next;
+        }
+    }
+    if (head1 != NULL)
+    {
+        rear->next = head1;
+    }
+    else
+    {
+        rear->next = head2;
+    }
+    return dummyHead->next;
+}
+
+LinkNode *mergeSort(LinkNode *head)
+{
+    if (head->next == NULL)
+        return head;
+    LinkNode *slow = head, *fast = head;
+    LinkNode *midbefore = slow;
+
+    // 快指针走两步, 慢指针走一步, 慢指针就指向了中点
+    while (fast != NULL && fast->next != NULL)
+    {
+        midbefore = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    midbefore->next = NULL;
+    LinkNode *left = mergeSort(head);
+    LinkNode *right = mergeSort(slow);
+    return Merge(left, right);
+}
+
+int main()
+{
+    int a[10] = {49, 38, 65, 97, 76, 13, 27};
+    int n = 7;
+    LinkNode *head = (LinkNode *)malloc(sizeof(LinkNode));
+    LinkNode *tail = head;
+    for (int i = 0; i < n; i++)
+    {
+        LinkNode *tmp = (LinkNode *)malloc(sizeof(LinkNode));
+        tmp->val = a[i];
+        tail->next = tmp;
+        tail = tmp;
+    }
+    tail->next = NULL;
+    printf("排序前：\n");
+    for (LinkNode *it = head->next; it != NULL; it = it->next)
+    {
+        printf("%d ", it->val);
+    }
+    printf("\n\n");
+
+    head->next = mergeSort(head->next);
+
+    printf("排序后：\n");
+    for (LinkNode *it = head->next; it != NULL; it = it->next)
+    {
+        printf("%d ", it->val);
+    }
+    return 0;
+}
+```
+
+#### 12软专
+
+> 进行层序遍历,从队列里取节点时,当一个节点为空时,将标志位置为真,然后若队列中还有节点那么就不是完全二叉树.
+> 当队列取值时遇到空节点, 就意味着之后若队列为空, 就是完全二叉树
+> 反之不为空, 就说明不是完全二叉树
+
+![Alt text](assets/image-c45.png)
+
+```c
+typedef struct TreeNode
+{
+    int val;
+    struct TreeNode *left, *right;
+} TreeNode;
+
+vool IsCompleteTree(TreeNode *root)
+{
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode) * 100);
+
+    int rear = -1. front = -1;
+
+    bool flag = false;
+
+    queue[++rear] = false;
+
+    while (front != rear)
+    {
+        TreeNode *p = queue[++front];
+        if (p != NULL)
+        {
+            if (flag == true)
+            {
+                return false;
+            }
+            else
+            {
+                queue[++rear] = p->left;
+                queue[++rear] = p->right;
+            }
+        }
+        else
+        {
+            flag = true;
+        }
+    }
+    return true;
 }
 ```
 
