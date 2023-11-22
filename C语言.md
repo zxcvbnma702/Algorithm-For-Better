@@ -2329,6 +2329,277 @@ int **FindAllPath(AGraph *g, int u, int v, int *size, int **num)
 }
 ```
 
+#### 17软专
+
+![Alt text](assets/image-c54.png)
+
+```c
+typedef struct TreeNode
+{
+    int val;
+    TreeNode *left, *right;
+} TreeNode;
+
+void traverse(TreeNode *root, int level)
+{
+    if (root)
+    {
+        printf("%d %d", level, root->val);
+        traverse(root->left, level + 1);
+        traverse(root->right, level + 1);
+    }
+}
+```
+
+![Alt text](assets/image-c55.png)
+
+```c
+typedef struct DLinkNode
+{
+    DLinkNode *LLink;
+    DLinkNode *RLink;
+    int Data;
+    int Freq;
+} DLinkNode;
+
+void Locate(DLinkNode l, int x)
+{
+    DLinkNode *p = l->RLink;
+    while (p != NULL && p->Data != x)
+    {
+        p = p->RLink;
+    }
+    if (p != NULL)
+    {
+        p - > Freq++;
+    }
+
+    DLinkNode *q = p;
+    while (q ! = l && q->Freq < p->Freq)
+    {
+        q = q->LLink;
+    }
+    if (q != l)
+    {
+        p->LLink->RLink = p->RLink;
+        p->RLink->LLink = p->LLink;
+
+        p->LLink = q;
+        p->RLink = q->RLink;
+        q->RLink = p;
+        p->RLink->LLink = p;
+    }
+}
+```
+
+#### 16软专
+
+![Alt text](assets/image-c52.png)
+
+```c
+typedef struct TreeNode
+{
+    int val;
+    TreeNode *left, *right;
+} TreeNode;
+
+int IsPerfect(TreeNode *root)
+{
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode *));
+    int front = -1, rear = -1;
+    queue[++rear] = root;
+    bool flag = 0;
+    while (front != rear)
+    {
+        TreeNode *node = queue[++front];
+        if (node != NULL)
+        {
+            if (flag == 1)
+            {
+                return 0;
+            }
+            else
+            {
+                queue[++rear] = node->left;
+                queue[++rear] = node->right;
+            }
+        }
+        else
+        {
+            flag = 1;
+        }
+    }
+    return 1;
+}
+```
+
+![Alt text](assets/image-c53.png)
+
+```c
+typedef struct EdgeNode
+{
+    int val;
+    int edge;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct HeadNode
+{
+    int val;
+    EdgeNode *first
+} HeadNode;
+
+typedef struct AGraph
+{
+    HeadNode adj[100];
+    int n, e;
+} AGraph;
+
+bool hasCycle = false;
+
+void traverse(AGraph *g, int start, int visited[], int onPath[], int preorder[], int *preorderSize)
+{
+    if (onPath[start])
+    {
+        hasCycle = true;
+    }
+
+    if (hasCycle || visited[start])
+    {
+        return;
+    }
+
+    visited[start] = 1;
+    onPath[start] = 1;
+
+    EdgeNode *p = g->adj[start].first;
+    while (p)
+    {
+        dfs(g, p->val, visited, onPath, preorder, preorderSize);
+    }
+
+    preorder[(*preorderSize)++] = start;
+    onPath[start] = 0;
+}
+
+void TPSort(AGraph *g)
+{
+    // 判断节点是否被递归过
+    int visited[g->n] = {0};
+    // 保存路径上的节点
+    int onPath[g->n] = {0};
+    // 后序数组
+    int preorder[g->n] = {0};
+
+    int *preorderSize = 0;
+
+    traverse(g, 0, visited, onPath, preorder, preorderSize);
+
+    if (hasCycle)
+    {
+        printf("wu");
+    }
+
+    int i = 0, j = (*preorderSize) - 1;
+    while (i < j)
+    {
+        int temp = preorder[i];
+        preorder[i] = preorder[j];
+        preorder[j] = temp;
+
+        i++;
+        j--;
+    }
+}
+
+```
+
+#### 15软专
+
+![Alt text](assets/image-c50.png)
+
+```c
+typedef struct ENode
+{
+    int val;
+    int edge;
+    ENode *next;
+} ENode;
+
+typedef struct ANode
+{
+    int val;
+    ENode *first;
+}
+
+typedef struct
+{
+    ANode adj[100];
+    int e, n;
+} AGraph;
+
+void Dfs(AGraph *g, int v, int *countvnum, int *countenum, int visited[])
+{
+    visited[v] = 1;
+    (*countvnum)++;
+    ENode *p = g->adj[v]->first;
+    while (p)
+    {
+        (*countenum)++;
+        if (visited[p->val] == 0)
+        {
+            Dfs(g, p->val, countvnum, countenum, visited);
+        }
+        p = p->next;
+    }
+}
+
+bool isTree(AGraph *g)
+{
+    int visited[g->n] = {0};
+    int countvnum, countenum = 0;
+    Dfs(g, 0, &countvnum, &countenum, visited);
+    if (countvnum == g->n && countenum == (g->n - 1) * 2)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+```
+
+![Alt text](assets/image-c51.png)
+
+> 双指针, 左边循环找偶数, 右边循环找奇数,找到后互换, 直到i jx相遇
+
+```c
+void partion(int s[], int n)
+{
+    int low = 0, high - n - 1;
+    while (i < j)
+    {
+        while (a[i] % 2 == 0 && i < j)
+        {
+            i++;
+        }
+
+        while (a[j] % 2 != 0 && i < j)
+        {
+            j--;
+        }
+
+        if (i < j)
+        {
+            int temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+        }
+    }
+}
+```
+
 #### 14软专
 
 ![Alt text](assets/image-c48.png)

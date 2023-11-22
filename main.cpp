@@ -5,29 +5,39 @@
 
 #include <iostream>
 
-typedef struct TreeNode
+typedef struct DLinkNode
 {
-    int val;
-    TreeNode *left, *right;
-} TreeNode;
+    DLinkNode *LLink;
+    DLinkNode *RLink;
+    int Data;
+    int Freq;
+} DLinkNode;
 
-int IsBanlanceTree(TreeNode *root)
+void Locate(DLinkNode l, int x)
 {
-    if (root->left == NULL && root->right == NULL)
-        return 0;
-
-    int left = IsBanlanceTree(root->left);
-    int right = IsBanlanceTree(root->right);
-
-    if (left == -1 || right == -1)
+    DLinkNode *p = l->RLink;
+    while (p != NULL && p->Data != x)
     {
-        return -1;
+        p = p->RLink;
+    }
+    if (p != NULL)
+    {
+        p - > Freq++;
     }
 
-    if (abs(left - right) > 1)
+    DLinkNode *q = p;
+    while (q ! = l && q->Freq < p->Freq)
     {
-        return -1;
+        q = q->LLink;
     }
+    if (q != l)
+    {
+        p->LLink->RLink = p->RLink;
+        p->RLink->LLink = p->LLink;
 
-    return max(left, right) + 1;
+        p->LLink = q;
+        p->RLink = q->RLink;
+        q->RLink = p;
+        p->RLink->LLink = p;
+    }
 }
