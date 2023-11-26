@@ -5,39 +5,60 @@
 
 #include <iostream>
 
-typedef struct DLinkNode
+typedef struct Point
 {
-    DLinkNode *LLink;
-    DLinkNode *RLink;
-    int Data;
-    int Freq;
-} DLinkNode;
+    int x, int y;
+} Point;
 
-void Locate(DLinkNode l, int x)
+double dist(Point x, Point y)
 {
-    DLinkNode *p = l->RLink;
-    while (p != NULL && p->Data != x)
+    return sqrt((x.x - y.x) * (x.x - y.x) + (y.y - x.y) * (y.y - x.y));
+}
+
+double square(Point a, Point b, Point c)
+{
+    double e1 = dist(a, b);
+    double e2 = dist(a, c);
+    double e3 = dist(b, c);
+
+    double s = (e1 + e2 + e2) / 2;
+
+    return sqrt(s * (s - e1) * (s - e2) * (s - e3));
+}
+
+void maxTrangle(int ax[], int ay[], int n)
+{
+    Point ps[n];
+    for (int i = 0; i < n; i++)
     {
-        p = p->RLink;
-    }
-    if (p != NULL)
-    {
-        p - > Freq++;
+        ps[i].x = ax[i];
+        ps[i].y = ay[i];
     }
 
-    DLinkNode *q = p;
-    while (q ! = l && q->Freq < p->Freq)
-    {
-        q = q->LLink;
-    }
-    if (q != l)
-    {
-        p->LLink->RLink = p->RLink;
-        p->RLink->LLink = p->LLink;
+    double maxArea = 0;
+    Point maxPoint[3];
 
-        p->LLink = q;
-        p->RLink = q->RLink;
-        q->RLink = p;
-        p->RLink->LLink = p;
+    for (int i = 0; i < 98; i++)
+    {
+        for (int j = i + 1; j < 99; j++)
+        {
+            for (int k = j + 1; k < 100; k++)
+            {
+                int sq = square(ps[i], ps[j], ps[k]);
+                if (sq > maxArea)
+                {
+                    maxArea = sq;
+                    maxPoint[0] = ps[i];
+                    maxPoint[1] = ps[j];
+                    maxPoint[2] = ps[k];
+                }
+            }
+        }
+    }
+
+    printf("%lf", maxArea);
+    for (int i = 0; i < 3; i++)
+    {
+        printf("%d %d\n", maxPoint[i].x, maxPoint[i].y);
     }
 }

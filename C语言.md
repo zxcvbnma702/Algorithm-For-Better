@@ -1022,6 +1022,180 @@ void distance_k(int a[10][10], int n, int i, int k)
 }
 ```
 
+#### 18计专
+
+![Alt text](assets/image-c56.png)
+
+```c
+int main()
+{
+    int jw = 5;
+    int jm = 3;
+    int jc = 1 / 3;
+
+    for (int i = 0; i <= 20; i++)
+    {
+        for (int j = 0; j <= 33; j++)
+        {
+            for (int n = 0; n < 300; n++)
+            {
+                if (jw * i + jm * j + jc * n == 100 && n % 3 == 0)
+                {
+                    printf("%d %d %d \n", i, j, n);
+                }
+            }
+        }
+    }
+    return 0;
+}
+```
+
+![Alt text](assets/image-c57.png)
+
+```c
+int jc(int n)
+{
+    if (n == 0 || n == 1)
+    {
+        return 1;
+    }
+
+    if (n < 0)
+    {
+        return NULL;
+    }
+
+    return n * jc(n - 1);
+}
+
+double traverse(int n)
+{
+    if (n == 0)
+    {
+        return 0;
+    }
+
+    return (traverse(n - 1) + (n / (n + 1) * jc(n + 2))) * 1.00;
+}
+```
+
+![Alt text](assets/image-c58.png)
+
+```c
+void mASort(int a[], int n)
+{
+    for (int i = n - 1; i > 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (a[j] > a[j + 1])
+            {
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            }
+        }
+    }
+}
+
+bool kblk(int n)
+{
+    if (n == 6174)
+    {
+        return true;
+    }
+
+    int a[4] = {0};
+    for (int i = 0; i < 4; i++)
+    {
+        a[i] = n % 10;
+        n = n / 10;
+    }
+    mASort(a, 4);
+
+    int minValue = 0;
+    int maxVlaue = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        minValue = minValue * 10 + a[i];
+        maxVlaue = maxVlaue * 10 + a[3 - i];
+    }
+
+    int res = maxVlaue - minValue;
+    printf("%d\n", res);
+    kblk(res);
+    return false;
+}
+
+int main()
+{
+    kblk(9998);
+    return 0;
+};
+```
+
+![Alt text](assets/image-c59.png)
+
+```c
+typedef struct Point
+{
+    int x, int y;
+} Point;
+
+double dist(Point x, Point y)
+{
+    return sqrt((x.x - y.x) * (x.x - y.x) + (y.y - x.y) * (y.y - x.y));
+}
+
+double square(Point a, Point b, Point c)
+{
+    double e1 = dist(a, b);
+    double e2 = dist(a, c);
+    double e3 = dist(b, c);
+
+    double s = (e1 + e2 + e2) / 2;
+
+    return sqrt(s * (s - e1) * (s - e2) * (s - e3));
+}
+
+void maxTrangle(int ax[], int ay[], int n)
+{
+    Point ps[n];
+    for (int i = 0; i < n; i++)
+    {
+        ps[i].x = ax[i];
+        ps[i].y = ay[i];
+    }
+
+    double maxArea = 0;
+    Point maxPoint[3];
+
+    for (int i = 0; i < 98; i++)
+    {
+        for (int j = i + 1; j < 99; j++)
+        {
+            for (int k = j + 1; k < 100; k++)
+            {
+                int sq = square(ps[i], ps[j], ps[k]);
+                if (sq > maxArea)
+                {
+                    maxArea = sq;
+                    maxPoint[0] = ps[i];
+                    maxPoint[1] = ps[j];
+                    maxPoint[2] = ps[k];
+                }
+            }
+        }
+    }
+
+    printf("%lf", maxArea);
+    for (int i = 0; i < 3; i++)
+    {
+        printf("%d %d\n", maxPoint[i].x, maxPoint[i].y);
+    }
+}
+```
+
 #### 17软专
 
 ![Alt text](assets/image-c21.png)
