@@ -5,60 +5,63 @@
 
 #include <iostream>
 
-typedef struct Point
+int odds(int s)
 {
-    int x, int y;
-} Point;
-
-double dist(Point x, Point y)
-{
-    return sqrt((x.x - y.x) * (x.x - y.x) + (y.y - x.y) * (y.y - x.y));
 }
 
-double square(Point a, Point b, Point c)
+typedef struct TreeNode
 {
-    double e1 = dist(a, b);
-    double e2 = dist(a, c);
-    double e3 = dist(b, c);
+    int data;
+    TreeNode *left;
+    TreeNode *right;
+} TreeNode;
 
-    double s = (e1 + e2 + e2) / 2;
-
-    return sqrt(s * (s - e1) * (s - e2) * (s - e3));
-}
-
-void maxTrangle(int ax[], int ay[], int n)
+TreeNode *createByS(int s[], int n)
 {
-    Point ps[n];
-    for (int i = 0; i < n; i++)
+    if (n == 0)
     {
-        ps[i].x = ax[i];
-        ps[i].y = ay[i];
+        return NULL;
     }
 
-    double maxArea = 0;
-    Point maxPoint[3];
+    TreeNode *root = (TreeNode *)malloc(sizeof(TreeNode));
+    TreeNode *p = root;
+    int i = 0, top = -1;
 
-    for (int i = 0; i < 98; i++)
+    TreeNode **stack = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+
+    while (p != NULL || top != -1)
     {
-        for (int j = i + 1; j < 99; j++)
+        if (p != NULL)
         {
-            for (int k = j + 1; k < 100; k++)
+            if ([i] == 0)
             {
-                int sq = square(ps[i], ps[j], ps[k]);
-                if (sq > maxArea)
-                {
-                    maxArea = sq;
-                    maxPoint[0] = ps[i];
-                    maxPoint[1] = ps[j];
-                    maxPoint[2] = ps[k];
-                }
+                p->left = NULL;
+                p->right = NULL;
             }
+            else if (s[i] == 1)
+            {
+                TreeNode *temp = (TreeNode *)malloc(sizeof(TreeNode));
+                p->left = temp;
+                p->right = NULL;
+            }
+            else if (s[i] == 2)
+            {
+                TreeNode *temp1 = (TreeNode *)malloc(sizeof(TreeNode));
+                TreeNode *temp2 = (TreeNode *)malloc(sizeof(TreeNode));
+                p->left = temp1;
+                p->right = temp2;
+            }
+
+            stack[++top] = p;
+            p = p->left;
+            i++;
+        }
+        else
+        {
+            p = stack[top--];
+            p = p->right;
         }
     }
 
-    printf("%lf", maxArea);
-    for (int i = 0; i < 3; i++)
-    {
-        printf("%d %d\n", maxPoint[i].x, maxPoint[i].y);
-    }
+    return root;
 }

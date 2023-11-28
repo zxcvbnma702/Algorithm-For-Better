@@ -1358,6 +1358,18 @@ void setZero(int a[5][5], int m, int n)
 }
 ```
 
+#### 17计专
+
+![Alt text](assets/image-c62.png)
+
+
+
+![Alt text](assets/image-c63.png)
+
+![Alt text](assets/image-c64.png)
+
+![Alt text](assets/image-c65.png)
+
 #### 16软专
 
 ![Alt text](assets/image-c25.png)
@@ -2503,6 +2515,126 @@ int **FindAllPath(AGraph *g, int u, int v, int *size, int **num)
 }
 ```
 
+#### 18计专
+
+![Alt text](assets/image-c60.png)
+
+```c
+void sortNP(int a[], int n)
+{
+    int i = 0;
+    int j = n - 1;
+
+    while (i < j)
+    {
+        while (a[i] < 0 && i < j)
+        {
+            i++;
+        }
+        while (a[j] >= 0 && i < j)
+        {
+            j--;
+        }
+
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+
+        i++;
+        j--;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ", a[i]);
+    }
+}
+
+int main()
+{
+    int a[10] = {1, 3, 4, 5, 0, -1, -2, -5, -6};
+    sortNP(a, 10);
+    return 0;
+}
+```
+
+![Alt text](assets/image-c61.png)
+
+> 求两次最短路径,先求得最长的最短路径,再以此顶点为起点再求的最长的最短路径就是直径
+
+```c
+typedef struct EdgeNode
+{
+    int val;
+    int edge;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int val;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    ArcNode adj[100];
+    int pointNum, edgeNum;
+};
+
+int ShortestPath(AGraph *g, int v, int dist[])
+{
+    int *queue = (int *)malloc(sizeof(int) * g->n);
+    int front = -1;
+    int rear = -1;
+
+    for (int i = 0; i < g->n; i++)
+    {
+        dist[i] = -1;
+    }
+    // 起点路径为0
+    dist[v] = 0;
+    queue[++rear] = v;
+    while (front != rear)
+    {
+        int p = queue[++front];
+        EdgeNode *q = g->adj[p].first;
+        while (q != NULL)
+        {
+            if (dist[q->val] == -1)
+            {
+                dist[q->val] += dist[p] + q->edge;
+                queue[++rear] = q;
+            }
+            q = q->next;
+        }
+    }
+
+    int max = 0;
+    for(int i = 0; i< g->n; i++
+    {
+        if (dist[i] > dist[max])
+        {
+            max = i;
+        }
+    }
+
+    // 返回节点
+    return max;
+}
+
+int Diameter(AGraph *g)
+{
+    int dist[g->n];
+    int first = ShortestPath(g, 0, dist);
+    printf("%d", first);
+
+    int last = ShortestPath(g, first, dist);
+    printf("%d", last);
+    return dist[last];
+}
+```
+
 #### 17软专
 
 ![Alt text](assets/image-c54.png)
@@ -2563,6 +2695,90 @@ void Locate(DLinkNode l, int x)
         q->RLink = p;
         p->RLink->LLink = p;
     }
+}
+```
+
+#### 17计专
+
+![Alt text](assets/image-c66.png)
+
+```c
+void insert(int a[], int x, int n)
+{
+    for (int i = n - 1; i > 0; i--)
+    {
+        if (a[i] > x)
+        {
+            a[i + 1] = a[i];
+        }
+        else
+        {
+            a[i] = x;
+            return;
+        }
+    }
+    return;
+}
+```
+
+![Alt text](assets/image-c67.png)
+
+```c
+typedef struct TreeNode
+{
+    int data;
+    TreeNode *left;
+    TreeNode *right;
+} TreeNode;
+
+TreeNode *createByS(int s[], int n)
+{
+    if (n == 0)
+    {
+        return NULL;
+    }
+
+    TreeNode *root = (TreeNode *)malloc(sizeof(TreeNode));
+    TreeNode *p = root;
+    int i = 0, top = -1;
+
+    TreeNode **stack = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+
+    while (p != NULL || top != -1)
+    {
+        if (p != NULL)
+        {
+            if ([i] == 0)
+            {
+                p->left = NULL;
+                p->right = NULL;
+            }
+            else if (s[i] == 1)
+            {
+                TreeNode *temp = (TreeNode *)malloc(sizeof(TreeNode));
+                p->left = temp;
+                p->right = NULL;
+            }
+            else if (s[i] == 2)
+            {
+                TreeNode *temp1 = (TreeNode *)malloc(sizeof(TreeNode));
+                TreeNode *temp2 = (TreeNode *)malloc(sizeof(TreeNode));
+                p->left = temp1;
+                p->right = temp2;
+            }
+
+            stack[++top] = p;
+            p = p->left;
+            i++;
+        }
+        else
+        {
+            p = stack[top--];
+            p = p->right;
+        }
+    }
+
+    return root;
 }
 ```
 
