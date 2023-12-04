@@ -5,63 +5,50 @@
 
 #include <iostream>
 
-int odds(int s)
+bool IsTrue(char *str, double num)
 {
-}
-
-typedef struct TreeNode
-{
-    int data;
-    TreeNode *left;
-    TreeNode *right;
-} TreeNode;
-
-TreeNode *createByS(int s[], int n)
-{
-    if (n == 0)
+    int i = 0;
+    double sum = 0.0;
+    while (str[i] != '\0')
     {
-        return NULL;
-    }
-
-    TreeNode *root = (TreeNode *)malloc(sizeof(TreeNode));
-    TreeNode *p = root;
-    int i = 0, top = -1;
-
-    TreeNode **stack = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
-
-    while (p != NULL || top != -1)
-    {
-        if (p != NULL)
+        if (str[i] >= '0' && str[i] <= '9')
         {
-            if ([i] == 0)
-            {
-                p->left = NULL;
-                p->right = NULL;
-            }
-            else if (s[i] == 1)
-            {
-                TreeNode *temp = (TreeNode *)malloc(sizeof(TreeNode));
-                p->left = temp;
-                p->right = NULL;
-            }
-            else if (s[i] == 2)
-            {
-                TreeNode *temp1 = (TreeNode *)malloc(sizeof(TreeNode));
-                TreeNode *temp2 = (TreeNode *)malloc(sizeof(TreeNode));
-                p->left = temp1;
-                p->right = temp2;
-            }
-
-            stack[++top] = p;
-            p = p->left;
+            sum = sum * 10.0 + str[i] - '0';
+        }
+        else if (str[i] == '.')
+        {
             i++;
+            break;
         }
         else
         {
-            p = stack[top--];
-            p = p->right;
+            return false;
         }
+        i++;
     }
 
-    return root;
+    double mm = 0.1;
+
+    while (str[i] != '\0')
+    {
+        if (str[i] >= '0' && str[i] <= '9')
+        {
+            sum += (str[i] - '0') * mm;
+            mm = mm * 0.1;
+        }
+        else
+        {
+            return false;
+        }
+        i++;
+    }
+    printf("%lf", sum);
+    return sum >= num;
+}
+
+int main()
+{
+    double a = 123;
+    int t = IsTrue("123.789", a);
+    printf("%d", t);
 }

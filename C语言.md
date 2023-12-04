@@ -1362,13 +1362,131 @@ void setZero(int a[5][5], int m, int n)
 
 ![Alt text](assets/image-c62.png)
 
+```c
+int odds(int s)
+{
+    int sum = 0;
+    int p = 1;
+    while (s != 0)
+    {
+        if (s % 2 != 0)
+        {
+            sum += s % 10 * p;
+            p = p * 10;
+        }
+        s = s / 10;
+    }
 
+    return sum;
+}
+
+int main()
+{
+    int a = odds(987312);
+    printf("%d", a);
+    return 0;
+}
+```
 
 ![Alt text](assets/image-c63.png)
+
+```c
+void Yanghui(int n)
+{
+    int a[n + 1];
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = 1;
+        for (int j = i - 1; j > 0; j--)
+        {
+            a[j] = a[j - 1] + a[j];
+        }
+    }
+}
+```
 
 ![Alt text](assets/image-c64.png)
 
 ![Alt text](assets/image-c65.png)
+
+> 对两个链表进行归并排序, 然后将两个链表合并
+
+```c
+typedef struct LinkedNode
+{
+    int data;
+    LinkedNode *next;
+} LinkedNode;
+
+LinkedNode *Merge(LinkedNode *head1, LinkedNode *head2)
+{
+    LinkedNode *dummyHead = (LinkedNode *)malloc(sizeof(LinkedNode));
+    LinkedNode *rear = dummyHead;
+
+    while (head1 = NULL && head2 != NULL)
+    {
+        if (head1->data < head2->data)
+        {
+            rear->next = head1;
+            head1 = head1->next;
+            rear = rear->next;
+        }
+        else
+        {
+            rear->next = head2;
+            head2 = head2->next;
+            rear = rear->next;
+        }
+    }
+
+    if (head1 != NULL)
+    {
+        rear->next = head1;
+    }
+
+    if (head2 != NULL)
+    {
+        rear->next = head2;
+    }
+
+    return dummyHead->next;
+}
+
+// 寻找中点
+LinkedNode *MergeSort(LinkedNode *head)
+{
+    if (head->next == NULL)
+    {
+        return head;
+    }
+    LinkedNode *slow = head, *fast = head;
+    LinkedNode *slowbefore = slow;
+
+    while (fast != NULL && fast->next != NULL)
+    {
+        slowbefore = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    slowbefore->next = NULL;
+    LinkedNode *left = MergeSort(head);
+    LinkedNode *right = MergeSort(slow);
+
+    return Merge(left, right);
+}
+
+LinkedNode *UnionSet(LinkedNode *Q, LinkedNode *P)
+{
+    LinkedNode *q = MergeSort(Q);
+    LinkedNode *p = MergeSort(P);
+
+    // 直接使用归并的函数会出现重复结点, 所以需要更改下Merge函数
+    LinkedNode *R = Merge(q, p);
+
+    return R;
+}
+```
 
 #### 16软专
 
@@ -1638,6 +1756,167 @@ bool idTrue(char *s)
 }
 ```
 
+#### 16计专
+
+![Alt text](assets/image-c68.png)
+
+```c
+int f(int n)
+{
+    if (n == 1 || n == 2)
+        return 1;
+
+    int p = 1, q = 1, num;
+    for (int i = 3; i <= n; i++)
+    {
+        num = p + q;
+        q = p;
+        p = num;
+    }
+    return num;
+}
+```
+
+![Alt text](assets/image-c69.png)
+
+> 将二维数组值存到一维数组中, 然后将其排序, 再依次赋回到二维数组中
+
+```c
+void bubble(int a[], int n)
+{
+    for (int i = n - 1; i > 0; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (a[j] > a[j + i])
+            {
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int sort(int a[][], int m, int n)
+{
+    int b[m * n];
+
+    int k = 0;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            b[k] = a[i][j];
+            k++;
+        }
+    }
+
+    bubble(b, m * n);
+
+    int s = 0;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            a[i][j] = a[s];
+            s++;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c70.png)
+
+> 双指针
+
+```c
+typedef struct LinkedNode
+{
+    int data;
+    LinkedNode *next;
+} LinkedNode;
+
+LinkedNode *InsertNode(LinkedNode *head)
+{
+    if (head->next == NULL)
+    {
+        return head;
+    }
+
+    LinkedNode *pre, *cur;
+
+    pre = head;
+    cur = head->next;
+
+    while (cur != NULL)
+    {
+        LinkedNode *temp = (LinkedNode *)malloc(sizeof(LinkedNode));
+        temp->data = pre->data + cur->data;
+
+        pre->next = temp;
+        temp->next = cur;
+
+        pre = cur;
+        cur = cur->next;
+    }
+
+    return head;
+}
+```
+
+![Alt text](assets/image-c71.png)
+
+```c
+bool IsTrue(char *str, double num)
+{
+    int i = 0;
+    double sum = 0.0;
+    while (str[i] != '\0')
+    {
+        if (str[i] >= '0' && str[i] <= '9')
+        {
+            sum = sum * 10.0 + str[i] - '0';
+        }
+        else if (str[i] == '.')
+        {
+            i++;
+            break;
+        }
+        else
+        {
+            return false;
+        }
+        i++;
+    }
+
+    double mm = 0.1;
+
+    while (str[i] != '\0')
+    {
+        if (str[i] >= '0' && str[i] <= '9')
+        {
+            sum += (str[i] - '0') * mm;
+            mm = mm * 0.1;
+        }
+        else
+        {
+            return false;
+        }
+        i++;
+    }
+    printf("%lf", sum);
+    return sum >= num;
+}
+
+int main()
+{
+    double a = 123;
+    int t = IsTrue("123.789", a);
+    printf("%d", t);
+}
+```
+
 #### 15软专
 
 ![Alt text](assets/image-c29.png)
@@ -1828,6 +2107,16 @@ int main()
     }
 }
 ```
+
+#### 15计专
+
+![Alt text](assets/image-c72.png)
+
+![Alt text](assets/image-c73.png)
+
+![Alt text](assets/image-c74.png)
+
+![Alt text](assets/image-c75.png)
 
 #### 14软专
 

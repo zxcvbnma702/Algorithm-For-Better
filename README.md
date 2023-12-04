@@ -551,6 +551,8 @@ private:
 
 3. 将两个排序后的子链表合并，得到完整的排序后的链表。可以使用「21. 合并两个有序链表」的做法，将两个有序的子链表进行合并。
 
+> 归并排序
+
 ```c
 /**
  * Definition for singly-linked list.
@@ -618,6 +620,36 @@ struct ListNode* toSortList(struct ListNode* head, struct ListNode* tail)
 struct ListNode* sortList(struct ListNode* head)
 {
     return toSortList(head, NULL);
+}
+```
+
+> 冒泡排序
+
+```c
+void BubbleSort(LinkedNode *head)
+{
+    LinkedNode *P = head;
+    LinkedNode *q;
+
+    while (p != NULL)
+    {
+        q = p->next;
+        while (q != NULL)
+        {
+            if (p->data > q->data)
+            {
+                LinkedNode temp = *p;
+                *p = *q;
+                *q = temp;
+
+                temp.next = p->next;
+                p->next = q->next;
+                q->next = temp.next;
+            }
+            q = q->next;
+        }
+        p = p->next;
+    }
 }
 ```
 
