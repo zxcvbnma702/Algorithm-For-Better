@@ -2054,39 +2054,56 @@ int main()
 ![Alt text](assets/image-c32.png)
 
 ```c
-void dfs(int A[], int n, int **res, int *size,
-         int **num, int path[], int pathSize, int start, int M)
+void dfs(int A[], int n, int **res, int **num, int *size,
+         int path[], int pathSize, int startIndex, int M)
 {
+
     if (pathSize == M)
     {
-        // 二位数组分配内存
+        // 给二维数组的一行分配内存
         res[*size] = (int *)malloc(sizeof(int) * pathSize);
-        // 用一个二维数组将对应的行path的大小存下来
+
+        // 将每一行的大小存下来
         (*num)[*size] = pathSize;
+
         // 将path存到res里
         for (int i = 0; i < pathSize; i++)
         {
             res[*size][i] = path[i];
         }
-        // 将二位数组行指针下移
+
         (*size)++;
+
         return;
     }
 
-    for (int i = start; i < n; i++)
+    for (int i = startIndex; i < n; i++)
     {
-        path[pathSize] = A[i];
-        dfs(A, n, res, size, num, path, pathSize + 1, i + 1, M);
+        // path[pathSize] = A[i];
+        // dfs(A, n, res, num, size, path, pathSize + 1, i + 1, M);
+
+        // 正统回溯写法
+        path[pathSize++] = A[i];
+        dfs(A, n, res, num, size, path, pathSize, i + 1, M);
+        path[pathSize--] = 0;
     }
 }
 
-int **subset(int A[], int n, int *size, int **num, int M)
+int **subset(int a[], int n, int *size, int **num, int M)
 {
+    // 结果二维数组
     int **res = (int **)malloc(sizeof(int *) * 100);
+
+    // 存储结果二维数组每一行的大小
     *num = (int *)malloc(sizeof(int) * 100);
+
+    // 用于存储子集
     int path[n];
+
+    // 结果二维数组的大小
     *size = 0;
-    dfs(A, n, res, size, num, path, 0, 0, M);
+
+    dfs(a, n, res, num, size, path, 0, 0, M);
     return res;
 }
 
@@ -2097,6 +2114,7 @@ int main()
     int *num;
     int *size;
     int **result = subset(A, 4, size, &num, 2);
+
     for (int i = 0; i < *size; i++)
     {
         for (int j = 0; j < num[i]; j++)
@@ -2112,11 +2130,178 @@ int main()
 
 ![Alt text](assets/image-c72.png)
 
+```c
+int gcd(int a, int b)
+{
+    if (a % b == 0)
+    {
+        return b;
+    }
+
+    return gcd(b, a % b);
+}
+
+int main()
+{
+    int a = gcd(35, 10);
+    printf("%d", a);
+    return 0;
+}
+```
+
 ![Alt text](assets/image-c73.png)
+
+```c
+double sin(double x)
+{
+    int n = 1;
+    double temp = x, sum = 0;
+    while (temp > 1e-5)
+    {
+        sum += temp;
+        temp *= -1 * x * x / (2 * n * (2 * n + 1));
+        n++;
+    }
+}
+```
 
 ![Alt text](assets/image-c74.png)
 
+```c
+void Cau(int a[][], int m, int n)
+{
+    int sum = 0;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            scanf("%d", &a[i][j]);
+            if (i == 0 || j == 0 || i == m - 1 || j == n - 1)
+            {
+                sum += a[i][j];
+            }
+        }
+    }
+
+    double res = 1.0 * sum / (2 * m + 2 * (n - 2));
+    printf("%.2f", res);
+}
+```
+
 ![Alt text](assets/image-c75.png)
+
+```c
+typedef struct LinkNode
+{
+    int data;
+    LinkNode *next;
+} LinkNode;
+
+bool IsPrime(int n)
+{
+    if (n <= 1)
+    {
+        return false;
+    }
+    else
+    {
+        for (int i = 2; i < n; i++)
+        {
+            if (n % i == 0)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+LinkNode *deleteSu(LinkNode *head)
+{
+    LinkNode *dummyHead = (LinkNode *)malloc(sizeof(LinkNode));
+    dummyHead->next = head;
+    LinkNode *pre = dummyHead;
+    LinkNode *cur = head;
+
+    while (cur != NULL)
+    {
+        if (IsPrime(cur->data))
+        {
+            pre->next = cur->next;
+            free(cur);
+            cur = pre->next;
+        }
+        else
+        {
+            pre = cur;
+            cur = cur->next;
+        }
+    }
+    return dummyHead->next;
+}
+
+LinkNode *merge(LinkNode *a, LinkNode *b)
+{
+    LinkNode *dummyHead = (LinkNode *)malloc(sizeof(LinkNode));
+    if (a == NULL)
+    {
+        return b;
+    }
+    if (b == NULL)
+    {
+        return a;
+    }
+    LinkNode *left = a, *right = b;
+    LinkNode *cur = dummyHead;
+    while (left != NULL && right != NULL)
+    {
+        if (left->data < right->data)
+        {
+            cur->next = left;
+            left = left->next;
+        }
+        else
+        {
+            cur->next = right;
+            right = righ->next;
+        }
+        cur = cur->next;
+    }
+    if (left != NULL)
+    {
+        cur->next = left;
+    }
+    if (right != NULL)
+    {
+        cur->next = right;
+    }
+    return dummyHead->next;
+}
+
+LinkNode *merSort(LinkNode *head)
+{
+    LinkNode *slow = head, *fast = head, *midBefore;
+
+    while (fast->next != NULL)
+    {
+        midBefore = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    midBefore->next = NULL;
+
+    LinkNode *left = merge(head);
+    LinkNode *right = merge(slow);
+    return merge(left, right);
+}
+
+LinkNode *jieguo(LinkNode *head)
+{
+    LinkNode *res = merSort(head);
+    res = deleteSu(res);
+    return res;
+}
+```
 
 #### 14软专
 
@@ -2297,6 +2482,18 @@ double MaxArea()
     return maxArea;
 }
 ```
+
+#### 14计专
+
+![Alt text](assets/image-c76.png)
+
+![Alt text](assets/image-c77.png)
+![Alt text](assets/image-c78.png)
+
+![Alt text](assets/image-c79.png)
+
+![Alt text](assets/image-c80.png)
+
 
 #### 13软专
 
