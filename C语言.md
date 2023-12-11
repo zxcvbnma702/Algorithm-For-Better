@@ -2487,13 +2487,145 @@ double MaxArea()
 
 ![Alt text](assets/image-c76.png)
 
+```c
+double f(double x)
+{
+    return x * x * x - x * x - 1;
+}
+
+double getGen()
+{
+    int left = 0;
+    int right = 3;
+
+    while (right - left > 1e-4)
+    {
+        double mid = (right + left) / 2;
+        if (f(mid) > 0)
+        {
+            right = mid;
+        }
+        else
+        {
+            left = mid;
+        }
+    }
+    return mid;
+}
+```
+
 ![Alt text](assets/image-c77.png)
 ![Alt text](assets/image-c78.png)
 
+```c
+int count(int a[], int n)
+{
+    int hashtable[200] = {0};
+
+    for (int i = 0; i < n; i++)
+    {
+        hashtable[a[i]]++;
+    }
+
+    for (int i = 0; i < 200; i++)
+    {
+        if (hashtable[i] != 0)
+        {
+            printf("%d 出现的次数是 %d\n", i, hashtable[i]);
+        }
+    }
+}
+
+int main()
+{
+    int a[10] = {3, 5 ,3 ,3 ,10, 7 ,7 ,5, 3 ,7 };
+    count(a, 10);
+    return 0;
+}
+```
+
 ![Alt text](assets/image-c79.png)
+
+```c
+bool IsPrime(int n)
+{
+    if (n <= 1)
+        return 0;
+
+    for (int i = 2; i < n; i++)
+    {
+        if (n % i == 0)
+            return false;
+    }
+
+    return true;
+}
+
+int count(int n)
+{
+    if (n < 2)
+        printf("0");
+
+    if (IsPrime(n))
+        printf("%d", n);
+
+    int i = 2;
+    while (n != 1)
+    {
+        n /= i;
+        if (n != 1)
+        {
+            printf("*");
+        }
+        else
+        {
+            i++;
+        }
+    }
+}
+```
 
 ![Alt text](assets/image-c80.png)
 
+```c
+void Martix()
+{
+    int a[10][10];
+
+    int count = 1, i, j;
+
+    int row = 0, col = 0;
+
+    while (row < 10 && col < 10)
+    {
+        i = row;
+        j = col;
+        while (i >= 0 && j < 9)
+            a[i][j] = count++;
+        i--;
+        j++;
+    }
+    if (row < 9)
+        row++;
+    else
+        col++;
+
+    for (int c = 0; c < 10; c++)
+    {
+        for (int d = 0; d < 10; d++)
+        {
+            printf("%2d", a[c][d]);
+        }
+        printf("\n");
+    }
+}
+
+int main()
+{
+    Martix();
+    return 0;
+}
+```
 
 #### 13软专
 
@@ -3550,6 +3682,121 @@ int IsBanlanceTree(TreeNode *root)
 }
 ```
 
+#### 14计专
+
+![Alt text](assets/image-c87.png)
+
+```c
+typedef struct TreeNode
+{
+    int data;
+    TreeNode *left, *right;
+} TreeNode;
+
+void InvertLevelOrder(TreeNode *root)
+{
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+    int front = -1, rear = -1;
+    TreeNode **stack = (TreeNode **)malloc(sizeof(TreeNode *) * 100);
+    int top = -1;
+
+    queue[++rear] = root;
+    while (front != rear)
+    {
+        int n = rear - front;
+        for (int i = 0; i < n; i++)
+        {
+            TreeNode *p = queue[++front];
+            stack[++top] = p;
+
+            if (p->left)
+            {
+                queue[++rear] = p->left;
+            }
+            if (p->right)
+            {
+                queue[++rear] = p->right;
+            }
+        }
+    }
+    while (top != -1)
+    {
+        printf("%d", stack[top--]->data);
+    }
+}
+```
+
+![Alt text](assets/image-c88.png)
+
+```c
+typedef struct EdgeNode
+{
+    int data;
+    int edgeLen;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    int nodeNum;
+    int edgeNUm;
+    ArcNode adjlist[maxnum];
+} AGraph;
+
+typedef struct TreeNode
+{
+    int data, childNum;
+    TreeNode *children[maxnum];
+} TreeNode;
+
+TreeNode *bfs(AGraph *g, int v)
+{
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode *) * g->nodeNum);
+
+    int rear = -1, front = -1;
+
+    TreeNode *root = (TreeNode *)malloc(sizeof(TreeNode));
+    root->data = k;
+
+    queue[++rear] = root;
+
+    int visited[g->nodeNum] = {0};
+
+    visited[v] = 1;
+
+    while (front != rear)
+    {
+        TreeNode *p = queue[++front];
+
+        p->childNum = 0;
+
+        EdgeNode *q = g->adjlist[p->data].first;
+
+        while (q != NULL)
+        {
+            if (visited[q->data] != 1)
+            {
+                TreeNode *temp = (TreeNode *)malloc(sizeof(TreeNode));
+                temp->data = q->data;
+
+                p->children[p->childNum++] = temp;
+                queue[++rear] = temp;
+                visited[q->data] = 1;
+            }
+            q = q->next;
+        }
+    }
+
+    return root;
+}
+```
+
 #### 13软专
 
 ![Alt text](assets/image-c46.png)
@@ -3685,6 +3932,133 @@ int main()
 }
 ```
 
+#### 13计专
+
+![Alt text](assets/image-c84.png)
+
+```c
+typedef struct LinkedNode
+{
+    int data;
+    LinkedNode *next;
+} LinkedNode;
+
+void findMax(LinkedNode *head)
+{
+    LinkedNode *p = head->next, *pre = head;
+    LinkedNode *max = p, *maxPre = pre;
+
+    while (p != NULL)
+    {
+        if (p->data > max->data)
+        {
+            max = p;
+            maxPre = pre;
+        }
+        p = p->next;
+        pre = pre->next;
+    }
+
+    head->data = max->data;
+    maxPre->next = max->next;
+    free(max);
+}
+```
+
+![Alt text](assets/image-85.png)
+
+```c
+typedef struct EdgeNode
+{
+    int data;
+    int edgeLen;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    int nodeNum, edgeNum;
+    ArcNode adjlist[maxnum];
+} AGraph;
+
+void Indegree(AGraph *g, int count[])
+{
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        count[i] = 0;
+    }
+
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        EdgeNode *p = g->adjlist[i].first;
+        while (p != NULL)
+        {
+            count[p->data]++;
+            p = p->next;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c85.png)
+
+```c
+typedef struct EdgeNode
+{
+    int data;
+    int edgeLen;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    int nodeNum, edgeNum;
+    ArcNode adjlist[maxnum];
+} AGraph;
+
+// 把边表节点的值换成顶点, 顶点adj的值换成边
+void getReverseAdjlist(AGraph *g, AGraph *r)
+{
+    r->nodeNum = g->nodeNum;
+    r->edgeNum = g->edgeNum;
+
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        r->adjlist[i].data = g->adjlist[i].data;
+        r->adjlist[i].next = NULL;
+    }
+
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        EdgeNode *p;
+        p = g->adjlist[i].first;
+        while (p != NULL)
+        {
+            EdgeNode *n = (EdgeNode *)malloc(sizeof(EdgeNode));
+            n->data = i;
+            n->next = r->adjlist[p->data].first;
+
+            r->adjlist[p->data].first = s;
+            p = p =->next;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c86.png)
+
 #### 12软专
 
 > 进行层序遍历,从队列里取节点时,当一个节点为空时,将标志位置为真,然后若队列中还有节点那么就不是完全二叉树.
@@ -3702,13 +4076,13 @@ typedef struct TreeNode
 
 vool IsCompleteTree(TreeNode *root)
 {
-    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode) * 100);
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode*) * 100);
 
     int rear = -1. front = -1;
 
     bool flag = false;
 
-    queue[++rear] = false;
+    queue[++rear] = root;
 
     while (front != rear)
     {
@@ -3731,6 +4105,236 @@ vool IsCompleteTree(TreeNode *root)
         }
     }
     return true;
+}
+```
+
+#### 12计专
+
+![Alt text](assets/image-c81.png)
+
+```c
+typedef struct EdgeNode
+{
+    int data;
+    int edgeLen;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNdoe;
+
+typedef struct AGraph
+{
+    int nodeNum, edgeNum;
+    ArcNdoe adjlist[maxnum];
+} AGraph;
+
+void bfs(AGraph *g, int v, int k)
+{
+    int dist[g->nodeNum] = {-1};
+
+    int *queue = (int *)malloc(sizeof(int) * g->nodeNum);
+    int front = -1, rear = -1;
+
+    queue[++rear] = v;
+    dist[v] = 0;
+
+    while (front != rear)
+    {
+        int m = queue[++front];
+        EdgeNode *p = g->adjlist[m].first;
+
+        while (p != NULL)
+        {
+            if (dist[p->data] == -1)
+            {
+                dist[p->data] += dist[m] + 1;
+                if (dist[p->data] == k)
+                {
+                    printf("%d", p->data);
+                }
+                else
+                {
+                    queue[++rear] = p->data;
+                }
+            }
+
+            p = p->next;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c82.png)
+
+```c
+typedef struct LinkedNode
+{
+    int data;
+    LinkedNode *next;
+} LinkedNode;
+
+void searctK(LinkedNode *head, int k)
+{
+    LinkedNode *p = head, *q = head;
+    int count;
+
+    while (k > 0)
+    {
+        p = p->next;
+        k--;
+    }
+
+    if (p == NULL)
+    {
+        return 0;
+    }
+
+    while (p != NULL)
+    {
+        p = p->next;
+        q = q->next;
+    }
+
+    printf("%d", q->data);
+
+    return 1;
+}
+```
+
+![Alt text](assets/image-c83.png)
+
+#### 11计专
+
+求二叉树的宽度
+
+```c
+typedef struct TreeNode
+{
+    int data;
+    TreeNode *left;
+    TreeNode *right;
+} TreeNode;
+
+int getTreeLength(TreeNode *root)
+{
+    if (root == NULL)
+        return 0;
+    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode*) * maxnum);
+    int front = -1, rear = -1;
+    queue[++rear] = root;
+    int maxWidth = 1;
+
+    while (front != rear)
+    {
+        int n = rear - front;
+
+        if (n > maxWidth)
+        {
+            maxWidth = n;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            TreeNode *p = queue[++front];
+            if (p->left != NULL)
+            {
+                queue[++rear] = p->left;
+            }
+            if (p->right != NULL)
+            {
+                queue[++rear] = p->right;
+            }
+        }
+    }
+
+    return maxWidth;
+}
+```
+
+#### 10计专
+
+判断邻接表形式存储的有向图是否有有向回路
+
+```c
+#define maxnum 1000
+
+typedef struct EdgeNode
+{
+    int data;
+    int edge;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    ArcNode adjlist[maxnum];
+    int nodeNUm, edgeNUm;
+} AGraph;
+
+void Indegree(AGraph *g, int count[])
+{
+    for (int i = 0; i < g->nodeNUm; i++)
+    {
+        count[i] = 0;
+    }
+
+    for (int i = 0; i < g->nodeNUm; i++)
+    {
+        EdgeNode *p = g->adjlist[i].first;
+        while (p != NULL)
+        {
+            count[p->data]++;
+            p = p->next;
+        }
+    }
+}
+
+bool TopOrder(AGraph *g)
+{
+    int count[g->nodeNUm];
+    Indegree(g, count);
+    int *queue = (int *)malloc(sizeof(int) * g->nodeNUm);
+    int front = -1, rear = -1;
+    int num = 0;
+    for (int i = 0; i < g->nodeNUm; i++)
+    {
+        if (count[i] == 0)
+        {
+            queue[++front] = i;
+        }
+    }
+    while (rear != front)
+    {
+        int k = queue[++rear];
+        num++;
+        EdgeNode *temp = g->adjlist[k].first;
+        while (temp != NULL)
+        {
+            count[temp->data]--;
+            if (count[temp->data] == 0)
+            {
+                queue[++front] = temp->data;
+            }
+            temp = temp->next;
+        }
+    }
+    if (num == g->nodeNUm)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 ```
 
