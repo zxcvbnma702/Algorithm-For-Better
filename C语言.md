@@ -3178,8 +3178,7 @@ int main()
 
 ![Alt text](assets/image-c61.png)
 
-> 求两次最短路径,先求得最长的最短路径,再以此顶点为起点再求的最长的最短路径就是直径
-
+> 无环连通图的最短路径使用bfs即可
 ```c
 typedef struct EdgeNode
 {
@@ -3522,6 +3521,105 @@ void TPSort(AGraph *g)
 
 ```
 
+#### 16计专
+
+![Alt text](assets/image-c91.png)
+
+```c
+typedef struct EdgeNode
+{
+    int data;
+    int edgeLen;
+    EdgeNode *next;
+} EdgeNode;
+
+typedef struct ArcNode
+{
+    int data;
+    EdgeNode *first;
+} ArcNode;
+
+typedef struct AGraph
+{
+    int nodeNum, edgeNum;
+    ArcNode adjlist[maxnum];
+} AGraph;
+
+void Indegree(AGraph *g, int count[])
+{
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        count[i] = 0;
+    }
+
+    for (int i = 0; i < g->nodeNum; i++)
+    {
+        EdgeNode *p = g->adjlist[i].first;
+        while (p != NULL)
+        {
+            count[p->data]++;
+            p = p->next;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c92.png)
+
+```c
+typedef struct TreeNode
+{
+    int data;
+    TreeNode *left, *right;
+} TreeNode;
+
+TreeNode* deleteBinSerTree(TreeNode *root, int k)
+{
+    if (root == nullptr)
+    {
+        return nullptr;
+    }
+
+    if (root->data == k)
+    {
+        if (root->left == NULL && root->right == NULL)
+        {
+            return NULL;
+        }
+        else if (root->left != NULL && root->right == NULL)
+        {
+            return root->left;
+        }
+        else if (root->right != NULL && root->left == NULL)
+        {
+            return root->right;
+        }
+        else
+        {
+            TreeNode *temp = root->right;
+            while (temp->left != NULL)
+            {
+                temp = temp->left;
+            }
+            temp->left = root->left;
+            return root->right;
+        }
+    }
+
+    if (root->data > key)
+    {
+        root->left = deleteBinSerTree(root->left, k);
+    }
+
+    if (root->data < key)
+    {
+        root->right = deleteBinSerTree(root->right, k);
+    }
+
+    return root;
+}
+```
+
 #### 15软专
 
 ![Alt text](assets/image-c50.png)
@@ -3607,6 +3705,41 @@ void partion(int s[], int n)
     }
 }
 ```
+
+#### 15计专
+
+![Alt text](assets/image-c89.png)
+
+```c
+void partion(int a[], int n)
+{
+    int i = 0, j = n - 1;
+    while (i < j)
+    {
+        while (a[i] < 0 && i < j)
+        {
+            i++;
+        }
+
+        while (a[j] > 0 && i < j)
+        {
+            j--;
+        }
+
+        if (i < j)
+        {
+            int temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+        }
+    }
+}
+```
+
+![Alt text](assets/image-c90.png)
+
+
+
 
 #### 14软专
 

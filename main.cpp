@@ -7,68 +7,53 @@
 
 #define maxnum 1000
 
-typedef struct EdgeNode
-{
-    int data;
-    int edgeLen;
-    EdgeNode *next;
-} EdgeNode;
-
-typedef struct ArcNode
-{
-    int data;
-    EdgeNode *first;
-} ArcNode;
-
-typedef struct AGraph
-{
-    int nodeNum;
-    int edgeNUm;
-    ArcNode adjlist[maxnum];
-} AGraph;
-
 typedef struct TreeNode
 {
-    int data, childNum;
-    TreeNode *children[maxnum];
+    int data;
+    TreeNode *left, *right;
 } TreeNode;
 
-TreeNode *bfs(AGraph *g, int v)
+void deleteBinSerTree(TreeNode *root, int k)
 {
-    TreeNode **queue = (TreeNode **)malloc(sizeof(TreeNode *) * g->nodeNum);
-
-    int rear = -1, front = -1;
-
-    TreeNode *root = (TreeNode *)malloc(sizeof(TreeNode));
-    root->data = k;
-
-    queue[++rear] = root;
-
-    int visited[g->nodeNum] = {0};
-
-    visited[v] = 1;
-
-    while (front != rear)
+    if (root == nullptr)
     {
-        TreeNode *p = queue[++front];
+        return nullptr;
+    }
 
-        p->childNum = 0;
-
-        EdgeNode *q = g->adjlist[p->data].first;
-
-        while (q != NULL)
+    if (root->data == k)
+    {
+        if (root->left == NULL && root->right == NULL)
         {
-            if (visited[q->data] != 1)
-            {
-                TreeNode *temp = (TreeNode *)malloc(sizeof(TreeNode));
-                temp->data = q->data;
-
-                p->children[p->childNum++] = temp;
-                queue[++rear] = temp;
-                visited[q->data] = 1;
-            }
-            q = q->next;
+            return NULL;
         }
+        else if (root->left != NULL && root->right == NULL)
+        {
+            return left;
+        }
+        else if (root->right != NULL && root->left == NULL)
+        {
+            return right;
+        }
+        else
+        {
+            TreeNode *temp = root->right;
+            while (temp->left != NULL)
+            {
+                temp = temp->left;
+            }
+            temp->left = root->left;
+            return root->right;
+        }
+    }
+
+    if (root->data > key)
+    {
+        deleteBinSerTree(root->left, k);
+    }
+
+    if (root->data < key)
+    {
+        deleteBinSerTree(root->right, k);
     }
 
     return root;
