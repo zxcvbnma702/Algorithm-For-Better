@@ -3092,8 +3092,8 @@ void dfs(AGraph *g, int u, int v, int **result, int *size, int **num, int *path,
     path[index] = u;
     if (u == v)
     {
-        result[*size] = (int *)malloc(sizeof(int) * (index) + 1);
-        num[*size] = index + 1;
+        result[*size] = (int *)malloc(sizeof(int) * index) + 1);
+        (*num)[*size] = index + 1;
         for (int i = 0; i <= index; i++)
         {
             result[*size][i] = path[i];
@@ -3121,7 +3121,7 @@ int **FindAllPath(AGraph *g, int u, int v, int *size, int **num)
 {
     int **result = (int **)malloc(sizeof(int *) * maxnum); // 结果数组
     *num = (int *)malloc(sizeof(int) * maxnum);            // 结果数组的每一行的路径大小;
-    intvisited[g->n], path[maxnum];
+    int visited[g->n], path[maxnum];
     for (int i = 0; i < g->n; i++)
     {
         visited[i] = 0;
@@ -3365,7 +3365,7 @@ TreeNode *createByS(int s[], int n)
     {
         if (p != NULL)
         {
-            if ([i] == 0)
+            if (s[i] == 0)
             {
                 p->left = NULL;
                 p->right = NULL;
