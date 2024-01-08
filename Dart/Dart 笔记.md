@@ -1755,7 +1755,7 @@ Dart 语言中，有很多库的函数返回 Future 或者 Stream 对象，这�
 
 #### Future
 
-1. Future代表的是一个异步的计算任务，如果任务还没执行完成，我们是拿不到异步任务的结果
+Future代表的是一个异步的计算任务，如果任务还没执行完成，我们是拿不到异步任务的结果
 
 ```dart
 import 'package:http/http.dart' as http;
@@ -1787,7 +1787,7 @@ Process finished with exit code 0
 1. 首先打印了 fTask ，输出表示 fTask 是一个 Future 对象，将来会返回一个叫 Response 的结果对象
 2. 接下来打印了 main end... ，而不是先输出 http 的请求状态码
 3. 最后打印了 http 的请求状态码：Response status: 200 ，然后进程也退出了
-上面这段程序在打印了 main end... 时进程并没有退出，而是等到打印了 http 的请求状态码：Response status: 200 才退出，这也验证了我们前面一个观点： Dart 的异步机制并不涉及线程的切换，仅仅是由我们的编程语言去控制，所以它的执行效率非常高
+上面这段程序在打印了 main end... 时进程并没有退出，而是等到打印了 http 的请求状态码：Response status: 200 才退出，这也验证了我们前面一个观点： **Dart 的异步机制并不涉及线程的切换，仅仅是由我们的编程语言去控制**，所以它的执行效率非常高
 
 #### await 和 async
 
