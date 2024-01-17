@@ -6,40 +6,99 @@
     - [Android 中进程的优先级](#android-中进程的优先级)
     - [Android中asset和res目录的区别](#android中asset和res目录的区别)
     - [Android中App 是如何沙箱化的,为何要这么做](#android中app-是如何沙箱化的为何要这么做)
+    - [模块化的好处](#模块化的好处)
+    - [组件化](#组件化)
+    - [Android 渲染机制](#android-渲染机制)
   - [Activity](#activity)
     - [Activity 生命周期](#activity-生命周期)
     - [onPause能不能执行耗时的操作？](#onpause能不能执行耗时的操作)
     - [横竖屏切换时Activity的生命周期](#横竖屏切换时activity的生命周期)
+    - [onSaveInstanceState 什么时候调用](#onsaveinstancestate-什么时候调用)
+    - [Activity执行finish后的生命周期](#activity执行finish后的生命周期)
     - [说说Activity的启动模式](#说说activity的启动模式)
+    - [Activity启动流程](#activity启动流程)
     - [在Activity中创建一个thread跟在service中创建一个thread之间的区别？](#在activity中创建一个thread跟在service中创建一个thread之间的区别)
+    - [A activity启动B activity和B activity返回A activity的生命周期执行过程](#a-activity启动b-activity和b-activity返回a-activity的生命周期执行过程)
+    - [TaskAffinity 属性](#taskaffinity-属性)
+    - [Activity启动模式的TaskAffinity和allowTaskReparenting](#activity启动模式的taskaffinity和allowtaskreparenting)
+    - [当前应用有两个Activity A和B，B的 android:launchMode 设置了singleTask模式，A是默认的standard，那么A startActivity启动B，B会新启一个Task吗？如果不会，那么startActivity的Intent加上FLAG\_ACTIVITY\_NEW\_TASK这个参数会不会呢？](#当前应用有两个activity-a和bb的-androidlaunchmode-设置了singletask模式a是默认的standard那么a-startactivity启动bb会新启一个task吗如果不会那么startactivity的intent加上flag_activity_new_task这个参数会不会呢)
+    - [IntentFilter的匹配规则](#intentfilter的匹配规则)
+    - [验证是否有当前Activity](#验证是否有当前activity)
+    - [如何获取当前屏幕Activity的对象？](#如何获取当前屏幕activity的对象)
+    - [Activity的onNewIntent()方法何时会被调用?](#activity的onnewintent方法何时会被调用)
+    - [除了用Intent 去启动一个Activity，还有其他方法吗](#除了用intent-去启动一个activity还有其他方法吗)
   - [Fragment](#fragment)
     - [Fragment的生命周期](#fragment的生命周期)
     - [Android中Fragment和Activity通信的方式有哪些](#android中fragment和activity通信的方式有哪些)
     - [如何实现Fragment的滑动?](#如何实现fragment的滑动)
   - [Service](#service)
     - [服务有几种启动方式？服务和Activty或服务之间怎么通信？](#服务有几种启动方式服务和activty或服务之间怎么通信)
+    - [Service的生命周期](#service的生命周期)
     - [Android中，startService和bindService有啥区别？](#android中startservice和bindservice有啥区别)
+    - [Service与Activity通过Binder通信](#service与activity通过binder通信)
+    - [Service 如何进行保活？](#service-如何进行保活)
     - [既使用startService又使用bindService的情况可以吗](#既使用startservice又使用bindservice的情况可以吗)
+    - [Service和Thread的区别](#service和thread的区别)
+    - [为什么有时需要在Service中创建子线程而不是Activity中](#为什么有时需要在service中创建子线程而不是activity中)
+    - [IntentService](#intentservice)
+    - [IntentService生命周期是怎样的](#intentservice生命周期是怎样的)
   - [BroadcastRecevier](#broadcastrecevier)
     - [广播注册一般有几种，各有什么优缺点？](#广播注册一般有几种各有什么优缺点)
+    - [Android中发送BroadCast的方式](#android中发送broadcast的方式)
+    - [BroadCastReceiver处理耗时操作](#broadcastreceiver处理耗时操作)
+    - [广播发送和接收的原理了解吗](#广播发送和接收的原理了解吗)
+    - [广播传输的数据是否有限制，是多少，为什么要限制？](#广播传输的数据是否有限制是多少为什么要限制)
+    - [Localbroadcast](#localbroadcast)
+  - [ContentProvider](#contentprovider)
+    - [请介绍下ContentProvider是如何实现数据共享的](#请介绍下contentprovider是如何实现数据共享的)
+    - [每个ContentProvider的操作是在哪个线程中运行的呢（其实我们关心的是UI线程和工作线程）？比如我们在UI线程调用getContentResolver().query查询数据，而当数据量很大时（或者需要进行较长时间的计算）会不会阻塞UI线程呢？](#每个contentprovider的操作是在哪个线程中运行的呢其实我们关心的是ui线程和工作线程比如我们在ui线程调用getcontentresolverquery查询数据而当数据量很大时或者需要进行较长时间的计算会不会阻塞ui线程呢)
+    - [ContentProvider、ContentResolver与ContentObserver之间的关系是什么？](#contentprovidercontentresolver与contentobserver之间的关系是什么)
   - [View](#view)
+    - [Activity、View 和 Window 三者的关系](#activityview-和-window-三者的关系)
     - [View的绘制流程](#view的绘制流程)
+    - [View的measureSpec 由谁决定?顶级view呢](#view的measurespec-由谁决定顶级view呢)
+    - [View 的生命周期](#view-的生命周期)
+    - [View和ViewGroup的基本绘制流程](#view和viewgroup的基本绘制流程)
     - [View的事件分发机制](#view的事件分发机制)
+    - [什么时候执行ACTION\_CANCEL](#什么时候执行action_cancel)
+    - [android:gravity与android:layout\_gravity的区别](#androidgravity与androidlayout_gravity的区别)
     - [自定义View的方式有哪些？](#自定义view的方式有哪些)
+    - [自定义View控件的状态被保存需要满足两个条件](#自定义view控件的状态被保存需要满足两个条件)
+    - [Canvas.save()跟Canvas.restore()的调用时机](#canvassave跟canvasrestore的调用时机)
     - [Android中常用的布局有哪啊些？](#android中常用的布局有哪啊些)
     - [在 Activity 中获取某个 View 的宽高](#在-activity-中获取某个-view-的宽高)
     - [invalidate和requestLayout的区别及使用？](#invalidate和requestlayout的区别及使用)
+    - [请谈谈 invalidate() 和 postInvalidate() 方法的区别和应用场景？](#请谈谈-invalidate-和-postinvalidate-方法的区别和应用场景)
+    - [两指缩放](#两指缩放)
+    - [谈一谈 SurfaceView 与 TextureView 的使用场景和用法](#谈一谈-surfaceview-与-textureview-的使用场景和用法)
+    - [SurfaceView与View的区别](#surfaceview与view的区别)
+    - [postDelayed原理](#postdelayed原理)
+    - [当一个TextView的实例调用setText()方法后执行了什么](#当一个textview的实例调用settext方法后执行了什么)
+    - [遇到过滑动冲突吗，有哪些解决办法？](#遇到过滑动冲突吗有哪些解决办法)
     - [Android的屏幕适配方案有哪些？](#android的屏幕适配方案有哪些)
     - [动画类型有哪啊些，它们有什么区别？](#动画类型有哪啊些它们有什么区别)
     - [Bitmap使用时需要注意什么？](#bitmap使用时需要注意什么)
+    - [Scroller](#scroller)
     - [说说Listview的复用机制](#说说listview的复用机制)
+    - [谈谈你是如何优化 ListView 的？](#谈谈你是如何优化-listview-的)
+    - [谈谈 RecyclerView的缓存机制？](#谈谈-recyclerview的缓存机制)
+    - [RecyclerView的局部刷新](#recyclerview的局部刷新)
+    - [RecyclerView绘制流程](#recyclerview绘制流程)
+  - [WebView](#webview)
+    - [WebView 优化](#webview-优化)
+    - [WebView与Native交互](#webview与native交互)
   - [数据存储](#数据存储)
     - [说说Android数据存储的方式有哪些？](#说说android数据存储的方式有哪些)
     - [SharedPreferences中的commit和apply有啥区别？](#sharedpreferences中的commit和apply有啥区别)
     - [SharedPreferences是线程安全的吗？](#sharedpreferences是线程安全的吗)
     - [SharedPreferences和DataStore有啥区别？](#sharedpreferences和datastore有啥区别)
+    - [文件存储路径与权限和权限](#文件存储路径与权限和权限)
+    - [SQLite](#sqlite)
+    - [数据库的升级](#数据库的升级)
+    - [如何导入外部数据库](#如何导入外部数据库)
     - [Serializable和Parcelable的比较](#serializable和parcelable的比较)
   - [异步机制](#异步机制)
+    - [Android 中IPC（进程间通信）的方式有哪些方式？](#android-中ipc进程间通信的方式有哪些方式)
     - [Android中线程异步的方式有哪些？](#android中线程异步的方式有哪些)
     - [Android 的子线程能否做到更新 UI？](#android-的子线程能否做到更新-ui)
     - [AsyncTask的缺陷？使用时有什么需要注意的点？](#asynctask的缺陷使用时有什么需要注意的点)
@@ -77,13 +136,24 @@
     - [什么是内存泄漏？](#什么是内存泄漏)
     - [什么是内存溢出？](#什么是内存溢出)
     - [什么是内存抖动，哪些场景会出现内存抖动？](#什么是内存抖动哪些场景会出现内存抖动)
+    - [Android中ViewHolder，Handler等为什么要被声明成静态内部类（static）](#android中viewholderhandler等为什么要被声明成静态内部类static)
+    - [常见的内存泄漏（举例）](#常见的内存泄漏举例)
     - [在Android中，有哪些场景会导致内存泄漏，要怎么解决？](#在android中有哪些场景会导致内存泄漏要怎么解决)
     - [哪些情况下会导致OOM问题？](#哪些情况下会导致oom问题)
     - [内存优化的解决方法](#内存优化的解决方法)
+    - [OOM异常是否可以被try...catch捕获](#oom异常是否可以被trycatch捕获)
     - [ANR 出现的场景以及解决方案？](#anr-出现的场景以及解决方案)
     - [ANR类型](#anr类型)
   - [性能优化](#性能优化)
     - [性能优化的方式有哪些？](#性能优化的方式有哪些)
+    - [Android启动优化](#android启动优化)
+    - [Android中捕获 App崩溃和重启](#android中捕获-app崩溃和重启)
+    - [什么情况会导致Force Close ？如何避免？能否捕获导致其的异常？](#什么情况会导致force-close-如何避免能否捕获导致其的异常)
+    - [LruCache实现原理](#lrucache实现原理)
+    - [SparseArray](#sparsearray)
+    - [ArrayMap](#arraymap)
+    - [图片的三级缓存](#图片的三级缓存)
+    - [App保活](#app保活)
     - [Android中怎么加速启动Activity？](#android中怎么加速启动activity)
     - [为什么ViewStub可以提高加载性能？](#为什么viewstub可以提高加载性能)
     - [那ViewStub适用于什么场景呢？](#那viewstub适用于什么场景呢)
@@ -99,7 +169,8 @@ Android的四大组件包括Activity、Service、BroadcastReceiver和ContentProv
 
 - Activity：用于表现功能。它是所有程序的根本，所有程序的流程都运行在Activity之中，可以算是开发者遇到的最频繁，也是Android当中最基本的模块之一。
 - Service：后台运行服务，不提供界面呈现。它是android系统中的一种组件，它跟Activity的级别差不多，但是他不能自己运行，只能后台运行，并且可以和其他组件进行交互。
-- BroadcastReceiver：用于接收广播。
+- Broadcas
+tReceiver：用于接收广播。
 - ContentProvider：支持在多个应用中存储和读取数据。
 
 ### Android 中进程的优先级
@@ -121,6 +192,23 @@ Android的四大组件包括Activity、Service、BroadcastReceiver和ContentProv
 沙箱化可以提升安全性和效率
 Android的底层内核为Linux，因此继承了Linux良好的安全性，并对其进行了优化。在Linux中，一个用户对应一个uid，而在Android中，（通常）一个APP对应一个uid，拥有独立的资源和空间，与其他APP互不干扰。如有两个APP A和B，A并不能访问B的资源，A的崩溃也不会对B造成影响，从而保证了安全性和效率
 
+### 模块化的好处
+
+不同模块间解偶，方便复用
+单个模块支持独立编译，并行开发，提高开发和测试效率
+
+### 组件化
+
+组件化是已复用为目的的
+多个团队可能公用一个组件
+
+### Android 渲染机制
+
+- CPU对视图进行必要的计算：measure等
+- 通过OpenGL 将CPU 处理过的数据交给GPU
+- GPU进行栅格化并存入缓存
+- Android 系统每隔16.6ms发出一个垂直同步信号，通知渲染
+
 ## Activity
 
 ### Activity 生命周期
@@ -134,7 +222,7 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 - **onPause()** ：表示Activity正在停止，正常情况下，紧接着onStop就会被调用。
 - **onStop()** ：表示Activity即将暂停，此时Activity工作在后台，已经不可见了，可以与onPause方法一样做一些轻量级操作，但依然不能太耗时。
 - **onDestroy()** ：表示活动即将被销毁。
-- **onNewIntent()**：这个方法在Activity收到新的Intent时被调用，可以用于处理多个调用只有一个Activity实例的情况。在Activity中实现onNewIntent()方法，并设置Activity的launchMode为singleTask或者singleTop，就可以实现这个功能
+- **onNewIntent()**：这个方法在Activity收到新的Intent时被调用，可以用于处理多个调用只有一个Activity实例的情况。在Activity中实现``onNewIntent()``方法，并设置Activity的launchMode为singleTask或者singleTop，就可以实现这个功能
 
 ### onPause能不能执行耗时的操作？
 
@@ -148,10 +236,30 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 - 设置Activity的``android:configChanges="orientation"``时，切屏还是会重新调用各个生命周期，切横、竖屏时只会执行一次
 - 设置Activity的`android:configChanges="orientation|keyboardHidden|screenSize"`时，切屏不会重新调用各个生命周期，只会执行``onConfigurationChanged``方法
 
+> local：设备的本地位置发生了变化，一般指切换了系统语言； keyboardHidden：键盘的可访问性发生了变化，比如用户调出了键盘；orientation：屏幕方向发生了变化，比如旋转了手机屏幕。
+
 系统配置发生改变后，比如横竖屏切换，它的``onPause``、``onStop``、``onDestroy``都会被调用，同时Activity是在异常情况下终止的，系统就会在``onStop``方法之前调用``onSaveInstanceState``来保存当前Activity的状态。
 在屏幕方向切换回来的时候，会依次调用``onCreate``、``onStart``、``onResume``方法，并可以在``onRestoreInstanceState``和``onCreate``中取出之前保存的数据并恢复。
 
 > 注意: ``onSaveInstanceState``只会在Activity被异常终止的情况下调用。
+
+### onSaveInstanceState 什么时候调用
+
+非用户主动明确结束（按back键，自定义click方法调用finish）时都会调用``onSaveInstanceState``：
+
+- 屏幕旋转
+- 按HOME键
+- 内存不足
+- 从一个activity启动另一个activity
+
+> 这个方法的调用时机是在onStop前，但是它和onPause没有既定的**时序关系**
+
+### Activity执行finish后的生命周期
+
+
+在onCreate中执行：onCreate -> onDestroy
+在onStart中执行：onCreate -> onStart -> onStop -> onDestroy
+在onResume中执行：onCreate -> onStart -> onResume -> onPause -> onStop -> onDestroy
 
 ### 说说Activity的启动模式
 
@@ -162,14 +270,72 @@ Activity的启动模式有四种，分别是standard、singleTop、singleTask和
 - **singleTask模式**：在任务栈中查看是否有和要启动的Activity相同的实例。如果有，就直接把该Activity之上的所有Activity全部弹出使之置于栈顶。
 - **singleInstance模式**：在整个系统中只创建一个Activity实例。
 
+### Activity启动流程
+
+![Alt text](image-9.png)
+
 ### 在Activity中创建一个thread跟在service中创建一个thread之间的区别？
 
 - 在Activity中被创建：该Thread的就是为这个Activity服务的，完成这个特定的Activity交代的任务，主动通知该Activity一些消息和事件，Activity销毁后，该Thread也没有存活的意义了。
 - 在Service中被创建：这是保证最长生命周期的Thread的唯一方式，只要整个Service不退出，Thread就可以一直在后台执行，一般在Service的``onCreate()``中创建，在``onDestroy()``中销毁。所以，在Service中创建的Thread，适合长期执行一些独立于APP的后台任务，比较常见的就是：在Service中保持与服务器端的长连接。
 
+### A activity启动B activity和B activity返回A activity的生命周期执行过程
+
+A启动B:A.onPause()→B.onCreate()→B.onStart()→B.onResume()→A.onStop
+B返回A：B.onPause()→A.onRestart()/A.onCreate()→A.onStart()→A.onResume()→B.onStop()
+
+### TaskAffinity 属性
+
+- 任务相关性，标识一个Activity所需的任务栈的名字。默认情况下，所有的Activity所需的任务栈的名字是应用的包名，当然也可以单独指定TaskAffinity属性。
+- TaskAffinity属性主要和 singleTask 启动模式和 allowTaskRepeating 属性配对使用，在其他情况下使用没有意义
+- 当TaskAffinity和singleTask启动模式配对使用的时候，它是具有该模式的Activity的目前任务栈的名字，待启动的Activity会运行在名字和TaskAffinity相同的任务栈中
+- 当TaskAffinity和allowTaskReparenting结合的时候，当一个应用A启动了应用B的某个Activity C后，如果Activity C的allowTaskReparenting属性设置为true的话，那么当应用B被启动后，系统会发现Activity C所需的任务栈存在了，就将Activity C从A的任务栈中转移到B的任务栈中。
+
+### Activity启动模式的TaskAffinity和allowTaskReparenting
+
+- TaskAffinity配合singleTask使用，指定任务栈：如果没有TaskAffinity指定的任务栈，则开启新栈
+- allowTaskReparenting配合standard和singleTop使用，标明该Activity的任务栈可以重新设置
+
+### 当前应用有两个Activity A和B，B的 android:launchMode 设置了singleTask模式，A是默认的standard，那么A startActivity启动B，B会新启一个Task吗？如果不会，那么startActivity的Intent加上FLAG_ACTIVITY_NEW_TASK这个参数会不会呢？
+
+- 设置了singleTask启动模式的Activity，它在启动的时会先在系统中查看属性值affinity等于它的属性值taskAffinity ( taskAffinity默认为包名 ) 的任务栈是否存在。如果存在这样的任务栈，它就会在这个任务栈中启动，否则就会在新任务栈中启动。
+
+- 当Intent对象包含``FLAG_ACTIVITY_NEW_TASK``标记时，系统在查找时仍然按Activity的taskAffinity属性进行匹配，如果找到一个任务栈的taskAffinity与之相同，就将目标Activity压入此任务栈中，如果找不到则创建一个新的任务栈。
+
+- 设置了singleTask启动模式的Activity在已有的任务栈中已经存在相应的Activity实例，再启动它时会把这个Activity实例上面的Activity全部结束掉。也就是说singleTask自带clear top的效果。
+
+### IntentFilter的匹配规则
+
+IntentFilter中的过滤信息有``action``、``category``、``data``，为了匹配过滤列表，需要同时匹配过滤列表中的``action``、``category``、``data``信息，否则匹配失败。
+
+### 验证是否有当前Activity
+
+- PackageManager 的``resolveActivity``方法或者Intent的``resolveActivity``方法：如果找不到就会返回``null``
+- PackageManager的``queryIntentActivities``方法：它返回所有成功匹配的Activity信息
+
+### 如何获取当前屏幕Activity的对象？
+
+通过在Application中注册Activity生命周期的监听函数``Application.registerActivityLifecycleCallbacks()``
+
+### Activity的onNewIntent()方法何时会被调用?
+
+> 前提:ActivityA已经启动过,处于当前应用的Activity堆栈中;
+
+- 当ActivityA的LaunchMode为``SingleTop``时，如果ActivityA在栈顶,且现在要再启动ActivityA，这时会调用``onNewIntent()``方法
+
+- 当ActivityA的LaunchMode为``SingleInstance,SingleTask``时,如果已经ActivityA已经在堆栈中，那么此时会调用``onNewIntent()``方法
+
+- 当ActivityA的LaunchMode为``Standard``时，由于每次启动ActivityA都是启动新的实例，和原来启动的没关系，所以不会调用原来ActivityA的``onNewIntent``方法
+
+### 除了用Intent 去启动一个Activity，还有其他方法吗
+
+使用adb shell am 命令 :如``adb shell am start com.example.fuchenxuan/.MainActivity`` 或者 ``adb shell am broadcast -a magcomm.action.TOUCH_LETTER``
+
 ## Fragment
 
 ### Fragment的生命周期
+
+![Alt text](image-11.png)
 
 - **onAttach**：当Fragment与Activity发生关联时调用。
 - **onCreate**：创建Fragment时被回调。
@@ -204,7 +370,7 @@ ViewPager为了让滑动的时候防止出现卡顿现象，它的内部有一�
 
 ### 服务有几种启动方式？服务和Activty或服务之间怎么通信？
 
-启动服务两种方式
+[启动服务两种方式](https://juejin.cn/post/6844903568059678733)
 
 1. **startService**
 
@@ -224,6 +390,10 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 
 服务和Activity、服务和服务之间可以通过Binder对象、Broadcast(广播)进行通信。
 
+### Service的生命周期
+
+![Alt text](image-10.png)
+
 ### Android中，startService和bindService有啥区别？
 
 - **生命周期**：``startService``的服务与启动它的组件无关，即使启动它的组件被销毁，服务也会继续运行。而``bindService``的服务与调用它的组件绑定，当与之绑定的所有组件都被销毁时，服务也会被销毁。
@@ -234,17 +404,52 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 
 总结来说，``startService``和``bindService``的主要区别在于它们的生命周期、通讯方式、多次启动/绑定以及结束方式等方面。开发者应该根据具体需求选择合适的方式启动服务。
 
+### Service与Activity通过Binder通信
+
+[bind方式启动时可以通过ServiceConnection通信]((https://link.juejin.cn/?target=https%3A%2F%2Fwww.cnblogs.com%2FJMatrix%2Fp%2F8296364.html))：在Service的``onBind``方法中返回一个binder，该binder可以是AIDL方法产生的，也可以是Messenger方法产生的
+
+### Service 如何进行保活？
+
+- **前台Service**：通过创建一个前台Service，可以确保Service在后台运行时不会被系统杀死。前台Service需要显示一个前台界面，例如一个Notification。当Service被启动时，可以通过``startForeground()``方法将其设置为前台Service。当Service不再需要继续运行时，应该调用``stopForeground()``方法将其设置为后台Service。
+- **绑定Service**：通过绑定Service，可以确保Service在后台运行时不会被系统杀死。当其他组件（如Activity）与Service绑定时，Service会保持活动状态，直到所有绑定的组件都被解绑。如果组件需要与Service进行通信，可以使用绑定方式进行通信。
+- **JobScheduler**：JobScheduler是Android中的任务调度器，可以用于安排周期性任务。通过使用JobScheduler，可以确保Service在后台运行时不会被系统杀死。JobScheduler可以根据需要安排任务，例如定期检查网络连接、执行某些操作等。
+- **AlarmManager**：AlarmManager是Android中的闹钟服务，可以用于安排定时任务。通过使用AlarmManager，可以确保Service在后台运行时不会被系统杀死。AlarmManager可以根据需要安排任务，例如定期检查数据更新、执行某些操作等。
+
 ### 既使用startService又使用bindService的情况可以吗
 
 可以，既使用``startService``又使用``bindService``的情况是可以的。
 
 如果一个Service又被启动又被绑定，那么该Service会一直在后台运行。首先不管如何调用，onCreate始终只会调用一次。对应startService调用多少次，Service的onStart方法便会调用多少次。Service的终止，需要unbindService和stopService同时调用才行。不管startService与bindService的调用顺序，如果先调用unbindService，此时服务不会自动终止，再调用stopService之后，服务才会终止；如果先调用stopService，此时服务也不会终止，而再调用unbindService或者之前调用bindService的Context不存在了（如Activity被finish的时候）之后，服务才会自动停止。
 
+### Service和Thread的区别
+
+- 这是没用任何关系的两个概念，servie是系统的组件，Thread是CPU运行的最小单元
+- Service不可见，我们可以把Service当成是不可见的Activity，用于在后台执行一些服务；
+- Service可以运行在任意线程上，如果我们生成它时没有做特殊说明，那么它运行在主线程上
+
+很多时候我们需要在Activity中开启一个Service，再在Service中开启一个线程，这么做的原因是Service只会初始化一次，我们可以随时找到Service中生成的thread，使用场景举例：
+
+> 如我们需要在多个Activity中对同一个thread进行控制时；
+> 如果你的 Thread 需要不停地隔一段时间就要连接服务器做某种同步的话，该 Thread 需要在 Activity 没有start的时候也在运行。这个时候当你 start 一个 Activity 就没有办法在该 Activity 里面控制之前创建的 Thread。因此你便需要创建并启动一个 Service ，在 Service 里面创建、运行并控制该 Thread，这样便解决了该问题
+
+### 为什么有时需要在Service中创建子线程而不是Activity中
+
+这是因为Activity很难对Thread进行控制，当Activity被销毁之后，就没有任何其它的办法可以再重新获取到之前创建的子线程的实例。而且在一个Activity中创建的子线程，另一个Activity无法对其进行操作。但是Service就不同了，所有的Activity都可以与Service进行关联，然后可以很方便地操作其中的方法，即使Activity被销毁了，之后只要重新与Service建立关联，就又能够获取到原有的Service中Binder的实例。因此，使用Service来处理后台任务，Activity就可以放心地``finish``，完全不需要担心无法对后台任务进行控制的情况。
+
+### IntentService
+
+IntentService 是继承自 Service,内部通过 HandlerThread 启动一个新线程处理耗时操作，可以看做是 Service 和 HandlerThread 的结合体，在完成了使命之后会自动停止，适合需要在工作线程处理UI无关任务的场景
+如果启动 IntentService 多次，那么每一个耗时操作会以**工作队列**的方式在 IntentService 的 ``onHandleIntent`` 回调方法中执行，依次去执行，使用串行的方式，执行完自动结束。
+
+### IntentService生命周期是怎样的
+
+在所有任务执行完毕后，自动结束生命
+
 ## BroadcastRecevier
 
 ### 广播注册一般有几种，各有什么优缺点？
 
-第一种是常驻型(静态注册)：当应用程序关闭后如果有信息广播来，程序也会被系统调用，自己运行。
+第一种是常驻型(静态注册)：当应用程序关闭后如果有信息广播来，程序也会被系统调用，自己运行。(在manifest中静态注册)
 第二种不常驻(动态注册)：广播会跟随程序的生命周期。
 
 **动态注册**
@@ -253,24 +458,152 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 **静态注册**
 优点： 无需担忧广播接收器是否被关闭，只要设备是开启状态，广播接收器就是打开着的。
 
+### Android中发送BroadCast的方式
+
+- **无序广播**：通过``mContext.sendBroadcast(Intent)``或``mContext.sendBroadcast(Intent, String)``发送的是无序广播(后者加了权限)；
+- **有序广播**: 通过``mContext.sendOrderedBroadcast(Intent, String, BroadCastReceiver, Handler, int, String, Bundle)``发送的是有序广播（不再推荐使用）。
+
+> 在无序广播中，所有的Receiver会接收到相同广播；而在有序广播中，我们可以为Receiver设置优先级，优先级高的先接收广播，并有权对广播进行处理和决定要不要继续向下传送
+
+### BroadCastReceiver处理耗时操作
+
+BroadcastReceiver 的生命周期只有一个回调方法``onReceive(Context context, Intent intent)``；无法进行耗时操作，即使启动线程处理，也是出于非活动状态，有可能被系统杀掉。
+如果需要进行耗时操作，可以启动一个service处理。
+
+### 广播发送和接收的原理了解吗
+
+- 继承BroadcastReceiver，重写``onReceive()``方法。
+- 通过Binder机制向ActivityManagerService注册广播。
+- 通过Binder机制向ActivityMangerService发送广播。
+- ActivityManagerService查找符合相应条件的广播（IntentFilter/Permission）的BroadcastReceiver，将广播发送到BroadcastReceiver所在的消息队列中。
+- BroadcastReceiver所在消息队列拿到此广播后，回调它的onReceive()方法。
+
+### 广播传输的数据是否有限制，是多少，为什么要限制？
+
+1. 广播是通过Intent携带需要传递的数据的
+2. Intent是通过Binder机制实现的
+3. Binder对数据大小有限制，不同room不一样，一般为1M
+
+### Localbroadcast
+
+本地广播，只有本进程中的receivers能接收到此广播
+
+实现原理（监听者模式）：
+
+LocalBroadcastManager是一个单例
+在LocalBroadcastManager实例中维护一个Action和ReceiverRecord的Map.(ReceiverRecord是reveiver和intentfilter的组合)
+当调用LocalBroadcastManager的sendBroadcast方法时，会从2中的map找到合适的receiver，让后加到待执行的队列mPendingBroadcasts，并通过Handler发送一个空消息（此Handler运行在主线程中，是创建manager时创建的）
+handler 的handle方法收到消息，从mPendingBroadcasts取出receiver并调用onreceive方法
+其他：删除方法是通过一个辅助的hashmap实现的，hashmap存储了receiver和receiverRecord
+
+## ContentProvider
+
+### 请介绍下ContentProvider是如何实现数据共享的
+
+准确的说，ContentProvider是一个APP间共享数据的接口。一个程序可以通过实现一个Content provider的抽象接口将自己的数据完全暴露出去，数据可以是SqLite中的，也可以是文件或者其他类型。
+
+使用方式：
+
+- 在A APP中实现建ContentProvider，并在Manifest中声明它的Uri和权限
+- 在B APP中注册权限，并通过ContentResolver和Uri进行增删改查
+
+> 扩展：ContentProvider底层是通过Binder机制来实现跨进程间通信，通过匿名共享内存方式进行数据的传输
+一个应用进程有16个Binder线程去和远程服务进行交互，而每个线程可占用的缓存空间是128KB，超过会报异常。
+
+### 每个ContentProvider的操作是在哪个线程中运行的呢（其实我们关心的是UI线程和工作线程）？比如我们在UI线程调用getContentResolver().query查询数据，而当数据量很大时（或者需要进行较长时间的计算）会不会阻塞UI线程呢？
+
+- ContentProvider和调用者在同一个进程，ContentProvider的方法（query/insert/update/delete等）和调用者在同一线程中
+- ContentProvider和调用者在不同的进程，ContentProvider的方法会运行在它自身所在进程的一个Binder线程中
+
+### ContentProvider、ContentResolver与ContentObserver之间的关系是什么？
+
+- **ContentProvider**：管理数据，提供数据的增删改查操作，数据源可以是数据库、文件、XML、网络等，ContentProvider为这些数据的访问提供了统一的接口，可以用来做进程间数据共享。
+- **ContentResolver**：ContentResolver可以不同URI操作不同的ContentProvider中的数据，外部进程可以通过ContentResolver与ContentProvider进行交互。
+- **ContentObserver**：观察ContentProvider中的数据变化，并将变化通知给外界。
+
 ## View
+
+### Activity、View 和 Window 三者的关系
+
+**Activity与View的关系**：
+
+- Activity是Android应用程序的基本组成单元，它负责管理用户界面的生命周期和交互。
+- View是Android中用于绘制UI的基本组件，它是Activity中的UI元素。
+- Activity通过View来显示内容，View可以是按钮、文本框、图像等。
+
+**Activity与Window的关系**：
+
+- Window是Android应用程序的顶层容器，它包含了所有的UI元素。
+- Activity与Window的关系是，Activity是Window的一个子窗口，它被包含在Window中。
+- Window负责管理Activity的显示和隐藏，以及与其他应用程序的交互。
+
+**View与Window的关系**：
+
+- View是Window中的一个子元素，它是用来显示UI内容的组件。
+- Window通过View来显示内容，View可以是按钮、文本框、图像等。
+- View与Window的关系是，View被包含在Window中，通过Window来管理和显示View。
 
 ### View的绘制流程
 
 View的绘制流程主要包括以下三个步骤：
 
-- **measure阶段**：这个阶段主要是计算出控件树中的各个控件要显示其内容的话，需要多大尺寸。起点是**ViewRootImpl**的**measureHierarchy()** 方法，**measureHierarchy()** 方法中有一段源码如下：**getRootMeasureSpec()** 方法用来获取根 **MeasureSpec**，根 **MeasureSpec** 代表了对  **decorView** 的宽高的约束信息。
+- **measure阶段**：这个阶段主要是计算出控件树中的各个控件要显示其内容的话，需要多大尺寸。起点是**ViewRootImpl**的``measureHierarchy()`` 方法，``measureHierarchy()`` 方法中有一段源码如下：``getRootMeasureSpec()`` 方法用来获取根 **MeasureSpec**，根 **MeasureSpec** 代表了对  **decorView** 的宽高的约束信息。
 - **layout阶段**：这个阶段主要是判断是否需要重新计算View的位置，需要的话则计算。在layout方法中，View会根据父容器的尺寸以及自身的尺寸来确定自己在父容器中的位置和大小。
-- **draw阶段**：这个阶段主要是判断是否需要重新绘制View，需要的话则重绘制。在draw方法中，View会先绘制自己的背景，然后再绘制自己的内容，最后再绘制自己的前景。在绘制自己的内容时，View会调用自己的onDraw方法来进行绘制。
+- **draw阶段**：这个阶段主要是判断是否需要重新绘制View，需要的话则重绘制。在draw方法中，View会先绘制自己的背景，然后再绘制自己的内容，最后再绘制自己的前景。在绘制自己的内容时，View会调用自己的``onDraw``方法来进行绘制。
+
+### View的measureSpec 由谁决定?顶级view呢
+
+- View的 MeasureSpec 由父容器的 MeasureSpec 和其自身的 LayoutParams 共同确定，
+- 而对于 DecorView 是由它的 MeasureSpe 由窗口尺寸和其自身的 LayoutParams 共同确定。
+
+### View 的生命周期
+
+- 构造方法
+- **onFinishInflate**：该方法当View及其子View从XML文件中加载完成后会被调用。
+- onVisibilityChanged
+- onAttachedToWindow
+- onMeasure
+- onSizeChanged
+- onLayout
+- onDraw
+- onWindowFocusChanged
+- onWindowVisibilityChanged
+- onDetachedFromWindow
+
+### View和ViewGroup的基本绘制流程
+
+**View**
+measure -> onMeasure()
+layout（onLayout()方法是空的，因为他没有child了）
+draw -> ondraw()
+
+**ViewGroup**
+measure -> onMeasure() (onMeasure中需要调用childView的measure计算大小)
+layout -> onLayout() （onLayout方法中调用childView的layout方法）
+draw -> onDraw() （ViewGroup一般不绘制自己，ViewGroup默认实现dispatchDraw去绘制孩子）
 
 ### View的事件分发机制
 
 当一个用户在Android设备上进行触摸操作时，会生成一个``MotionEvent``对象，这个对象包含了触摸事件的所有信息，如触摸点的位置、触摸的方式（按下、抬起、移动等）等。
 这个``MotionEvent``对象首先被传递到Activity的窗口中。在窗口中，事件被传递给顶级View（DecorView）。DecorView是一个特殊的View，它包含了整个界面树，也就是所有的View。
 在DecorView中，事件首先会通过``dispatchTouchEvent``方法进行分发。这个方法会根据事件的类型（按下、抬起、移动等）和位置，将事件传递给相应的View或者ViewGroup进行处理。
-如果事件可以被传递给某个具体的View或ViewGroup，那么这个View或ViewGroup就会调用它的onTouchEvent方法来处理这个事件。如果事件不能被传递给任何View或ViewGroup，那么事件就会被上交给它的父View或ViewGroup来处理。
+如果事件可以被传递给某个具体的View或ViewGroup，那么这个View或ViewGroup就会调用它的``onTouchEvent``方法来处理这个事件。如果事件不能被传递给任何View或ViewGroup，那么事件就会被上交给它的父View或ViewGroup来处理。
 这个过程会一直持续下去，直到找到一个可以处理这个事件的View或ViewGroup为止。这就是Android的View事件分发机制的核心部分。
-此外，Android还提供了一些其他的机制来处理事件，如onInterceptTouchEvent方法，当return true时它可以在事件分发过程中拦截事件，改变事件的流向。这些机制可以用于实现一些特殊的效果和交互方式。
+此外，Android还提供了一些其他的机制来处理事件，如``onInterceptTouchEvent``方法，当return true时它可以在事件分发过程中拦截事件，改变事件的流向。这些机制可以用于实现一些特殊的效果和交互方式。
+
+onTouchListener > onTouchEvent > onClickListener
+
+### 什么时候执行ACTION_CANCEL
+
+一个点击或者活动事件包含``ACTION_DOWN``，``ACTION_MOVE``,``ACTION_UP``等
+当子View处理了``ACTION_DOWN``事件之后，后续的``ACTION_MOVE``,``ACTION_UP``都会直接交由这个子View处理
+如果此时父View拦截了``ACTION_MOVE``,``ACTION_UP``，那么子View会收到一个``ACTION_CANCEL``
+场景举例：点击一个控件，并滑动到控件外，此时次控件会收到一个``ACTION_CALNCEL``
+
+### android:gravity与android:layout_gravity的区别
+
+- ``gravity``是控制当前View内布局的位置
+- ``layout_gravity``是控制View在父布局中的位置
 
 ### 自定义View的方式有哪些？
 
@@ -279,6 +612,16 @@ View的绘制流程主要包括以下三个步骤：
 - **继承已有的ViewGroup类**：如果你需要创建的自定义View包含多个子View，那么可以通过继承已有的ViewGroup类，例如LinearLayout、RelativeLayout等，来创建自定义的ViewGroup。
 
 - **继承已有的Drawable类**：如果你需要创建的自定义View是用来绘制图形的，那么可以通过继承已有的Drawable类，例如BitmapDrawable、ColorDrawable等，来创建自定义的Drawable。
+
+### 自定义View控件的状态被保存需要满足两个条件
+
+- View有唯一的ID
+- View的初始化时要调用setSaveEnabled(true)
+
+### Canvas.save()跟Canvas.restore()的调用时机
+
+- save：用来保存Canvas的状态。save之后，可以调用Canvas的平移、放缩、旋转、错切、裁剪等操作。
+- restore：用来恢复Canvas之前保存的状态。防止save后对Canvas执行的操作对后续的绘制有影响。
 
 ### Android中常用的布局有哪啊些？
 
@@ -340,12 +683,88 @@ protected void onStart() {
 
 ### invalidate和requestLayout的区别及使用？
 
-invalidate()：是自定义View 的时候，重新执行onDraw()方法，当view只在内容和可见度方面发生变化时调用。
+``invalidate()``：是自定义View 的时候，重新执行``onDraw()``方法，当view只在内容和可见度方面发生变化时调用。
 
-requeLayout() : 他跟invalidate()相反，他只调用measure()和layout()过程，不会调用draw()。
+``requeLayout()`` : 他跟``invalidate()``相反，他只调用``measure()``和``layout()``过程，不会调用``draw()``。
 
 **如果需要局部刷新怎么办？**
-使用 requestFocus()方法，他只刷新你要刷新的地方。
+使用 ``requestFocus()``方法，他只刷新你要刷新的地方。
+
+### 请谈谈 invalidate() 和 postInvalidate() 方法的区别和应用场景？
+
+在Android中，``invalidate()``和``postInvalidate()``方法都用于标记界面需要重新绘制。然而，它们在处理重绘请求的方式上有所不同。
+
+- ``invalidate()``方法会立即请求重绘，需要在UI线程调用。它直接将整个视图标记为需要重绘，并且会立即发送一个重绘请求。这意味着下一次主线程的绘图周期会立即处理这个请求，可能导致重绘过于频繁。
+``invalidate()``方法通常用于需要立即重绘的场景，例如当某个视图的状态改变，需要立即更新到屏幕上。
+
+- ``postInvalidate()``方法也会标记视图需要重绘，它可以在**UI线程**调用，也可以在** **中调用，但是它会将重绘请求放入消息队列中，等待主线程空闲时进行处理。这意味着重绘可能会稍后发生，而不是立即发生。
+``postInvalidate()``方法通常用于在某些计算或动画完成后请求重绘，而不是立即重绘。例如，当一个动画结束后，你可能想要通过``postInvalidate()``来请求重绘视图，以显示动画的最终状态。
+
+总结一下，``invalidate()``和``postInvalidate()``的主要区别在于它们处理重绘请求的方式：``invalidate()``立即请求重绘，而``postInvalidate()``将重绘请求放入消息队列中等待处理。选择使用哪个方法取决于你的具体需求和场景。
+
+### 两指缩放
+
+为了解决多点触控问题，android在``MotionEvent``中引入了pointer概念
+通过``ACTION_DOWN、ACTION_POINTER_DOWN、ACTION_MOVE、ACTION_POINTER_UP、ACTION_UP``来检测手机的动作
+每个手指的位置可以通过``getX（pointIndex）``来获得，这样我们就能判断出滑动的距离
+
+缩放有多种实现：
+
+1. ImageView 可以通过``setImageMatrix（martix)``来实现
+2. 自定义 View 可以缩放 Canvas 的大小
+3. 还可以设置 LayoutParams 来改变大小
+
+### 谈一谈 SurfaceView 与 TextureView 的使用场景和用法
+
+在Android中，``SurfaceView``和``TextureView``都是用于在屏幕上显示内容的组件，但它们在使用场景和用法上有一些区别。
+
+- ``SurfaceView``是Android中一个用于显示自定义视图内容的组件，它提供了一个可以在子线程中绘制的表面（Surface），从而避免了主线程的阻塞。它适用于需要进行复杂绘制或者需要执行动画等操作的场景。
+使用``SurfaceView``时，你需要创建一个继承自``SurfaceView``的子类，并重写``SurfaceHolder.Callback``接口中的方法，以便在surface创建、销毁和大小改变时进行回调。通过``SurfaceHolder``对象，你可以控制对``surface``的访问权限，以及在``surface``上进行绘制操作。
+
+- ``TextureView``是Android中一个用于显示内容的组件，它支持在主线程中执行绘制操作，并且可以在界面布局中自由放置。与``SurfaceView``相比，``TextureView``更加灵活，适用于需要在界面布局中直接显示内容的场景。
+使用``TextureView``时，你需要创建一个继承自``TextureView``的子类，并重写``SurfaceTextureListener.OnSurfaceTextureAvailableListener``接口中的方法，以便在``surface``纹理可用时进行回调。通过``SurfaceTextureListener``对象，你可以控制对``surface``纹理的访问权限，以及在``surface``纹理上进行绘制操作。
+
+总结一下，``SurfaceView``适用于需要进行复杂绘制或者需要执行动画等操作的场景，这些操作可以在**子线程**中执行，避免主线程的阻塞。而``TextureView``适用于需要在界面布局中直接显示内容的场景，它更加灵活，可以在**主线程**中执行绘制操作。在实际应用中，你可以根据具体需求选择使用``SurfaceView``或``TextureView``。
+
+### SurfaceView与View的区别
+
+- View主要适用于主动更新的情况下，而SurfaceView主要适用于被动更新，例如频繁地刷新；
+- View在主线程中对画面进行刷新，而SurfaceView通常会通过一个子线程来进行页面刷新
+- SurfaceView在底层实现机制中就已经实现了双缓冲机制
+
+### postDelayed原理
+
+- 不管是view的``postDelayed``方法，还是Handler的``post``方法，通过包装后最终都会走Handler的``sendMessageAtTime``方法
+- 随后会通过MessageQueue的``enqueueMessage``方法将message加入队列，加入时按时间排序，我们可以理解成Message是一个有序队列，时间是其排序依据
+- 当Looper从MessageQueue中调用next方法取出message时，如果还没有到时间，就会阻塞等待
+- 2中当有新的message加完成后，会检查当前有没有3中设置的阻塞，需不需要唤起，如果需要唤起则唤起
+
+### 当一个TextView的实例调用setText()方法后执行了什么
+
+- setText后会对text做一些处理，如设置AutoLink，Ellipsize等
+- 在合适的位置调用``TextChangeListener``
+- 调用``requestLayout``和``invalidate``方法
+
+### 遇到过滑动冲突吗，有哪些解决办法？
+
+在Android开发中，滑动冲突的场景主要有以下几种：
+
+- **列表项的滑动与外部滑动冲突**：当一个列表项被选中时，如果用户尝试在列表外部滑动，可能会触发列表项的滑动事件，导致列表项的滚动与外部滑动冲突。
+解决这个问题的方法是使用``View.setNestedScrollingEnabled(false)``来禁用列表项的滚动。这样，当用户在列表外部滑动时，列表项不会跟随滚动，从而避免滑动冲突。
+
+- **嵌套滚动视图之间的滑动冲突**：当一个视图内部包含另一个可以滚动的视图时，可能会出现滑动冲突。例如，在一个ScrollView内部有一个ListView或RecyclerView。
+解决这个问题的方法是使用``View.requestDisallowInterceptTouchEvent(true)``来禁止父视图拦截触摸事件。这样，当用户在嵌套滚动视图之间滑动时，不会触发父视图的滑动事件，从而避免滑动冲突。
+
+- **自定义视图的滑动冲突**：当自定义视图实现了自己的触摸事件处理逻辑时，可能会出现滑动冲突。例如，一个自定义视图覆盖了触摸事件的处理逻辑，导致用户无法正常滑动。
+解决这个问题的方法是仔细检查自定义视图的触摸事件处理逻辑，确保它不会与系统默认的滑动行为产生冲突。如果需要自定义滑动的行为，可以使用``View.onTouchEvent()``方法来自定义触摸事件的处理逻辑。
+
+- **水平垂直方向的滑动冲突**可以通过以下方法解决：
+**使用外部拦截法**：重写``onInterceptTouchEvent``方法，判断横向滑动的距离与竖直滑动距离的长短。如果竖直滑动的距离更长，则判断为竖直滑动，将拦截设置为false，让父容器不拦截，交由子元素处理；如果横向滑动的距离更长，则将拦截设置为true，交由父容器处理。
+**使用内部拦截法**：重写``dispatchTouchEvent``方法，判断滑动方向与目标视图的方向是否一致。如果一致，则不拦截该事件；如果不一致，则拦截该事件并交由父容器处理。
+
+总之
+**外部拦截**：重写``onInterceptTouchEvent``方法
+**内部拦截**：重写``dispatchTouchEvent``方法，同时配合``requestDisAllowInterceptTouchEvent``方法
 
 ### Android的屏幕适配方案有哪些？
 
@@ -379,6 +798,19 @@ RGB_565 每个像素占用2byte内存
 
 > 在Android中，Bitmap的存储分为两部分，一部分是Bitmap的数据，一部分是Bitmap的引用。 在Android2.3时代，Bitmap的引用是放在堆中的，而Bitmap的数据部分是放在栈中的，需要用户调用recycle方法手动进行内存回收，而在Android2.3之后，整个Bitmap，包括数据和引用，都放在了堆中，这样，整个Bitmap的回收就全部交给GC了，这个recycle方法就再也不需要使用了。
 
+### Scroller
+
+Scroller 通常用来实现平滑的滚动
+
+> 背景容器移动、从而产生物体移动的视错觉
+
+实现平滑滚动：
+
+1. 新建Scroller，并设置合适的插值器
+2. 在View的``computeScroll``方法中调用scroller，查看当前应该滑动到的位置，并调用view的``scrollTo``或者``scrollBy``方法滑动
+3. 调用Scroller的``start``方法开始滑动
+
+
 ### 说说Listview的复用机制
 
 ListView的复用机制是ListView为了提高效率内部实现的一种优化，这种优化是通过复用itemview的方式实现的。
@@ -393,6 +825,66 @@ ListView的复用机制是ListView为了提高效率内部实现的一种优化�
 遇到过。把获取到的图片放于itemview中，然后不断的滑动listview时，由于listview的复用机制，它会把之前的view复用到滑动到的新的view上，这就会造成图片错位，同时它还在异步获取新的图片，这就会造成滑动时itemview上图片的变换。
 
 解决方法是使用findViewWithTag，由于ListView中的ImageView控件都是重用的，移出屏幕的控件很快会被进入屏幕的图片重新利用起来，那么getView()方法就会再次得到执行，而在getView()方法中会为这个ImageView控件设置新的Tag，这样老的Tag就会被覆盖掉，于是这时再调用findVIewWithTag()方法并传入老的Tag，就只能得到null了，而我们判断只有ImageView不等于null的时候才会设置图片，这样图片乱序的问题也就不存在了。
+
+### 谈谈你是如何优化 ListView 的？
+
+- 使用 RecyclerView 替代。
+- 延迟加载数据。
+- 避免大型图片和复杂动画。
+- 采用 ViewHolder 模式。
+- 利用图片加载库（如 Glide 或 Picasso）。
+- 合理设置布局参数。
+- 避免在列表项中执行耗时操作。
+
+### 谈谈 RecyclerView的缓存机制？
+
+RecyclerView的缓存机制主要分为两种：预加载和复用。
+
+**预加载（Prefetching）** ：
+
+- 当用户滚动RecyclerView时，预加载机制会预先加载即将显示在屏幕上的数据项。
+这意味着当用户滚动到某个位置时，RecyclerView已经预先加载了该位置及其附近的数据项，以便快速显示。
+- 预加载机制通过测量滚动距离和预测用户行为来实现。当用户停止滚动一段时间后，RecyclerView会停止预加载。
+
+**复用（Recycling）** ：
+
+- 复用机制是RecyclerView的核心功能之一，它允许重新利用已回收的ViewHolder以显示新的数据项。
+当数据项被滚动出屏幕时，它的ViewHolder会被回收并存储在一个复用池中。当新的数据项需要显示时，RecyclerView会从复用池中取出ViewHolder并更新其内容，而不是重新创建新的ViewHolder。
+- 复用机制可以显著减少创建和销毁视图对象的开销，从而提高性能。
+
+除了预加载和复用机制外，RecyclerView还提供了其他一些优化措施，如**懒加载**（Lazy Loading）和**初始化**和**销毁优化**。
+总之，RecyclerView的缓存机制通过预加载和复用来提高性能和响应性。它能够有效地处理大量数据，并为用户提供流畅的滚动体验。
+
+### RecyclerView的局部刷新
+
+1. 调用notifyItemChange方法
+2. 如果想刷新某个item的局部，可以有两种方法
+``notifyItemRangeChanged``方法
+[根据position获取对应的``ViewHolder``，更新其View](https://www.jianshu.com/p/c5ca75d3a78c)
+
+### RecyclerView绘制流程
+
+RecyclerView的Measure和Layout是委托LayoutManager进行的
+
+## WebView
+
+### WebView 优化
+
+- **替换内核**：不同的rom厂商对webview的优化不同，可能出现兼容性和速度问题，可以替换成X5内核等来解决兼容性问题，同时提高加载速度
+- **WebView初始化提前**：WebView初始化是一个耗时的过程，我们可以预先将WebView初始化好，例如使用全局webview
+- **开启缓存**，可以明显提升第二次加载的速度
+- **优化dns解析速度**：使用和api一样的域名，这样dns不用二次解析，可以提高速度
+- **预加载**：将需要的文件资源通过native方法提前加载好或者打包进apk，需要使用时直接使用
+- **延迟加载**：延迟加载部分资源，在界面要显示的数据加载完成后再加载，如图片资源，js等
+- **对于webview内存泄漏**：单独开一个进程，Activity销毁时手动回收资源
+
+### WebView与Native交互
+
+1. WebView中拦截网址：设置``setWebViewClient``，重写``shouldOverrideUrlLoading``
+2. js与native交互：
+``mWebView.getSettings().setJavaScriptEnabled(true);``
+``mWebView.addJavascriptInterface(new JSInterface(), "jsInterface");``
+其他js调用Native方案：通过prompt, alert等，在webClient中重写拦截相应的方法
 
 ## 数据存储
 
@@ -429,21 +921,82 @@ SharedPreferences默认实现不是线程安全的。在多线程环境下，同
 
 总的来说，SharedPreferences适用于存储简单的数据，而DataStore则适用于存储更复杂的数据类型，且具有更高的性能和跨进程通信能力。
 
+### 文件存储路径与权限和权限
+
+[文件存储分为内部存储和外部存储](https://blog.csdn.net/u010937230/article/details/73303034)
+**内部存储**
+
+```java
+Environment.getDataDirectory() = /data //这个方法是获取内部存储的根路径
+getFilesDir().getAbsolutePath() = /data/user/0/packname/files //这个方法是获取某个应用在内部存储中的files路径
+getCacheDir().getAbsolutePath() = /data/user/0/packname/cache  //这个方法是获取某个应用在内部存储中的cache路径
+getDir(“myFile”, MODE_PRIVATE).getAbsolutePath() = /data/user/0/packname/app_myFile
+```
+
+**外部存储**
+
+```java
+Environment.getExternalStorageDirectory().getAbsolutePath() = /storage/emulated/0  //这个方法是获取外部存储的根路径
+Environment.getExternalStoragePublicDirectory(“”).getAbsolutePath() = /storage/emulated/0
+// 这个方法是获取外部存储的根路径
+getExternalFilesDir(“”).getAbsolutePath() = /storage/emulated/0/Android/data/packname/files
+// 这个方法是获取某个应用在外部存储中的files路径
+1. getExternalCacheDir().getAbsolutePath() = /storage/emulated/0/Android/data/packname/cache
+// 这个方法是获取某个应用在外部存储中的cache路径
+```
+
+清除数据和卸载APP时， 内外存储的file和cache都会被删除
+内部存储file和cache不需要权限；外部存储低版本上（19以下）file和cache需要权限，高版本不需要权限；``Environment.getExternalStorageDirectory()``需要权限
+
+### SQLite
+
+SQLite每个数据库都是以单个文件（.db）的形式存在，这些数据都是以B-Tree的数据结构形式存储在磁盘上。
+使用SQLiteDatabase的insert，delete等方法或者execSQL方法默认都开启了事务，如果操作顺利完成才会更新.db数据库。事务的实现是依赖于名为rollback journal文件，借助这个临时文件来完成原子操作和回滚功能。在/data/data//databases/目录下看到一个和数据库同名的.db-journal文件。
+
+如何对SQLite数据库中进行大量的数据插入?
+[显示的开启事务](https://link.juejin.cn/?target=https%3A%2F%2Fwww.jianshu.com%2Fp%2F2398aad3bd61)
+
+```db.beginTransaction();
+try {
+   ...
+   db.setTransactionSuccessful();
+} finally {
+   db.endTransaction();
+  }
+```
+
+### 数据库的升级
+
+Android中提供了SqLiteOpenHelper类，当版本更新时，会自动调用``onUpgrade``方法，我们在此方法中升级
+
+> 如果修改已有表，可以才有临时表的方法：
+将已有表重命名成一个临时表
+创建新表
+拷贝
+删除临时表
+
+### 如何导入外部数据库
+
+1. 把数据库db文件放在res/raw下打包进apk
+2. 通过FileInputStream读取db文件，通过FileOutputStream将文件写入/data/data/包名/database下
+
 ### Serializable和Parcelable的比较
 
 它们都是用于对象序列化的接口，有的时候我们需要把对象持久化到存储设备或者通过网络进行传输给其他客户端，这个时候就需要完成对象的持久化。通过这两个接口我们可以序列化来完成对象的持久化。
 
 **Serializable（Java自带）**
-
 Serializable是序列化的意思，表示将一个对象转换成存储或可传输的状态。序列化后的对象可以在网络上进传输，也可以存储到本地。
 
 **Parcelable（android专用）**
-
 使用Parcelable也可以实现对象序列化果，不过不同于Serializable，Parcelable方式的实现原理是将一个完整的对象进行分解，而分解后的每一部分都是Intent所支持的数据类型，这也就实现传递对象的功能。
 
 > Serializable需要大量的I/O操作,虽然使用时操作方便但是开销很大。Parcelable使用起来稍微麻烦点，但它的效率高，它是Android推荐的序列化方式，首选Parcelable。
 
 ## 异步机制
+
+### Android 中IPC（进程间通信）的方式有哪些方式？
+
+![Alt text](image-8.png)
 
 ### Android中线程异步的方式有哪些？
 
@@ -453,7 +1006,6 @@ Serializable是序列化的意思，表示将一个对象转换成存储或可�
 - **使用Thread + Looper + Handler**：这种方式结合了Thread和Handler，通过Looper来管理消息队列，实现异步任务。这种方式可以实现更复杂的异步操作，但需要更多的代码和更深入的理解。
 - **使用Service**（如IntentService）：Service是Android中用于在后台执行长时间运行的操作的组件。通过创建一个Service对象，可以在后台执行一些耗时的任务，而不会阻塞UI线程。
 - **使用ExecutorService**：ExecutorService是Android提供的一个高级的异步执行机制，可以创建和管理多个线程池，用于执行异步任务。
-
 
 ### Android 的子线程能否做到更新 UI？
 
@@ -973,6 +1525,19 @@ Pull 与 SAX 有点类似，都提供了类似的事件，如开始元素和结�
 - **减少大对象的使用**：尽量避免一次性加载大量的数据或者资源，可以使用分页加载、懒加载等技术来减少内存占用。
 - 如避免在循环遍历时创建临时大对象，不在自定义View时在onDraw里创建对象等。
 
+### Android中ViewHolder，Handler等为什么要被声明成静态内部类（static）
+
+非静态内部类会持有外部类的引用，在一些情况下很可能造成内存泄漏，所以一般声明为静态内部类，但并不是说一定要生命成静态内部类。
+
+### 常见的内存泄漏（举例）
+
+- 不恰当的使用static变量（或者向static集合中添加数据却忘了必要时移除数据）
+- 忘记关闭各种连接，如IO流等
+- 不恰当的内部类：因为内部类持有外部类的引用，当内部类存活时间较长时，导致外部类也不能正确的回收（常发生在使用Handler的时候）
+- 不恰当的单例模式：例如错误的将某个Activity给单例持有，或者在不该使用单例的地方使用了单例
+- 使用错误的Context：Application 和 Activity的context生命周期不一样
+- webview造成的内存泄漏
+
 ### 在Android中，有哪些场景会导致内存泄漏，要怎么解决？
 
 1. 非静态内部类的静态示例
@@ -1103,9 +1668,15 @@ protected void onDestroy() {
 - 使用``StringBuilder``替代``String``拼接
 - 统一带有缓存的基础库，特别是图片库，如果用了两套不一样的图片加载库就会出现2个图片各自维护一套图片缓存
 - 给ImageView设置合适尺寸的图片，列表页显示缩略图，查看大图显示原图 
-- 优化业务架构设计，比如省市区数据分批加载，需要加载省就加载省，需要加载市就加载市，避免**一下子加载所有数据** 
+- 优化业务架构设计，比如省市区数据分批加载，需要加载省就加载省，需要加载市就加载市，避免**一下子加载所有数据**
 
 3.避免内存泄漏
+
+### OOM异常是否可以被try...catch捕获
+
+在发生地点可以捕获
+但是OOM往往是由于内存泄漏造成的，泄漏的部分多数情况下不在try语句块里，所以catch后不久就会再次发生OOM
+对待OOM的方案应该是找到内存泄漏的地方以及优化内存的占用
 
 ### ANR 出现的场景以及解决方案？
 
@@ -1161,6 +1732,75 @@ logcat日志关键字：timeout publishing content providers
 - **网络请求优化**：减少HTTP请求：通过合并图片、减少图片大小、使用缓存等方式可以减少HTTP请求次数，从而提高应用程序的性能，使用 Gzip 压缩 Response 减少数据传输量；使用 Protocol Buffer 代替 JSON。
 - **数据库查询优化**：通过索引、分页查询、批量操作等方式可以优化数据库查询性能。
 - **电量优化**：避免轮循。可以利用推送。如果非要轮循，合理的设置频率。应用处于后台时，避免某些数据的传输，比如感应器，定位，视频缓存。页面销毁时，取消掉网络请求。限制访问频率，失败后不要无限的重连等。
+
+### Android启动优化
+
+启动优化的目的是提高用户感知的启动速度
+可以采用TraceView等分析耗时，找出优化方向
+优化的思路：
+
+- 利用提前展示出来的Window，设置Theme，快速展示出来一个界面，给用户快速反馈的体验（启动后再改变回来）
+- 异步初始化一些第三方SDK
+- 延迟初始化
+- 针对性的优化算法，减少耗时
+
+### Android中捕获 App崩溃和重启
+
+- 实现``Thread.UncaughtExceptionHandler()``接口，在``uncaughtException``方法中完成对崩溃的上报和对App的重启。
+- 实现自定义Application，并在Application中注册1中Handler实例。
+
+### 什么情况会导致Force Close ？如何避免？能否捕获导致其的异常？
+
+- 出现运行时异常（如nullpointer/数组越界等），而我们又没有try catch捕获，可能造成Force Close
+- 避免：需要我们在编程时谨慎处理逻辑，提高代码健壮性。如对网络传过来的未知数据先判空，再处理；此外还可以通过静态代码检查来帮助我们提高代码质量
+- 此外，我们还可以在Application初始化时注册``UncaultExceptionHandler``，来捕捉这些异常重启我们的程序
+
+### LruCache实现原理
+
+最近最少使用算法：内部通过LinkedHashMap来实现
+
+LinkedHashMap的特性：LinkedHashMap是一个双向链表，当构造函数中accessOrder为true时：调用``put()``方法，会在集合头部添加元素时，会调用``trimToSize()``判断缓存是否已满，如果满了就用LinkedHashMap的迭代器删除队尾元素，即近期最少访问的元素。当调用``get()``方法访问缓存对象时，就会调用LinkedHashMap的``get()``方法获得对应集合元素，同时会更新该元素到队头
+
+### SparseArray
+
+- SparseArray通过两个数组实现，key为int型，value为Object型
+- 适用于数据量较小时
+- 通过二分法插入和删除数据
+
+### ArrayMap
+
+ArrayMap 是Android中的一种用时间换空间的容器，用来替代HashMap
+不适合大量数据或者有大量删除
+采用二分查找
+
+原理：
+使用两个数组进行存储
+
+数组1储存key的HashCode
+数组2储存key和value；value位置为key位置左移1位再加1
+hash冲突的解决：寻找下一个空位，因为查询时会比较hashcode和key，所以不会有问题
+
+### 图片的三级缓存
+
+- 首次加载 Android App 时，肯定要通过网络交互来获取图片，之后我们可以将图片保存至本地SD卡和内存中
+- 之后运行 App 时，优先访问内存中的图片缓存
+- 若内存中没有，则加载本地SD卡中的图片
+
+### App保活
+
+随着Google对Android系统的更新，以及国内厂商堆Room的定制，一些保活的手段已经失效或者不再适用，这里列举一些保活手段,实际中常常是多个方式并用
+
+- 联系Room厂商加入白名单（或者引导用户手动加入白名单）
+- 利用系统漏洞root进行提权，或者直接把本应用变成系统应用
+- Service设置成START_STICKY:kill 后会被重启（等待5秒左右），重传Intent，保持与重启前一样
+- 提升service优先级:通过android:priority = "1000"这个属性设置最高优先级（可能已经失效）
+- onDestroy方法里重启service（效果不好）
+- 监听广播（除了监听系统广播外，还可以利用友盟等第三方sdk做到应用相互唤起）
+- 启动两个进程service相互监听，互相唤起（大部分room上失效）
+- 在屏幕上保留1像素
+- 注册系统同步服务
+- 创建Native进程，双进程互相监听保活（5.0 以上失效）
+- 利用JobSheduler保活
 
 ### Android中怎么加速启动Activity？
 
