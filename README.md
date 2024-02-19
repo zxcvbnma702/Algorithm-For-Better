@@ -1026,9 +1026,32 @@ public:
 
 ## 哈希表
 
+> 什么时候使用哈希法，当我们需要查询一个元素是否出现过，或者一个元素是否在集合里的时候，就要第一时间想到哈希法。
+
 ### 有效的字母异位词
 
 [有效的字母异位词](https://leetcode.cn/problems/valid-anagram/)
+
+Given two strings s and t, return true if t is an anagram of s, and false otherwise.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+Example 1:
+
+> Input: s = "anagram", t = "nagaram"
+Output: true
+
+Example 2:
+
+> Input: s = "rat", t = "car"
+Output: false
+
+Constraints:
+
+- 1 <= s.length, t.length <= 5 * 10^4
+- s and t consist of lowercase English letters.
+
+> 如果是Anagram, hash表中的值相等
 
 ```c
 // 有效的字母异位词
@@ -1064,9 +1087,58 @@ bool isAnagram(char *s, char *t)
 }
 ```
 
+```c++
+// 有效的字母异位词 c++
+class Solution
+{
+public:
+    bool isAnagram(string s, string t)
+    {
+        int hashTable[26] = {0};
+
+        for (int i = 0; i < s.size(); i++)
+        {
+            hashTable[s[i] - 'a']++;
+        }
+
+        for (int i = 0; i < t.size(); i++)
+        {
+            hashTable[t[i] - 'a']--;
+        }
+
+        for (int i = 0; i < 26; i++)
+        {
+            if (hashTable[i] != 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+```
+
 ### 两个数组的交集
 
 [两个数组的交集](https://leetcode.cn/problems/intersection-of-two-arrays/)
+
+Given two integer arrays nums1 and nums2, return an array of their intersection. Each element in the result must be unique and you may return the result in any order.
+
+Example 1:
+
+> Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2]
+
+Example 2:
+
+> Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [9,4]
+Explanation: [4,9] is also accepted.
+
+Constraints:
+
+- 1 <= nums1.length, nums2.length <= 1000
+- 0 <= nums1[i], nums2[i] <= 1000
 
 ```c
 // 两个数组的交集
@@ -1100,78 +1172,472 @@ int *intersection(int *nums1, int nums1Size, int *nums2, int nums2Size, int *ret
 }
 ```
 
+```c++
+// 两个数组的交集-c++
+class Solution
+{
+public:
+    vector<int> intersection(vector<int> &nums1, vector<int> &nums2)
+    {
+        int hashTable[1000] = {0};
+
+        vector<int> result;
+        for (int i = 0; i < nums1.size(); i++)
+        {
+            hashTable[nums1[i]]++;
+        }
+
+        for (int i = 0; i < nums2.size(); i++)
+        {
+            if (hashTable[nums2[i]] != 0)
+            {
+                // 如果找到了重复的元素, 将其加入进结果数组
+                result.push_back(nums2[i]);
+                // 然后将重复元素置0, 防止重复
+                hashTable[nums2[i]] = 0;
+            }
+        }
+
+        return result;
+    }
+};
+```
+
 ### 快乐数
 
 [快乐数](https://leetcode.cn/problems/happy-number)
 
-> “快指针” 每次走两步，“慢指针” 每次走一步，当二者相等时，即为一个循环周期。此时，判断是不是因为 1 引起的循环，是的话就是快乐数，否则不是快乐数
+Write an algorithm to determine if a number n is happy.
+
+A happy number is a number defined by the following process:
+
+Starting with any positive integer, replace the number by the sum of the squares of its digits.
+Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.
+Those numbers for which this process ends in 1 are happy.
+Return true if n is a happy number, and false if not.
+
+Example 1:
+
+> Input: n = 19
+Output: true
+Explanation:
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+
+Example 2:
+
+> Input: n = 2
+Output: false
+
+Constraints:
+
+- 1 <= n <= 2^31 - 1
+
+> 将得到的过程值存入到``unordered_set<int>``中，无限循环得到过程值并查询集合，如果有重复值就代表进入到了无限循环，不是快乐数;没查到就将值加入到无序集合中。
 
 ```c++
 class Solution
 {
 public:
-    int bitSquareSum(int n)
+    int getNUm(int sum)
     {
-        int sum = 0;
-        while (n > 0)
+        int result = 0;
+
+        while (sum)
         {
-            int bit = n % 10;
-            sum += bit * bit;
-            n = n / 10;
+            int a = sum % 10;
+            result += a * a;
+            sum = sum / 10;
         }
-        return sum;
+        return result;
     }
 
     bool isHappy(int n)
     {
-        int slow = n, fast = n;
-        do
-        {
-            slow = bitSquareSum(slow);
-            fast = bitSquareSum(fast);
-            fast = bitSquareSum(fast);
-        } while (slow != fast);
+        // 无序集合
+        unordered_set<int> set;
 
-        return slow == 1;
+        while (1)
+        {
+            int sum = getNUm(n);
+            // 快乐数
+            if (sum == 1)
+                return true;
+
+            // 找到了重复值,代表进入了无限循环
+            if (set.find(sum) != set.end())
+            {
+                return false;
+            }
+            else
+            {
+                set.insert(sum); // 没找到,加入到集合中
+            }
+
+            n = sum;
+        }
     }
 };
 ```
 
-// 最大也就是810
+### 两数之和
 
-```c
-int getSum(int n)
-{
-    int sum = 0;
-    while (n)
-    {
-        int t = n % 10;
-        sum += t * t;
-        n = n / 10;
-    }
-    return sum;
-}
+[两数之和](https://leetcode.cn/problems/two-sum/)
 
-bool isHappy(int n)
-{
-    int hashtable[820] = {0};
-    int sum = getSum(n);
-    while (sum != 1)
-    {
-        // 循环到了重复值
-        if (hashtable[sum] == 1)
+Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+You can return the answer in any order.
+
+Example 1:
+
+> Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+
+Example 2:
+
+>Input: nums = [3,2,4], target = 6
+Output: [1,2]
+
+Example 3:
+
+>Input: nums = [3,3], target = 6
+Output: [0,1]
+
+Constraints:
+
+- 2 <= nums.length <= 10^4
+- -10^9 <= nums[i] <= 10^9
+- -10^9 <= target <= 10^9
+- Only one valid answer exists.
+
+```c++
+// 两数之和-暴力解法-双层for循环
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+
+        vector<int> result;
+
+        for(int i =0 ; i<nums.size() ;i++)
         {
-            return false;
+            for(int j = i+1; j< nums.size(); j++)
+            {
+                if(nums[i] +nums[j] == target)
+                {
+                    result.push_back(i);
+                    result.push_back(j);
+                }
+            }
         }
-        else
-        {
-            hashtable[sum]++;
-        }
-        sum = getSum(sum);
+        return result;
     }
+};
 
-    return true;
-}
+// 两数之和-map查找
+class Solution
+{
+public:
+    vector<int> twoSum(vector<int> &nums, int target)
+    {
+
+        std::unordered_map<int, int> map;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            auto iter = map.find(target - nums[i]);
+            // 找到了另一个数
+            if (iter != map.end())
+            {
+                return {i, iter->second};
+            }
+
+            // 将数值插入无序map
+            map.insert(pair<int, int>(nums[i], i));
+        }
+        return {};
+    }
+};
+```
+
+### 四数相加
+
+[四数相加](https://leetcode.cn/problems/4sum-ii/)
+
+Given four integer arrays nums1, nums2, nums3, and nums4 all of length n, return the number of tuples (i, j, k, l) such that:
+
+0 <= i, j, k, l < n
+nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0
+
+Example 1:
+
+> Input: nums1 = [1,2], nums2 = [-2,-1], nums3 = [-1,2], nums4 = [0,2]
+Output: 2
+Explanation:
+The two tuples are:
+> 1. (0, 0, 0, 1) -> nums1[0] + nums2[0] + nums3[0] + nums4[1] = 1 + (-2) + (-1) + 2 = 0
+> 2. (1, 1, 0, 0) -> nums1[1] + nums2[1] + nums3[0] + nums4[0] = 2 + (-1) + (-1) + 0 = 0
+
+Example 2:
+
+> Input: nums1 = [0], nums2 = [0], nums3 = [0], nums4 = [0]
+Output: 1
+
+Constraints:
+
+- n == nums1.length
+- n == nums2.length
+- n == nums3.length
+- n == nums4.length
+- 1 <= n <= 200
+- -2^28 <= nums1[i], nums2[i], nums3[i], nums4[i] <= 2^28
+
+> 返回的是元组的数量
+
+1. 首先定义 一个unordered_map，key放a和b两数之和，value 放a和b两数之和出现的次数。
+2. 遍历大A和大B数组，统计两个数组元素之和，和出现的次数，放到map中。
+3. 定义int变量count，用来统计 a+b+c+d = 0 出现的次数。
+4. 在遍历大C和大D数组，找到如果 0-(c+d) 在map中出现过的话，就用count把map中key对应的value也就是出现次数统计出来。
+5. 最后返回统计值 count 就可以了
+
+```c++
+// 四数相加
+class Solution
+{
+public:
+    int fourSumCount(vector<int> &nums1, vector<int> &nums2, vector<int> &nums3,
+                     vector<int> &nums4)
+    {
+        unordered_map<int, int> map1;
+        // 返回的是元组的数量
+        int result = 0;
+
+        // 将前两个集合可能出现的值做统计 ,所以使用map
+        for (int a : nums1)
+        {
+            for (int b : nums2)
+            {
+                map1[a + b]++;
+            }
+        }
+
+        for (int c : nums3)
+        {
+            for (int d : nums4)
+            {
+                // 寻找到一个符合条件的元组
+                auto iter = map1.find(0 - (c + d));
+                if (iter != map1.end())
+                {
+                    // second pair第二个
+                    result += iter->second;
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 三数之和
+
+[三数之和](https://leetcode.cn/problems/3sum/description/)
+
+Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+
+Notice that the solution set must not contain duplicate triplets.
+
+Example 1:
+
+> Input: nums = [-1,0,1,2,-1,-4]
+Output: [[-1,-1,2],[-1,0,1]]
+Explanation: 
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+The distinct triplets are [-1,0,1] and [-1,-1,2].
+Notice that the order of the output and the order of the triplets does not matter.
+
+Example 2:
+
+> Input: nums = [0,1,1]
+Output: []
+Explanation: The only possible triplet does not sum up to 0.
+
+Example 3:
+
+> Input: nums = [0,0,0]
+Output: [[0,0,0]]
+Explanation: The only possible triplet sums up to 0.
+
+Constraints:
+
+- 3 <= nums.length <= 3000
+- -105 <= nums[i] <= 105
+
+> 用for循环的i作为一个指针, 然后再每层循环里再使用双指针左右逼近值
+
+```c++
+// 三数之和
+class Solution
+{
+public:
+    vector<vector<int>> threeSum(vector<int> &nums)
+    {
+        vector<vector<int>> result;
+
+        // 排序
+        sort(nums.begin(), nums.end());
+
+        // 用for循环的i作为一个指针
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] > 0)
+                return result; // 不可能等于0了
+
+            // 对这个指针进行去重操作, 值重复了就让指针往右走
+            if (i > 0 && nums[i] == nums[i - 1])
+            {
+                continue;
+            }
+
+            // 每层循环里再使用双指针左右逼近值0
+            int left = i + 1;
+            int right = nums.size() - 1;
+            while (left < right)
+            {
+                if (nums[i] + nums[right] + nums[left] > 0)
+                {
+                    right--;
+                }
+                else if (nums[i] + nums[right] + nums[left] < 0)
+                {
+                    left++;
+                }
+                else
+                {
+                    result.push_back({nums[i], nums[left], nums[right]});
+                    // 去重逻辑应该放在找到一个三元组之后，对b 和 c去重
+                    while (right > left && nums[right] == nums[right - 1])
+                        right--;
+                    while (right > left && nums[left] == nums[left + 1])
+                        left++;
+
+                    right--;
+                    left++;
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 四数之和
+
+[四数之和](https://leetcode.cn/problems/4sum/)
+
+Given an array nums of n integers, return an array of all the unique quadruplets [nums[a], nums[b], nums[c], nums[d]] such that:
+
+0 <= a, b, c, d < n
+a, b, c, and d are distinct.
+nums[a] + nums[b] + nums[c] + nums[d] == target
+You may return the answer in any order.
+
+Example 1:
+
+> Input: nums = [1,0,-1,0,-2,2], target = 0
+Output: ``[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]``
+
+Example 2:
+
+> Input: nums = [2,2,2,2,2], target = 8
+Output: ``[[2,2,2,2]]``
+
+Constraints:
+
+- 1 <= nums.length <= 200
+- -109 <= nums[i] <= 109
+- -109 <= target <= 109
+
+```c++
+// 四数之和
+class Solution
+{
+public:
+    vector<vector<int>> fourSum(vector<int> &nums, int target)
+    {
+        vector<vector<int>> result;
+
+        sort(nums.begin(), nums.end());
+        // 第一指针
+        for (int k = 0; k < nums.size(); k++)
+        {
+            // 大于0时再进行剪枝
+            if (nums[k] >= 0 && nums[k] > target)
+            {
+                break;
+            }
+
+            // 第一指针去重
+            if (k > 0 && nums[k] == nums[k - 1])
+            {
+                continue;
+            }
+
+            // 第二指针
+            for (int i = k + 1; i < nums.size(); i++)
+            {
+                // 大于0时再进行剪枝
+                if (nums[i] + nums[k] >= 0 && nums[i] + nums[k] > target)
+                {
+                    break;
+                }
+                // 第二指针去重
+                if (i > k + 1 && nums[i] == nums[i - 1])
+                {
+                    continue;
+                }
+
+                // 第三指针
+                int a = i + 1;
+                // 第四指针
+                int b = nums.size() - 1;
+                while (a < b)
+                {
+                    if ((long)nums[k] + nums[i] + nums[a] + nums[b] < target)
+                    {
+                        a++;
+                    }
+                    else if ((long)nums[k] + nums[i] + nums[a] + nums[b] >
+                             target)
+                    {
+                        b--;
+                    }
+                    else
+                    {
+                        result.push_back(
+                            vector<int>{nums[k], nums[i], nums[a], nums[b]});
+
+                        // 第三指针去重
+                        while (a < b && nums[a] == nums[a + 1])
+                            a++;
+                        // 第四指针去重
+                        while (a < b && nums[b] == nums[b - 1])
+                            b--;
+
+                        a++;
+                        b--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
 ```
 
 ## 字符串
@@ -7415,4 +7881,35 @@ public:
 
 ##### 0-1背包问题
 
-> dp[i][j] 表示从下标为[0-i]的物品里任意取，放进容量为j的背包，价值总和最大是多少。
+题目描述
+
+> 小明是一位科学家，他需要参加一场重要的国际科学大会，以展示自己的最新研究成果。他需要带一些研究材料，但是他的行李箱空间有限。这些研究材料包括实验设备、文献资料和实验样本等等，它们各自占据不同的空间，并且具有不同的价值。
+> 小明的行李空间为 N，问小明应该如何抉择，才能携带最大价值的研究材料，每种研究材料只能选择一次，并且只有选与不选两种选择，不能进行切割。
+
+输入描述
+
+> 第一行包含两个正整数，第一个整数 M 代表研究材料的种类，第二个正整数 N，代表小明的行李空间。
+> 第二行包含 M 个正整数，代表每种研究材料的所占空间。 
+> 第三行包含 M 个正整数，代表每种研究材料的价值。
+
+输出描述
+
+>输出一个整数，代表小明能够携带的研究材料的最大价值。
+
+输入示例
+> 6 1
+2 2 3 1 5 2
+2 3 1 5 4 3
+
+输出示例
+
+> 5
+
+提示信息
+
+> 小明能够携带 6 种研究材料，但是行李空间只有 1，而占用空间为 1 的研究材料价值为 5，所以最终答案输出 5。
+
+数据范围：
+> 1 <= N <= 5000
+> 1 <= M <= 5000
+> 研究材料占用空间和价值都小于等于 1000
