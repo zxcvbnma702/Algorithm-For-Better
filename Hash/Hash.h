@@ -413,3 +413,77 @@ public:
         return result;
     }
 };
+
+// 字母异位词分组
+class Solution
+{
+public:
+    // 排完序的异位词作为键, 出现次序作为值
+    vector<vector<string>> groupAnagrams(vector<string> &strs)
+    {
+        vector<vector<string>> result;
+        map<string, int> hashTable;
+
+        // 异位词的数量,充当二维数组的行指针
+        int count = 0;
+
+        for (int i = 0; i < strs.size(); i++)
+        {
+            string temp = strs[i];
+            sort(strs[i].begin(), strs[i].end());
+
+            // 没找到异位词, 就将其加入到新的一列结果中
+            if (hashTable.find(strs[i]) == hashTable.end())
+            {
+                result.push_back(vector<string>());
+                result.back().push_back(temp);
+                // 表明这是第几个异位词, 方便后期插入到对应的词数组里
+                hashTable[strs[i]] = count;
+                count++;
+            }
+            else // 找到异位词, 就将他加入到对应集合里
+            {    // 从map的值中获取插入位置
+                int index = hashTable[strs[i]];
+                result[index].push_back(temp);
+            }
+        }
+        return result;
+    }
+};
+
+// 最长连续序列
+class Solution
+{
+public:
+    int longestConsecutive(vector<int> &nums)
+    {
+        unordered_set<int> set;
+
+        int result = 0;
+        // 使用set集合去重
+        for (int i = 0; i < nums.size(); i++)
+        {
+            set.insert(nums[i]);
+        }
+
+        // 查找元素的最左边界数
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (set.count(nums[i] - 1))
+                continue;
+
+            // 到达最左边界数
+            int count = 1;
+
+            // 向最右边界计数
+            while (set.count(nums[i] + 1))
+            {
+                count++;
+                // 循环右移
+                nums[i]++;
+            }
+            result = max(result, count);
+        }
+        return result;
+    }
+};

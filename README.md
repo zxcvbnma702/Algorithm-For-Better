@@ -1640,6 +1640,141 @@ public:
 };
 ```
 
+### 字母异位词分组
+
+[字母异位词分组](https://leetcode.cn/problems/group-anagrams/description/?envType=study-plan-v2&envId=top-100-liked)
+
+Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+Example 1:
+
+> Input: strs = ["eat","tea","tan","ate","nat","bat"]
+Output: ``[["bat"],["nat","tan"],["ate","eat","tea"]]``
+
+Example 2:
+
+> Input: strs = [""]
+Output: ``[[""]]``
+
+Example 3:
+
+> Input: strs = ["a"]
+Output: ``[["a"]]``
+
+Constraints:
+
+- 1 <= strs.length <= 10^4
+- 0 <= strs[i].length <= 10^0
+- strs[i] consists of lowercase English letters.
+
+思路: 给每一个词排序, 使用map进行查找排序后的词是否出现过,
+
+```c++
+// 字母异位词分组
+class Solution
+{
+public:
+    // 排完序的异位词作为键, 出现次序作为值
+    vector<vector<string>> groupAnagrams(vector<string> &strs)
+    {
+        vector<vector<string>> result;
+        map<string, int> hashTable;
+
+        // 异位词的数量,充当二维数组的行指针
+        int count = 0;
+
+        for (int i = 0; i < strs.size(); i++)
+        {
+            string temp = strs[i];
+            sort(strs[i].begin(), strs[i].end());
+
+            // 没找到异位词, 就将其加入到新的一列结果中
+            if (hashTable.find(strs[i]) == hashTable.end())
+            {
+                result.push_back(vector<string>());
+                result.back().push_back(temp);
+                // 表明这是第几个异位词, 方便后期插入到对应的词数组里
+                hashTable[strs[i]] = count;
+                count++;
+            }
+            else // 找到异位词, 就将他加入到对应集合里
+            {    // 从map的值中获取插入位置
+                int index = hashTable[strs[i]];
+                result[index].push_back(temp);
+            }
+        }
+        return result;
+    }
+};
+```
+
+### 最长连续序列
+
+[最长连续序列](https://leetcode.cn/problems/longest-consecutive-sequence/description/?envType=study-plan-v2&envId=top-100-liked)
+
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+
+Example 1:
+
+> Input: nums = [100,4,200,1,3,2]
+Output: 4
+Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.
+
+Example 2:
+
+> Input: nums = [0,3,7,2,5,8,4,6,0,1]
+Output: 9
+
+Constraints:
+
+- 0 <= nums.length <= 10^5
+- -10^9 <= nums[i] <= 10^9
+
+思路: 先使用set去重，然后寻找最左边界数，找到后开始计数至最右边界，然后将最大的计数值返回即可。
+
+```c++
+// 最长连续序列
+class Solution
+{
+public:
+    int longestConsecutive(vector<int> &nums)
+    {
+        unordered_set<int> set;
+
+        int result = 0;
+        // 使用set集合去重
+        for (int i = 0; i < nums.size(); i++)
+        {
+            set.insert(nums[i]);
+        }
+
+        // 查找元素的最左边界数
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (set.count(nums[i] - 1))
+                continue;
+
+            // 到达最左边界数
+            int count = 1;
+
+            // 向最右边界计数
+            while (set.count(nums[i] + 1))
+            {
+                count++;
+                // 循环右移
+                nums[i]++;
+            }
+            result = max(result, count);
+        }
+        return result;
+    }
+};
+```
+
 ## 字符串
 
 给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串的第一个匹配项的下标（下标从 0 开始）。如果 needle 不是 haystack 的一部分，则返回  -1 。
@@ -7719,6 +7854,27 @@ public:
 
 [不同路径](https://leetcode.cn/problems/unique-paths/description/)
 
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The test cases are generated so that the answer will be less than or equal to 2 * 10^9.
+
+Example 1:
+
+> Input: m = 3, n = 7
+Output: 28
+
+Example 2:
+
+> Input: m = 3, n = 2
+Output: 3
+Explanation: From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:
+
+> 1. Right -> Down -> Down
+> 2. Down -> Down -> Right
+> 3. Down -> Right -> Down
+
 ![Alt text](assets/image-56.png)
 
 ```c++
@@ -7913,3 +8069,26 @@ public:
 > 1 <= N <= 5000
 > 1 <= M <= 5000
 > 研究材料占用空间和价值都小于等于 1000
+
+#### 分割等和子集
+
+[分割等和子集](https://leetcode.cn/problems/partition-equal-subset-sum/description/)
+
+Given an integer array nums, return true if you can partition the array into **two** subsets such that the sum of the elements in both subsets is equal or false otherwise.
+
+Example 1:
+
+> Input: nums = [1,5,11,5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+
+Example 2:
+
+> Input: nums = [1,2,3,5]
+Output: false
+Explanation: The array cannot be partitioned into equal sum subsets.
+
+Constraints:
+
+- 1 <= nums.length <= 200
+- 1 <= nums[i] <= 100
