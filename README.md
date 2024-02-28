@@ -58,7 +58,35 @@ public:
 
 [移除元素](https://leetcode.cn/problems/remove-element/)
 
-> 双指针，快指针比对值，如果和目标值并不相等，就将值赋给慢指针，然后慢指针右移
+Given an integer array nums and an integer val, remove all occurrences of val in nums in-place. The order of the elements may be changed. Then return the number of elements in nums which are not equal to val.
+
+Consider the number of elements in nums which are not equal to val be k, to get accepted, you need to do the following things:
+
+Change the array nums such that the first k elements of nums contain the elements which are not equal to val. The remaining elements of nums are not important as well as the size of nums.
+Return k.
+
+Example 1:
+
+> Input: nums = [3,2,2,3], val = 3
+Output: 2, nums = [2,2,_,_]
+Explanation: Your function should return k = 2, with the first two elements of nums being 2.
+It does not matter what you leave beyond the returned k (hence they are underscores).
+
+Example 2:
+
+> Input: nums = [0,1,2,2,3,0,4,2], val = 2
+Output: 5, nums = [0,1,4,0,3,_,_,_]
+Explanation: Your function should return k = 5, with the first five elements of nums containing 0, 0, 1, 3, and 4.
+Note that the five elements can be returned in any order.
+It does not matter what you leave beyond the returned k (hence they are underscores).
+
+Constraints:
+
+- 0 <= nums.length <= 10^0
+- 0 <= nums[i] <= 50
+- 0 <= val <= 10^0
+
+思路: 双指针，快指针比对值，如果和目标值并不相等，就将值赋给慢指针，然后慢指针右移
 
 ```c++
 // 移除元素
@@ -203,6 +231,234 @@ public:
 
         }
         return ans;
+    }
+};
+```
+
+### 移动零
+
+[移动零](https://leetcode.cn/problems/move-zeroes/description/?envType=study-plan-v2&envId=top-100-liked)
+
+Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+Note that you must do this in-place without making a copy of the array.
+
+Example 1:
+
+> Input: nums = [0,1,0,3,12]
+Output: [1,3,12,0,0]
+
+Example 2:
+
+> Input: nums = [0]
+Output: [0]
+
+Constraints:
+
+- 1 <= nums.length <= 10^4
+- 2^31 <= nums[i] <= 2^31 - 1
+
+
+> 相较于移除元素, 这题就是将0全部移除之后, 在后面补0
+
+```c++
+// 移动零
+class Solution
+{
+public:
+    // 直接将0去掉, 然后在后面补零
+    void moveZeroes(vector<int> &nums)
+    {
+        int slow = 0;
+        int fast = 0;
+
+        while (fast < nums.size())
+        {
+            if (nums[fast] != 0)
+            {
+                nums[slow] = nums[fast];
+                slow++;
+            }
+            fast++;
+        }
+
+        for (int i = slow; i < nums.size(); i++)
+        {
+            nums[i] = 0;
+        }
+    }
+};
+```
+
+### 盛最多雨水的容器
+
+[盛最多雨水的容器](https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-100-liked)
+
+You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+
+Find two lines that together with the x-axis form a container, such that the container contains the most water.
+
+Return the maximum amount of water a container can store.
+
+Notice that you may not slant the container.
+
+Example 1:
+
+> Input: height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+Explanation: The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49.
+
+Example 2:
+
+> Input: height = [1,1]
+Output: 1
+
+Constraints:
+
+- n == height.length
+- 2 <= n <= 10^5
+- 0 <= height[i] <= 10^4
+
+```c++
+// 盛最多雨水的容器
+class Solution
+{
+public:
+    int maxArea(vector<int> &height)
+    {
+        int left = 0;
+        int right = height.size() - 1;
+        int result = 0;
+
+        // 面积 = （right - left）* min(height[left], height[right])
+        while (left < right)
+        {
+            int area = (right - left) * min(height[left], height[right]);
+            result = max(result, area);
+
+            // 向内移动高的板子，area一定会变小
+            // 向内移动低的板子, area可能会变大
+            if (height[left] < height[right])
+            {
+                left++;
+            }
+            else
+            {
+                right--;
+            }
+        }
+
+        return result;
+    }
+};
+```
+
+### 接雨水
+
+[接雨水](https://leetcode.cn/problems/trapping-rain-water/description/?envType=study-plan-v2&envId=top-100-liked)
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+
+Example 1:
+
+> Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+Explanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.
+
+Example 2:
+
+> Input: height = [4,2,0,3,2,5]
+Output: 9
+
+Constraints:
+
+- n == height.length
+- 1 <= n <= 2 * 10^4
+- 0 <= height[i] <= 10^5
+
+暴力解法: 记录左边柱子的最高高度 和 右边柱子的最高高度, 选择其中低的那一项减去中间柱子的高度就得到了中间接雨水的数量, for循环不断更换中间值
+`当前列雨水面积：min(左边柱子的最高高度，记录右边柱子的最高高度) - 当前柱子高度。`
+优化: 暴力解法为了得到两边的最高高度，使用了双指针来遍历，每到一个柱子都向两边遍历一遍，
+
+```c++
+// 接雨水-暴力解法
+class Solution
+{
+public:
+    // 如果按照列来计算的话，宽度一定是1了，我们再把每一列的雨水的高度求出来就可以了。
+    // 三指针, 找到每一列左右最高的那一排, 然后取其中低的一个减去中间的排数计算
+
+    int trap(vector<int> &height)
+    {
+
+        int result = 0;
+
+        for (int i = 0; i < height.size(); i++)
+        {
+            // 边缘无雨水
+            if (i == 0 || i == height.size() - 1)
+            {
+                continue;
+            }
+
+            // 寻找指针左右两边的最大高度
+            int rHeight = height[i + 1];
+            int lHeight = height[i - 1];
+
+            for (int r = i + 1; r < height.size(); r++)
+            {
+                if (height[r] > rHeight)
+                    rHeight = height[r];
+            }
+
+            for (int l = i - 1; l >= 0; l--)
+            {
+                if (height[l] > lHeight)
+                    lHeight = height[l];
+            }
+
+            // 注意只有h大于零的时候，在统计到总和中
+            int h = min(lHeight, rHeight) - height[i];
+            if (h > 0)
+                result += h;
+        }
+        return result;
+    }
+};
+
+// 接雨水-双指针优化
+class Solution {
+public:
+    // 将每一个位置的最大高度用数组给存下来,避免了重复的计算
+    int trap(vector<int>& height) {
+        int result = 0;
+
+        // 两根柱子无法接雨水
+        if (height.size() <= 2)
+            return 0;
+
+        vector<int> maxLeft(height.size(), 0);
+        vector<int> maxRight(height.size(), 0);
+
+        // 分别计算左边最大高度
+        maxLeft[0] = height[0];
+        for (int i = 1; i < height.size(); i++) {
+            maxLeft[i] = max(height[i], maxLeft[i - 1]);
+        }
+        // 分别计算右边最大高度
+        maxRight[height.size() - 1] = height[height.size() - 1];
+        for (int i = height.size() - 2; i >= 0; i--) {
+            maxRight[i] = max(maxRight[i + 1], height[i]);
+        }
+
+        // area = min(maLeft, maxRight) - height
+        for (int i = 0; i < height.size(); i++) {
+            int h = min(maxLeft[i], maxRight[i]) - height[i];
+            if (h > 0)
+                result += h;
+        }
+
+        return result;
     }
 };
 ```

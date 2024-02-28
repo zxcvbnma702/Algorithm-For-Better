@@ -153,3 +153,143 @@ public:
         return ans;
     }
 };
+
+// 移动零
+class Solution
+{
+public:
+    // 直接将0去掉, 然后在后面补零
+    void moveZeroes(vector<int> &nums)
+    {
+        int slow = 0;
+        int fast = 0;
+
+        while (fast < nums.size())
+        {
+            if (nums[fast] != 0)
+            {
+                nums[slow] = nums[fast];
+                slow++;
+            }
+            fast++;
+        }
+
+        for (int i = slow; i < nums.size(); i++)
+        {
+            nums[i] = 0;
+        }
+    }
+};
+
+// 盛最多雨水的容器
+class Solution
+{
+public:
+    int maxArea(vector<int> &height)
+    {
+        int left = 0;
+        int right = height.size() - 1;
+        int result = 0;
+
+        // 面积 = （right - left）* min(height[left], height[right])
+        while (left < right)
+        {
+            int area = (right - left) * min(height[left], height[right]);
+            result = max(result, area);
+
+            // 向内移动高的板子，area一定会变小
+            // 向内移动低的板子, area可能会变大
+            if (height[left] < height[right])
+            {
+                left++;
+            }
+            else
+            {
+                right--;
+            }
+        }
+
+        return result;
+    }
+};
+
+// 接雨水-暴力解法
+class Solution
+{
+public:
+    // 如果按照列来计算的话，宽度一定是1了，我们再把每一列的雨水的高度求出来就可以了。
+    // 三指针, 找到每一列左右最高的那一排, 然后取其中低的一个减去中间的排数计算
+
+    int trap(vector<int> &height)
+    {
+
+        int result = 0;
+
+        for (int i = 0; i < height.size(); i++)
+        {
+            // 边缘无雨水
+            if (i == 0 || i == height.size() - 1)
+            {
+                continue;
+            }
+
+            // 寻找指针左右两边的最大高度
+            int rHeight = height[i + 1];
+            int lHeight = height[i - 1];
+
+            for (int r = i + 1; r < height.size(); r++)
+            {
+                if (height[r] > rHeight)
+                    rHeight = height[r];
+            }
+
+            for (int l = i - 1; l >= 0; l--)
+            {
+                if (height[l] > lHeight)
+                    lHeight = height[l];
+            }
+
+            // 注意只有h大于零的时候，在统计到总和中
+            int h = min(lHeight, rHeight) - height[i];
+            if (h > 0)
+                result += h;
+        }
+        return result;
+    }
+};
+
+// 接雨水-双指针优化
+class Solution {
+public:
+    // 将每一个位置的最大高度用数组给存下来,避免了重复的计算
+    int trap(vector<int>& height) {
+        int result = 0;
+
+        // 两根柱子无法接雨水
+        if (height.size() <= 2)
+            return 0;
+
+        vector<int> maxLeft(height.size(), 0);
+        vector<int> maxRight(height.size(), 0);
+
+        // 分别计算左边最大高度
+        maxLeft[0] = height[0];
+        for (int i = 1; i < height.size(); i++) {
+            maxLeft[i] = max(height[i], maxLeft[i - 1]);
+        }
+        // 分别计算右边最大高度
+        maxRight[height.size() - 1] = height[height.size() - 1];
+        for (int i = height.size() - 2; i >= 0; i--) {
+            maxRight[i] = max(maxRight[i + 1], height[i]);
+        }
+
+        // area = min(maLeft, maxRight) - height
+        for (int i = 0; i < height.size(); i++) {
+            int h = min(maxLeft[i], maxRight[i]) - height[i];
+            if (h > 0)
+                result += h;
+        }
+
+        return result;
+    }
+};
