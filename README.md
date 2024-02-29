@@ -5980,6 +5980,478 @@ void testBFS2()
 
 > 使用深度优先搜索
 
+### 岛屿问题
+
+二维数组深度优先搜索框架
+
+```c++
+void traverse(TreeNode* root) {
+    traverse(root->left);
+    traverse(root->right);
+}
+
+void dfs(vector<vector<int>>& grid, int i, int j, vector<vector<bool>>& visited) {
+    int m = grid.size(), n = grid[0].size();
+    if (i < 0 || j < 0 || i >= m || j >= n) {
+        return;
+    }
+    if (visited[i][j]) {
+        return;
+    }
+    visited[i][j] = true;
+    dfs(grid, i - 1, j, visited); // 上
+    dfs(grid, i + 1, j, visited); // 下
+    dfs(grid, i, j - 1, visited); // 左
+    dfs(grid, i, j + 1, visited); // 右
+}
+```
+
+#### 岛屿数量
+
+[岛屿数量](https://leetcode.cn/problems/number-of-islands/description/?envType=study-plan-v2&envId=top-100-liked)
+
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+> Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+
+Example 2:
+>Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+
+Constraints:
+
+- m == grid.length
+- n == grid[i].length
+- 1 <= m, n <= 300
+- grid[i][j] is '0' or '1'.
+
+```c++
+// 岛屿数量-淹岛法
+class Solution
+{
+public:
+    int numIslands(vector<vector<char>> &grid)
+    {
+        int result = 0;
+
+        int m = grid.size();
+        int n = grid[0].size();
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == '1')
+                {
+                    result++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        return result;
+    }
+
+    // 将相邻岛屿全部淹没
+    void dfs(vector<vector<char>> &grid, int i, int j)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+        // 边界条件
+        if (i < 0 || i >= m || j < 0 || j >= n)
+            return;
+
+        // 到达水面，不需要淹岛
+        if (grid[i][j] == '0')
+            return;
+
+        grid[i][j] = '0';
+
+        dfs(grid, i + 1, j);
+        dfs(grid, i - 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
+    }
+};
+```
+
+#### 统计封闭岛屿的数目
+
+[统计封闭岛屿的数目](https://leetcode.cn/problems/number-of-closed-islands/)
+
+Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed island is an island totally (all left, top, right, bottom) surrounded by 1s.
+
+Return the number of closed islands.
+
+Example 1:
+
+> Input: grid = `[[1,1,1,1,1,1,1,0],[1,0,0,0,0,1,1,0],[1,0,1,0,1,1,1,0],[1,0,0,0,0,1,0,1],[1,1,1,1,1,1,1,0]]`
+Output: 2
+Explanation: 
+Islands in gray are closed because they are completely surrounded by water (group of 1s).
+
+Example 2:
+
+> Input: grid = `[[0,0,1,0,0],[0,1,0,1,0],[0,1,1,1,0]]`
+Output: 1
+
+Example 3:
+
+> Input: grid = `[[1,1,1,1,1,1,1],
+               [1,0,0,0,0,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,1,0,1,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,0,0,0,0,1],
+               [1,1,1,1,1,1,1]]`
+Output: 2
+
+Constraints:
+
+- 1 <= grid.length, grid[0].length <= 100
+- 0 <= grid[i][j] <=1
+
+```c++
+// 封闭岛屿的数量
+class Solution
+{
+public:
+    // 将外层岛屿淹没掉, 然后再使用淹岛法即可
+    int closedIsland(vector<vector<int>> &grid)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+        int result = 0;
+
+        // 淹没上下边界
+        for (int i = 0; i < n; i++)
+        {
+            dfs(grid, 0, i);
+            dfs(grid, m - 1, i);
+        }
+        // 淹没左右边界
+        for (int i = 0; i < m; i++)
+        {
+            dfs(grid, i, 0);
+            dfs(grid, i, n - 1);
+        }
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 0)
+                {
+                    result++;
+                    // 淹没相邻陆地
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        return result;
+    }
+
+    // 淹岛法
+    void dfs(vector<vector<int>> &grid, int i, int j)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // 触底条件
+        if (i < 0 || j < 0 || i >= m || j >= n)
+            return;
+
+        // 水跳过
+        if (grid[i][j] == 1)
+            return;
+
+        // 淹没
+        grid[i][j] = 1;
+
+        dfs(grid, i - 1, j);
+        dfs(grid, i + 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
+    }
+};
+```
+
+#### 飞地的数量
+
+[飞地的数量](https://leetcode.cn/problems/number-of-enclaves/description/)
+
+You are given an m x n binary matrix grid, where 0 represents a sea cell and 1 represents a land cell.
+
+A move consists of walking from one land cell to another adjacent (4-directionally) land cell or walking off the boundary of the grid.
+
+Return the number of land cells in grid for which we cannot walk off the boundary of the grid in any number of moves.
+
+Example 1:
+
+> Input: grid = `[[0,0,0,0],[1,0,1,0],[0,1,1,0],[0,0,0,0]]`
+Output: 3
+Explanation: There are three 1s that are enclosed by 0s, and one 1 that is not enclosed because its on the boundary.
+
+Example 2:
+
+> Input: grid = `[[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,0,0,0]]`
+Output: 0
+Explanation: All 1s are either on the boundary or can reach the boundary.
+
+Constraints:
+
+- m == grid.length
+- n == grid[i].length
+- 1 <= m, n <= 500
+- grid[i][j] is either 0 or 1.
+
+上一道题的变型题, 先用淹岛法将四周淹没, 然后数出陆地块的个数就可以了
+
+```c++
+// 飞地数量
+class Solution
+{
+public:
+    // 将外面的岛淹掉, 剩下的陆地就都是飞地了
+    int numEnclaves(vector<vector<int>> &grid)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+        int result = 0;
+
+        // 淹掉上下边界
+        for (int i = 0; i < n; i++)
+        {
+            dfs(grid, 0, i);
+            dfs(grid, m - 1, i);
+        }
+        // 淹掉左右边界
+        for (int i = 0; i < m; i++)
+        {
+            dfs(grid, i, 0);
+            dfs(grid, i, n - 1);
+        }
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 1)
+                    result++;
+            }
+        }
+
+        return result;
+    }
+
+    void dfs(vector<vector<int>> &grid, int i, int j)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // 边界条件
+        if (i < 0 || j < 0 || i >= m || j >= n)
+            return;
+
+        if (grid[i][j] == 0)
+        {
+            return;
+        }
+
+        grid[i][j] = 0;
+
+        dfs(grid, i - 1, j);
+        dfs(grid, i + 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
+    }
+};
+```
+
+#### 岛屿的最大面积
+
+[岛屿的最大面积](https://leetcode.cn/problems/max-area-of-island/description/)
+
+You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+The area of an island is the number of cells with a value 1 in the island.
+
+Return the maximum area of an island in grid. If there is no island, return 0.
+
+Example 1:
+
+> Input: grid = `[[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]`
+Output: 6
+Explanation: The answer is not 11, because the island must be connected 4-directionally.
+
+Example 2:
+
+> Input: grid = [[0,0,0,0,0,0,0,0]]
+Output: 0
+
+Constraints:
+
+- m == grid.length
+- n == grid[i].length
+- 1 <= m, n <= 50
+- grid[i][j] is either 0 or 1.
+
+dfs函数淹岛时, 将值返回即可
+
+```c++
+// 最大岛屿面积-带返回值的淹岛法
+class Solution
+{
+public:
+    int maxAreaOfIsland(vector<vector<int>> &grid)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+        int result = 0;
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 1)
+                {
+                    result = max(result, dfs(grid, i, j));
+                }
+            }
+        }
+        return result;
+    }
+
+    int dfs(vector<vector<int>> &grid, int i, int j)
+    {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // 边界条件
+        if (i < 0 || j < 0 || i >= m || j >= n)
+            return 0;
+
+        if (grid[i][j] == 0)
+            return 0;
+
+        grid[i][j] = 0;
+
+        return dfs(grid, i - 1, j) + dfs(grid, i + 1, j) + dfs(grid, i, j - 1) +
+               dfs(grid, i, j + 1) + 1;
+    }
+};
+```
+
+#### 统计子岛屿
+
+[统计子岛屿](https://leetcode.cn/problems/count-sub-islands/description/)
+
+You are given two m x n binary matrices grid1 and grid2 containing only 0's (representing water) and 1's (representing land). An island is a group of 1's connected 4-directionally (horizontal or vertical). Any cells outside of the grid are considered water cells.
+
+An island in grid2 is considered a sub-island if there is an island in grid1 that contains all the cells that make up this island in grid2.
+
+Return the number of islands in grid2 that are considered sub-islands.
+
+Example 1:
+
+>Input: grid1 = `[[1,1,1,0,0],[0,1,1,1,1],[0,0,0,0,0],[1,0,0,0,0],[1,1,0,1,1]]`, grid2 = `[[1,1,1,0,0],[0,0,1,1,1],[0,1,0,0,0],[1,0,1,1,0],[0,1,0,1,0]]`
+Output: 3
+Explanation: In the picture above, the grid on the left is grid1 and the grid on the right is grid2.
+The 1s colored red in grid2 are those considered to be part of a sub-island. There are three sub-islands.
+
+Example 2:
+
+> Input: grid1 = `[[1,0,1,0,1],[1,1,1,1,1],[0,0,0,0,0],[1,1,1,1,1],[1,0,1,0,1]]`, grid2 = `[[0,0,0,0,0],[1,1,1,1,1],[0,1,0,1,0],[0,1,0,1,0],[1,0,0,0,1]]`
+Output: 2 
+Explanation: In the picture above, the grid on the left is grid1 and the grid on the right is grid2.
+The 1s colored red in grid2 are those considered to be part of a sub-island. There are two sub-islands.
+
+Constraints:
+
+- m == grid1.length == grid2.length
+- n == grid1[i].length == grid2[i].length
+- 1 <= m, n <= 500
+- grid1[i][j] and grid2[i][j] are either 0 or 1.
+
+如果岛屿 B 中存在一片陆地，在岛屿 A 的对应位置是海水，那么岛屿 B 就不是岛屿 A 的子岛。
+
+那么，我们只要遍历 grid2 中的所有岛屿，把那些不可能是子岛的岛屿排除掉，剩下的就是子岛。
+
+```c++
+// 统计子岛屿
+class Solution
+{
+public:
+    int countSubIslands(vector<vector<int>> &grid1,
+                        vector<vector<int>> &grid2)
+    {
+        int m = grid1.size(), n = grid1[0].size();
+        int result = 0;
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                // 如果岛屿 B 中存在一片陆地，在岛屿 A
+                // 的对应位置是海水，那么岛屿 B 就不是岛屿 A 的子岛。
+                if (grid1[i][j] == 0 && grid2[i][j] == 1)
+                {
+                    // 不是子岛就阉掉
+                    dfs(grid2, i, j);
+                }
+            }
+        }
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid2[i][j] == 1)
+                {
+                    // 记录岛屿数量
+                    result++;
+                    // 淹了
+                    dfs(grid2, i, j);
+                }
+            }
+        }
+        return result;
+    }
+
+    // 从 (i, j) 开始，将与之相邻的陆地都变成海水
+    void dfs(vector<vector<int>> &grid, int i, int j)
+    {
+        int m = grid.size(), n = grid[0].size();
+        if (i < 0 || j < 0 || i >= m || j >= n)
+        {
+            return;
+        }
+        if (grid[i][j] == 0)
+        {
+            return;
+        }
+
+        // 淹
+        grid[i][j] = 0;
+        dfs(grid, i + 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i - 1, j);
+        dfs(grid, i, j - 1);
+    }
+};
+```
+
 ### 拓扑排序
 
 > 有向无环图的逆后序
