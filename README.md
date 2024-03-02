@@ -6452,6 +6452,123 @@ public:
 };
 ```
 
+### 腐烂的橘子
+
+[腐烂的橘子](https://leetcode.cn/problems/rotting-oranges/description/?envType=study-plan-v2&envId=top-100-liked)
+
+You are given an m x n grid where each cell can have one of three values:
+
+- 0 representing an empty cell,
+- 1 representing a fresh orange, or
+- 2 representing a rotten orange.
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+
+Example 1:
+
+> Input: grid = `[[2,1,1],[1,1,0],[0,1,1]]`
+Output: 4
+
+Example 2:
+
+> Input: grid = `[[2,1,1],[0,1,1],[1,0,1]]`
+Output: -1
+Explanation: The orange in the bottom left corner (row 2, column 0) is never rotten, because rotting only happens 4-directionally.
+
+Example 3:
+
+> Input: grid = `[[0,2]]`
+Output: 0
+Explanation: Since there are already no fresh oranges at minute 0, the answer is just 0.
+
+Constraints:
+
+- m == grid.length
+- n == grid[i].length
+- 1 <= m, n <= 10
+- grid[i][j] is 0, 1, or 2.
+
+```c++
+// 腐烂的橘子
+class Solution
+{
+public:
+    vector<pair<int, int>> dirs{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    // 广度优先搜索
+    int orangesRotting(vector<vector<int>> &grid)
+    {
+        int result = 0;
+        int fresh = 0;
+        // 橘子坐标是二维的, 使用pair<>
+        queue<pair<int, int>> queue;
+
+        int m = grid.size();
+        int n = grid[0].size();
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 1)
+                {
+                    fresh++;
+                }
+                else if (grid[i][j] == 2)
+                {
+                    // 将腐烂的橘子入队
+                    queue.push({i, j});
+                }
+            }
+        }
+
+        while (!queue.empty())
+        {
+            int size = queue.size();
+            // 记录排空一次队列是否有橘子腐烂
+            bool hasRotton = false;
+            for (int i = 0; i < size; i++)
+            {
+                // 取出腐烂的橘子
+                auto [x, y] = queue.front();
+                queue.pop();
+
+                // 向四个方向腐烂
+                for (auto d : dirs)
+                {
+                    int nx = x + d.first;
+                    int ny = y + d.second;
+
+                    // 边界条件
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n)
+                        continue;
+                    if (grid[nx][ny] == 2 || grid[nx][ny] == 0)
+                        continue;
+
+                    // 腐烂新鲜的橘子
+                    grid[nx][ny] = 2;
+                    // 将腐烂的橘子加入队列
+                    queue.push({nx, ny});
+                    fresh--;
+                    hasRotton = true;
+                }
+            }
+            // 排空一次队列 ,腐烂时间+1
+            if (hasRotton)
+                result++;
+        }
+
+        // 有橘子腐烂不到
+        if (fresh)
+        {
+            return -1;
+        }
+
+        return result;
+    }
+};
+```
+
 ### 拓扑排序
 
 > 有向无环图的逆后序
@@ -6459,6 +6576,33 @@ public:
 #### 课程表1
 
 [课程表](https://leetcode.cn/problems/course-schedule/description/)
+
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
+
+Example 1:
+
+> Input: numCourses = 2, prerequisites = `[[1,0]]`
+Output: true
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0. So it is possible.
+
+Example 2:
+
+> Input: numCourses = 2, prerequisites = `[[1,0],[0,1]]`
+Output: false
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Constraints:
+
+- 1 <= numCourses <= 2000
+- 0 <= prerequisites.length <= 5000
+- prerequisites[i].length == 2
+- 0 <= ai, bi < numCourses
+- All the pairs prerequisites[i] are unique.
 
 > 检测有向无环图的中的环，在dfs时，使用一个path数组来保存递归调用期间栈上的所有顶点。当它找到一条边v→w且w在栈中时，它就找到了一个有向环。
 
@@ -6737,6 +6881,119 @@ public:
     }
 };
 ```
+
+### 前缀树
+
+A trie (pronounced as "try") or prefix tree is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.
+
+Implement the Trie class:
+
+Trie() Initializes the trie object.
+void insert(String word) Inserts the string word into the trie.
+boolean search(String word) Returns true if the string word is in the trie (i.e., was inserted before), and false otherwise.
+boolean startsWith(String prefix) Returns true if there is a previously inserted string word that has the prefix prefix, and false otherwise.
+
+Example 1:
+
+> Input
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+`[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]`
+Output
+[null, null, true, false, true, null, true]
+> Explanation
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // return True
+trie.search("app");     // return False
+trie.startsWith("app"); // return True
+trie.insert("app");
+trie.search("app");     // return True
+
+Constraints:
+
+- 1 <= word.length, prefix.length <= 2000
+- word and prefix consist only of lowercase English letters.
+- At most 3 * 10^4 calls in total will be made to insert, search, and startsWith.
+
+Trie 的形状和单词的插入或删除顺序无关，也就是说对于任意给定的一组单词，Trie 的形状都是唯一的。
+
+查找或插入一个长度为 L 的单词，访问 next 数组的次数最多为 L+1，和 Trie 中包含多少个单词无关。
+
+Trie 的每个结点中都保留着一个字母表，这是很耗费空间的。如果 Trie 的高度为 n，字母表的大小为 m，最坏的情况是 Trie 中还不存在前缀相同的单词，那空间复杂度就为 O(m^n)
+
+```c++
+// 实现前缀树
+class Trie
+{
+private:
+    bool isEnd;
+    Trie *next[26];
+
+public:
+    Trie()
+    {
+        isEnd = false;
+        memset(next, 0, sizeof(next));
+    }
+
+    void insert(string word)
+    {
+        // 获取根节点
+        Trie *node = this;
+        for (char c : word)
+        {
+            if (node->next[c - 'a'] == NULL)
+            {
+                node->next[c - 'a'] = new Trie();
+            }
+            // 指针只要指下去就行, 数字就代表了差值
+            node = node->next[c - 'a'];
+        }
+        // 到达了叶子节点
+        node->isEnd = true;
+    }
+
+    bool search(string word)
+    {
+        Trie *node = this;
+        for (char c : word)
+        {
+            node = node->next[c - 'a'];
+            // 没有后续了
+            if (node == NULL)
+            {
+                return false;
+            }
+        }
+        // 不能直接返回true, 也有可能word是前缀
+        return node->isEnd;
+    }
+
+    bool startsWith(string prefix)
+    {
+        Trie *node = this;
+        // 前缀部分必须跑完
+        for (char c : prefix)
+        {
+            node = node->next[c - 'a'];
+            if (node == NULL)
+                return false;
+        }
+
+        // 前缀部分跑完返回true即可
+        return true;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
+```
+
 
 ### 最小生成树
 

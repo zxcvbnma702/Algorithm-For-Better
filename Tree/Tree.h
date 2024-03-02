@@ -1530,3 +1530,74 @@ public:
         return root;
     }
 };
+
+// 实现前缀树
+class Trie
+{
+private:
+    bool isEnd;
+    Trie *next[26];
+
+public:
+    Trie()
+    {
+        isEnd = false;
+        memset(next, 0, sizeof(next));
+    }
+
+    void insert(string word)
+    {
+        // 获取根节点
+        Trie *node = this;
+        for (char c : word)
+        {
+            if (node->next[c - 'a'] == NULL)
+            {
+                node->next[c - 'a'] = new Trie();
+            }
+            // 指针只要指下去就行, 数字就代表了差值
+            node = node->next[c - 'a'];
+        }
+        // 到达了叶子节点
+        node->isEnd = true;
+    }
+
+    bool search(string word)
+    {
+        Trie *node = this;
+        for (char c : word)
+        {
+            node = node->next[c - 'a'];
+            // 没有后续了
+            if (node == NULL)
+            {
+                return false;
+            }
+        }
+        // 不能直接返回true, 也有可能word是前缀
+        return node->isEnd;
+    }
+
+    bool startsWith(string prefix)
+    {
+        Trie *node = this;
+        // 前缀部分必须跑完
+        for (char c : prefix)
+        {
+            node = node->next[c - 'a'];
+            if (node == NULL)
+                return false;
+        }
+
+        // 前缀部分跑完返回true即可
+        return true;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
