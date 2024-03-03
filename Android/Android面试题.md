@@ -27,6 +27,7 @@
     - [如何获取当前屏幕Activity的对象？](#如何获取当前屏幕activity的对象)
     - [Activity的onNewIntent()方法何时会被调用?](#activity的onnewintent方法何时会被调用)
     - [除了用Intent 去启动一个Activity，还有其他方法吗](#除了用intent-去启动一个activity还有其他方法吗)
+    - [Activity内存泄漏](#activity内存泄漏)
   - [Fragment](#fragment)
     - [Fragment的生命周期](#fragment的生命周期)
     - [Android中Fragment和Activity通信的方式有哪些](#android中fragment和activity通信的方式有哪些)
@@ -87,6 +88,10 @@
   - [WebView](#webview)
     - [WebView 优化](#webview-优化)
     - [WebView与Native交互](#webview与native交互)
+  - [第三方库](#第三方库)
+    - [Glide原理](#glide原理)
+    - [OkHttp原理](#okhttp原理)
+    - [Retrofit原理](#retrofit原理)
   - [数据存储](#数据存储)
     - [说说Android数据存储的方式有哪些？](#说说android数据存储的方式有哪些)
     - [SharedPreferences中的commit和apply有啥区别？](#sharedpreferences中的commit和apply有啥区别)
@@ -99,6 +104,7 @@
     - [Serializable和Parcelable的比较](#serializable和parcelable的比较)
   - [异步机制](#异步机制)
     - [Android 中IPC（进程间通信）的方式有哪些方式？](#android-中ipc进程间通信的方式有哪些方式)
+    - [Binder机制](#binder机制)
     - [Android中线程异步的方式有哪些？](#android中线程异步的方式有哪些)
     - [Android 的子线程能否做到更新 UI？](#android-的子线程能否做到更新-ui)
     - [AsyncTask的缺陷？使用时有什么需要注意的点？](#asynctask的缺陷使用时有什么需要注意的点)
@@ -129,13 +135,15 @@
     - [Handler.Callback.handleMessage 和 Handler.handleMessage 有什么不一样？为什么这么设计？](#handlercallbackhandlemessage-和-handlerhandlemessage-有什么不一样为什么这么设计)
     - [Thread、AsyncTask、IntentService的使用场景与特点？](#threadasynctaskintentservice的使用场景与特点)
     - [使用线程池有什么好处？](#使用线程池有什么好处)
-    - [ThradPoolExecutor线程池的执行任务的过程遵循什么样的规则？](#thradpoolexecutor线程池的执行任务的过程遵循什么样的规则)
+    - [ThreadPoolExecutor线程池的执行任务的过程遵循什么样的规则？](#threadpoolexecutor线程池的执行任务的过程遵循什么样的规则)
     - [知道哪几种常用的线程池？](#知道哪几种常用的线程池)
     - [Android中有哪几种解析xml的方式,官方推荐哪种？它们的原理和区别？](#android中有哪几种解析xml的方式官方推荐哪种它们的原理和区别)
   - [内存相关](#内存相关)
     - [什么是内存泄漏？](#什么是内存泄漏)
     - [什么是内存溢出？](#什么是内存溢出)
     - [什么是内存抖动，哪些场景会出现内存抖动？](#什么是内存抖动哪些场景会出现内存抖动)
+    - [内存分区](#内存分区)
+      - [GC算法](#gc算法)
     - [Android中ViewHolder，Handler等为什么要被声明成静态内部类（static）](#android中viewholderhandler等为什么要被声明成静态内部类static)
     - [常见的内存泄漏（举例）](#常见的内存泄漏举例)
     - [在Android中，有哪些场景会导致内存泄漏，要怎么解决？](#在android中有哪些场景会导致内存泄漏要怎么解决)
@@ -157,9 +165,12 @@
     - [Android中怎么加速启动Activity？](#android中怎么加速启动activity)
     - [为什么ViewStub可以提高加载性能？](#为什么viewstub可以提高加载性能)
     - [那ViewStub适用于什么场景呢？](#那viewstub适用于什么场景呢)
+    - [布局优化](#布局优化)
     - [apk如何瘦身？](#apk如何瘦身)
     - [请谈谈你是如何进行多渠道打包的？](#请谈谈你是如何进行多渠道打包的)
     - [android中的热更新方案有哪些？](#android中的热更新方案有哪些)
+
+![alt text](image-23.png)
 
 ## 架构
 
@@ -169,8 +180,7 @@ Android的四大组件包括Activity、Service、BroadcastReceiver和ContentProv
 
 - Activity：用于表现功能。它是所有程序的根本，所有程序的流程都运行在Activity之中，可以算是开发者遇到的最频繁，也是Android当中最基本的模块之一。
 - Service：后台运行服务，不提供界面呈现。它是android系统中的一种组件，它跟Activity的级别差不多，但是他不能自己运行，只能后台运行，并且可以和其他组件进行交互。
-- Broadcas
-tReceiver：用于接收广播。
+- BroadcastReceiver：用于接收广播。
 - ContentProvider：支持在多个应用中存储和读取数据。
 
 ### Android 中进程的优先级
@@ -181,7 +191,11 @@ tReceiver：用于接收广播。
 - **后台进程**：运行着onStop方法而停止的程序，当系统内存不够它就首先被杀死。
 - **空进程**：不包含应用程序的程序组件的进程，保留这类进程的唯一理由是高速缓存，这样可以提高下次一个组件要运行它时的启动速度。系统经常为了平衡进程高速缓存和底层的内核高速缓存之间的整体系统资而杀死它们。
 
+![alt text](image-27.png)
+
 ### Android中asset和res目录的区别
+
+![alt text](image-31.png)
 
 1. res目录下的资源文件会在R文件中生成对应的id，asset不会\
 2. res目录下的文件在生成apk时，除raw（即res/raw）目录下文件不进行编译外，都会被编译成二进制文件；asset目录下的文件不会进行编译
@@ -197,10 +211,14 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 不同模块间解偶，方便复用
 单个模块支持独立编译，并行开发，提高开发和测试效率
 
+即将常用的UI、网络请求、数据库操作、第三方库的使用等公共部分抽离封装成基础模块，或者将大的业务上拆分为多个小的业务模块，这些业务模块又依赖于公共基础模块的开发方式。
+更宏观上，又会将这些不同的模块组合为一个整体，打包成一个完整的项目。
+
 ### 组件化
 
 组件化是已复用为目的的
 多个团队可能公用一个组件
+![alt text](image-12.png)
 
 ### Android 渲染机制
 
@@ -213,7 +231,7 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 
 ### Activity 生命周期
 
-![Alt text](image.png)
+![alt text](image-13.png)
 
 - **onCreate()** ：当Activity正在被创建时调用。
 - **onRestart()** ：当Activity从不可见重新变为可见状态时调用。
@@ -236,10 +254,14 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 - 设置Activity的``android:configChanges="orientation"``时，切屏还是会重新调用各个生命周期，切横、竖屏时只会执行一次
 - 设置Activity的`android:configChanges="orientation|keyboardHidden|screenSize"`时，切屏不会重新调用各个生命周期，只会执行``onConfigurationChanged``方法
 
+![alt text](image.png)
+
 > local：设备的本地位置发生了变化，一般指切换了系统语言； keyboardHidden：键盘的可访问性发生了变化，比如用户调出了键盘；orientation：屏幕方向发生了变化，比如旋转了手机屏幕。
 
 系统配置发生改变后，比如横竖屏切换，它的``onPause``、``onStop``、``onDestroy``都会被调用，同时Activity是在异常情况下终止的，系统就会在``onStop``方法之前调用``onSaveInstanceState``来保存当前Activity的状态。
 在屏幕方向切换回来的时候，会依次调用``onCreate``、``onStart``、``onResume``方法，并可以在``onRestoreInstanceState``和``onCreate``中取出之前保存的数据并恢复。
+
+![alt text](image-14.png)
 
 > 注意: ``onSaveInstanceState``只会在Activity被异常终止的情况下调用。
 
@@ -256,7 +278,6 @@ Android的底层内核为Linux，因此继承了Linux良好的安全性，并对
 
 ### Activity执行finish后的生命周期
 
-
 在onCreate中执行：onCreate -> onDestroy
 在onStart中执行：onCreate -> onStart -> onStop -> onDestroy
 在onResume中执行：onCreate -> onStart -> onResume -> onPause -> onStop -> onDestroy
@@ -270,9 +291,20 @@ Activity的启动模式有四种，分别是standard、singleTop、singleTask和
 - **singleTask模式**：在任务栈中查看是否有和要启动的Activity相同的实例。如果有，就直接把该Activity之上的所有Activity全部弹出使之置于栈顶。
 - **singleInstance模式**：在整个系统中只创建一个Activity实例。
 
+![alt text](image-15.png)
+![alt text](image-16.png)
+
 ### Activity启动流程
 
-![Alt text](image-9.png)
+![alt text](image-18.png)
+
+当请求启动Activity时：
+
+1. Launcher进程通过Binder驱动向ActivityManagerService类发起startActivity请求；
+2. ActivityManagerService类接收到请求后，向ActivityStack类发送启动Activity的请求；
+3. ActivityStack类记录需启动的Activity的信息 & 调整Activity栈 将其置于栈顶、通过 Binder驱动 将Activity的启动信息传递到ApplicationThread线程中（即Binder线程）
+4. ApplicationThread线程通过Handler将Activity的启动信息发送到主线程ActivityThread
+5. 主线程ActivityThread类接收到该信息 & 请求后，通过ClassLoader加载相应的Activity类，最终调用Activity的onCreate（），最后 启动完毕
 
 ### 在Activity中创建一个thread跟在service中创建一个thread之间的区别？
 
@@ -306,6 +338,7 @@ B返回A：B.onPause()→A.onRestart()/A.onCreate()→A.onStart()→A.onResume()
 
 ### IntentFilter的匹配规则
 
+![alt text](image-17.png)
 IntentFilter中的过滤信息有``action``、``category``、``data``，为了匹配过滤列表，需要同时匹配过滤列表中的``action``、``category``、``data``信息，否则匹配失败。
 
 ### 验证是否有当前Activity
@@ -330,6 +363,10 @@ IntentFilter中的过滤信息有``action``、``category``、``data``，为了�
 ### 除了用Intent 去启动一个Activity，还有其他方法吗
 
 使用adb shell am 命令 :如``adb shell am start com.example.fuchenxuan/.MainActivity`` 或者 ``adb shell am broadcast -a magcomm.action.TOUCH_LETTER``
+
+### Activity内存泄漏
+
+![alt text](image-9.png)
 
 ## Fragment
 
@@ -408,7 +445,7 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 
 ### Service与Activity通过Binder通信
 
-[bind方式启动时可以通过ServiceConnection通信]((https://link.juejin.cn/?target=https%3A%2F%2Fwww.cnblogs.com%2FJMatrix%2Fp%2F8296364.html))：在Service的``onBind``方法中返回一个binder，该binder可以是AIDL方法产生的，也可以是Messenger方法产生的
+[bind方式启动时可以通过ServiceConnection通信](https://link.juejin.cn/?target=https%3A%2F%2Fwww.cnblogs.com%2FJMatrix%2Fp%2F8296364.html)：在Service的``onBind``方法中返回一个binder，该binder可以是AIDL方法产生的，也可以是Messenger方法产生的
 
 ### Service 如何进行保活？
 
@@ -425,6 +462,8 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 
 ### Service和Thread的区别
 
+![alt text](image-21.png)
+
 - 这是没用任何关系的两个概念，servie是系统的组件，Thread是CPU运行的最小单元
 - Service不可见，我们可以把Service当成是不可见的Activity，用于在后台执行一些服务；
 - Service可以运行在任意线程上，如果我们生成它时没有做特殊说明，那么它运行在主线程上
@@ -440,6 +479,8 @@ bind的方式开启服务后，如果开启者被销毁了，它也会跟着一�
 
 ### IntentService
 
+![alt text](image-22.png)
+
 IntentService 是继承自 Service,内部通过 HandlerThread 启动一个新线程处理耗时操作，可以看做是 Service 和 HandlerThread 的结合体，在完成了使命之后会自动停止，适合需要在工作线程处理UI无关任务的场景
 如果启动 IntentService 多次，那么每一个耗时操作会以**工作队列**的方式在 IntentService 的 ``onHandleIntent`` 回调方法中执行，依次去执行，使用串行的方式，执行完自动结束。
 
@@ -453,6 +494,8 @@ IntentService 是继承自 Service,内部通过 HandlerThread 启动一个新线
 
 第一种是常驻型(静态注册)：当应用程序关闭后如果有信息广播来，程序也会被系统调用，自己运行。(在manifest中静态注册)
 第二种不常驻(动态注册)：广播会跟随程序的生命周期。
+
+![alt text](image-19.png)
 
 **动态注册**
 优点： 在android的广播机制中，动态注册优先级高于静态注册优先级，因此在必要情况下，是需要动态注册广播接收者的。
@@ -473,6 +516,8 @@ BroadcastReceiver 的生命周期只有一个回调方法``onReceive(Context con
 如果需要进行耗时操作，可以启动一个service处理。
 
 ### 广播发送和接收的原理了解吗
+
+![alt text](image-20.png)
 
 - 继承BroadcastReceiver，重写``onReceive()``方法。
 - 通过Binder机制向ActivityManagerService注册广播。
@@ -499,6 +544,8 @@ handler 的handle方法收到消息，从mPendingBroadcasts取出receiver并调�
 其他：删除方法是通过一个辅助的hashmap实现的，hashmap存储了receiver和receiverRecord
 
 ## ContentProvider
+
+![alt text](image-24.png)
 
 ### 请介绍下ContentProvider是如何实现数据共享的
 
@@ -687,7 +734,7 @@ protected void onStart() {
 
 ``invalidate()``：是自定义View 的时候，重新执行``onDraw()``方法，当view只在内容和可见度方面发生变化时调用。
 
-``requeLayout()`` : 他跟``invalidate()``相反，他只调用``measure()``和``layout()``过程，不会调用``draw()``。
+``requestLayout()`` : 他跟``invalidate()``相反，他只调用``measure()``和``layout()``过程，不会调用``draw()``。
 
 **如果需要局部刷新怎么办？**
 使用 ``requestFocus()``方法，他只刷新你要刷新的地方。
@@ -789,14 +836,16 @@ protected void onStart() {
 
 要选择合适的图片规格，因为不同规格的图片所占用的内存不同
 
-ALPHA_8   每个像素占用1byte内存
-ARGB_4444 每个像素占用2byte内存
-ARGB_8888 每个像素占用4byte内存（默认）
-RGB_565 每个像素占用2byte内存
+![alt text](image-36.png)
+
+使用参数：``BitmapFactory.inPreferredConfig`` 设置
+默认使用解码方式：ARGB_8888
 
 - 图片压缩。通过BitmapFactory对图片进行压缩，这样就会降低内存占用从而在一定程度上避免OOM，提高Bitmap加载时的性能。
 - 复用内存。通过软引用(内存不够的时候才会回收掉)来复用内存块，就不需要再重新给这个bitmap申请一块新的内存，避免了一次内存的分配和回收带来的性能消耗。
 - 使用recycle()方法及时回收内存，避免内存泄露。
+
+![alt text](image-35.png)
 
 > 在Android中，Bitmap的存储分为两部分，一部分是Bitmap的数据，一部分是Bitmap的引用。 在Android2.3时代，Bitmap的引用是放在堆中的，而Bitmap的数据部分是放在栈中的，需要用户调用recycle方法手动进行内存回收，而在Android2.3之后，整个Bitmap，包括数据和引用，都放在了堆中，这样，整个Bitmap的回收就全部交给GC了，这个recycle方法就再也不需要使用了。
 
@@ -811,7 +860,6 @@ Scroller 通常用来实现平滑的滚动
 1. 新建Scroller，并设置合适的插值器
 2. 在View的``computeScroll``方法中调用scroller，查看当前应该滑动到的位置，并调用view的``scrollTo``或者``scrollBy``方法滑动
 3. 调用Scroller的``start``方法开始滑动
-
 
 ### 说说Listview的复用机制
 
@@ -888,6 +936,21 @@ RecyclerView的Measure和Layout是委托LayoutManager进行的
 ``mWebView.addJavascriptInterface(new JSInterface(), "jsInterface");``
 其他js调用Native方案：通过prompt, alert等，在webClient中重写拦截相应的方法
 
+## 第三方库
+
+### Glide原理
+
+![alt text](image-41.png)
+![alt text](image-42.png)
+
+### OkHttp原理
+
+![alt text](image-39.png)
+
+### Retrofit原理
+
+![alt text](image-40.png)
+
 ## 数据存储
 
 ### 说说Android数据存储的方式有哪些？
@@ -897,6 +960,8 @@ RecyclerView的Measure和Layout是委托LayoutManager进行的
 - **SQLite数据库**：这是一种轻型的关系型数据库，可以用于存储和管理大量的结构化数据。Android提供了SQLite数据库的API，开发者可以直接使用SQL语句进行数据的增删改查操作。
 - **ContentProvider**：当实例继承``ContentProvider``类，并重写该类用于提供数据和存储数据的方法，就可以向其他应用共享其数据。
 - **网络存储**：通过网络接口进行数据的存储和上传等操作。这种方式主要用于实时采集到的数据需要马上通过网络传输到数据处理中心进行存储并进行处理的情况。
+
+![alt text](image-29.png)
 
 ### SharedPreferences中的commit和apply有啥区别？
 
@@ -996,11 +1061,46 @@ Serializable是序列化的意思，表示将一个对象转换成存储或可�
 
 ## 异步机制
 
+在Android系统中一个进程会对应一个虚拟机实例，不同的虚拟机在内存分配上有不同的地址空间，所以：只有在多进程的环境下才需要考虑使用IPC进行通讯。Android中的应用程序可以为一个进程，也可以配置成多进程，每个进程都在自己独立的空间中运行
+
+Android默认是运行在默认名为包名的进程中，除非特别指定，所有的组件都运行在默认进程中。可以通过修改AndroidManifest文件，在 application 标签下添加 android:process 属性可以修改Android默认的进程名字：
+
+```XML
+<application
+    android:name=".MainApplication"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:process="com.aa.bbb"
+    android:theme="@style/Theme.Sunflower">
+   
+</application>
+```
+
+在Android中只有给四大组件（Activity Service Broadcast ContentProvider）设置android:process属性这一种使用多进程的方法。
+
+```xml
+<service
+    android:name=".messenger.MessengerService"
+    android:process=":services" />
+```
+
+上面的代码为MessengerService指定了``process``属性，为应用增加了一个新的进程。当MessengerService 启动时，系统会为它创建单独的进程。
+
 ### Android 中IPC（进程间通信）的方式有哪些方式？
 
 ![Alt text](image-8.png)
 
+### Binder机制
+
+![alt text](image-26.png)
+![alt text](image-25.png)
+
 ### Android中线程异步的方式有哪些？
+
+![alt text](image-38.png)
 
 - **使用Thread**：通过创建一个新的``Thread``对象，并重写其``run()``方法来执行异步任务。这是最简单的方式，但需要注意的是，Android的主线程（UI线程）不支持直接使用``Thread``，否则会导致ANR异常。
 - **使用Handler**：``Handler``是Android中用于在主线程（UI线程）中执行消息或``Runnable``对象的机制。通过创建一个``Handler``对象，可以将子线程中的任务发送到主线程中执行。
@@ -1035,6 +1135,8 @@ Android的子线程不能直接更新UI。UI的更新必须在主线程（UI线�
 在Activity中创建的AsyncTask会一直执行，直到``doInBackground()``方法执行完毕，所以我们在销毁Activity的时候也需要销毁AsyncTask。通过在Activity的``onDestroy``生命周期方法里调用AsyncTask的``cancel``销毁AsyncTask
 
 ### 说说Handler机制
+
+![alt text](image-28.png)
 
 Android中的Handler机制是一种在主线程（UI线程）和工作线程之间进行通信的机制。它允许子线程将任务发送到主线程中执行，从而避免在主线程中执行耗时操作，提高应用的性能。
 
@@ -1468,7 +1570,7 @@ void recycleUnchecked() {
 - 能够控制线程池中线程的并发数，避免大量的线程之间因互相抢占系统资源导致的阻塞现象。
 - 能够对线程进行简单的管理，可以提供定时执行以及指定间隔循环执行等功能。
 
-### ThradPoolExecutor线程池的执行任务的过程遵循什么样的规则？
+### ThreadPoolExecutor线程池的执行任务的过程遵循什么样的规则？
 
 - 如果所需线程数量没有达到核心线程的数量，那么就开启一个核心线程执行任务。
 - 如果所需线程的数量达到核心线程池的数量，那么任务就会被插入到任务队列中等待执行。
@@ -1502,6 +1604,10 @@ Pull 与 SAX 有点类似，都提供了类似的事件，如开始元素和结�
 
 ### 什么是内存泄漏？
 
+出现内存泄露的原因仅仅是外部人为原因 = 无意识地持有对象引用，使得 持有引用者的生命周期 > 被引用者的生命周期
+
+![alt text](image-32.png)
+
 内存泄漏指的是程序运行时未能正确释放不再使用的内存资源，导致这些内存资源无法被垃圾回收器回收和重新利用。内存泄漏会导致程序占用越来越多的内存，最终可能导致内存耗尽和程序崩溃。
 在Java中，当一个对象不再被引用时，Java的垃圾回收器会自动将其标记为可回收，并在合适的时机释放其占用的内存。然而，如果存在内存泄漏的情况，这些不再使用的对象仍然被保留在内存中，无法被垃圾回收器回收。内存泄漏可能是由于编程错误、资源管理不当或设计问题引起的。
 
@@ -1527,11 +1633,19 @@ Pull 与 SAX 有点类似，都提供了类似的事件，如开始元素和结�
 - **减少大对象的使用**：尽量避免一次性加载大量的数据或者资源，可以使用分页加载、懒加载等技术来减少内存占用。
 - 如避免在循环遍历时创建临时大对象，不在自定义View时在onDraw里创建对象等。
 
+### 内存分区
+
+![alt text](image-33.png)
+
+#### GC算法
+
 ### Android中ViewHolder，Handler等为什么要被声明成静态内部类（static）
 
 非静态内部类会持有外部类的引用，在一些情况下很可能造成内存泄漏，所以一般声明为静态内部类，但并不是说一定要生命成静态内部类。
 
 ### 常见的内存泄漏（举例）
+
+![alt text](image-34.png)
 
 - **不恰当的使用static变量**（或者向static集合中添加数据却忘了必要时移除数据）
 - **忘记关闭各种连接**，如IO流等
@@ -1763,6 +1877,8 @@ logcat日志关键字：timeout publishing content providers
 
 LinkedHashMap的特性：LinkedHashMap是一个双向链表，当构造函数中accessOrder为true时：调用``put()``方法，会在集合头部添加元素时，会调用``trimToSize()``判断缓存是否已满，如果满了就用LinkedHashMap的迭代器删除队尾元素，即近期最少访问的元素。当调用``get()``方法访问缓存对象时，就会调用LinkedHashMap的``get()``方法获得对应集合元素，同时会更新该元素到队头
 
+![alt text](image-30.png)
+
 ### SparseArray
 
 - SparseArray通过两个数组实现，key为int型，value为Object型
@@ -1824,6 +1940,10 @@ ViewStub使用的是惰性加载的方式，即使将其放置于布局文件中
 ### 那ViewStub适用于什么场景呢？
 
 通常用于网络请求页面失败的显示。一般情况下若要实现一个网络请求失败的页面，我们是不是使用两个View呢，一个隐藏，一个显示。试想一下，如果网络状况良好，并不需要加载失败页面，但是此页面确确实实已经加载完了，无非只是隐藏看不见而已。如果使用ViewStub，在需要的时候才进行加载，就达到节约内存提高性能的目的了。
+
+### 布局优化
+
+![alt text](image-37.png)
 
 ### apk如何瘦身？
 
