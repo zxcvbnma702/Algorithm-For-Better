@@ -91,6 +91,10 @@
   - [第三方库](#第三方库)
     - [Glide原理](#glide原理)
     - [OkHttp原理](#okhttp原理)
+      - [同步请求流程](#同步请求流程)
+      - [异步请求流程](#异步请求流程)
+      - [拦截器递归调用](#拦截器递归调用)
+      - [缓存策略](#缓存策略)
     - [Retrofit原理](#retrofit原理)
   - [数据存储](#数据存储)
     - [说说Android数据存储的方式有哪些？](#说说android数据存储的方式有哪些)
@@ -940,14 +944,71 @@ RecyclerView的Measure和Layout是委托LayoutManager进行的
 
 ### Glide原理
 
+[参考1](https://juejin.cn/post/6844903951897198605)
+[参考1](https://juejin.cn/post/6844903953604280328)
+
+![alt text](image-43.png)
+
 ![alt text](image-41.png)
 ![alt text](image-42.png)
 
 ### OkHttp原理
 
+[参考](https://juejin.cn/post/7182878936345346085#heading-5)
+
+![alt text](image-45.png)
+
+[OKHttp请求流程](https://juejin.cn/post/6844903960524881933)
+
+#### 同步请求流程
+
+1. 创建 OKHttpClient 实例，配置属性
+2. 构建 Request ，配置属性
+3. 构建 Realcall ，调用 executed
+4. 执行Dispatcher.executed() 中的 runningSyncCalls  将 Realcall 添加到同步执行队列中
+5. 通过 getResponseWithInterceptorChain() 内部的责任链调用对 Request 层层处理包装，最后在 CallServerInterceptor 拦截器中发起请求和获得 Response
+6. 通过Dispatcher.finished()，把 call 实例从队列中移除，并执行下一次任务。
+
+#### 异步请求流程
+
+1. 创建 OKHttpClient 实例，配置属性
+2. 构建 Request ，配置属性
+3. 构建 Realcall，调用 enqueue
+4. 生成一个AsyncCall(responseCallback)实例(实现了Runnable)
+5. AsyncCall实例放入了Dispatcher.enqueue()中，并判断 maxRequests （最大请求数 64）maxRequestsPerHost(最大host请求数 5)是否满足条件，如果满足就把AsyncCall添加到runningAsyncCalls中，并放入线程池中执行；如果条件不满足，就添加到等待就绪的异步队列，当那些满足的条件的执行时 ，在Dispatcher.finifshed(this)中的promoteCalls();方法中 对等待就绪的异步队列进行遍历，生成对应的AsyncCall实例，并添加到runningAsyncCalls中，最后放入到线程池中执行，一直到所有请求都结束。
+
+#### 拦截器递归调用
+
+[拦截器](https://juejin.cn/post/6844903965579018247)
+
+![alt text](image-46.png)
+
+1. 首先经过``RetryAndFollowUpIntercept``拦截器，它主要负责重试和重定向，并且重试或者重定向的次数不能大于20次，同时它还创建了一个ExchangeFinder对象用于管理连接池为后续的连接做准备；
+2. 第二个拦截器是`BridgeInterceptor`拦截器，这个拦截器主要是补充了请求头，把用户请求转换成网络请求，网络响应转换成用户可以接收的响应，同时还需要注意的一点是如果用户手动添加了Accept-Encoding那就需要处理解压操作；
+3. 第三个拦截器是``CacheInterceptor``拦截器，主要作用就是缓存response并且它的内部是通过okio来处理缓存的；
+4. 第四个拦截器是``ConnectInterceptor``拦截器，这个拦截器是负责建立连接的，从代码中可知最终是通过RealConnection对象建立socket连接的并且获得了输入输出流为下一步读写做准备，RealConnection对象的获取时优先复用的，如果无法复用则从连接池中获取，如果无法获取则创建一个新的连接并将其放入连接池中；
+5. 第五个拦截器是``CallServerInterceptor``拦截器，它真正发起了网络请求，负责数据的读取和写入。
+
+![alt text](image-44.png)
+
+#### 缓存策略
+
+[缓存策略](https://juejin.cn/post/6844903967302877198)
+
+OkHttp的缓存是基于HTTP网络协议的，所以这里需要先来来了解一下HTTP的缓存策略。HTTP的缓存策略是根据请求和响应头来标识缓存是否可用，缓存是否可用则是基于有效性和有效期的。
+
+OkHttp的缓存策略就是按照HTTP的方式实现的，okio最终实现了输入输出流，OKHttp的缓存是根据服务器端的Header自动完成的，开启缓存需要在OkHttpClient创建时设置一个Cache对象，并指定缓存目录和缓存大小，缓存系统内部使用LRU作为缓存的淘汰算法。
+
+- 拿到响应头后根据头信息决定是否进行缓存；
+- 获取数据时判断缓存是否有效，对比缓存后决定是否发出请求还是获取本地缓存；
+
+![alt text](image-47.png)
+
 ![alt text](image-39.png)
 
 ### Retrofit原理
+
+Retrofit 的底层涉及复杂的技术，包括动态代理、反射、注解处理器等。其核心原理为使用 OkHttp 发送网络请求，通过动态代理将定义的 Java 接口转化为 HTTP 请求，然后将请求发送给服务器。
 
 ![alt text](image-40.png)
 
