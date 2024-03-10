@@ -3773,6 +3773,26 @@ public:
 
 [二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
 
+Given the root of a binary tree, return its maximum depth.
+
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+Example 1:
+
+> Input: root = [3,9,20,null,null,15,7]
+Output: 3
+
+Example 2:
+
+> Input: root = [1,null,2]
+Output: 2
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+
+- -100 <= Node.val <= 100
+
 > 层序遍历解法见上文
 > 使用后序遍历来解题最优
 > 但严格求解深度问题还是得用前序遍历
@@ -9034,6 +9054,61 @@ public:
         }
 
         return dp[n];
+    }
+};
+```
+
+#### 最大子序和
+
+Given an integer array nums, find the subarray with the largest sum, and return its sum.
+
+Example 1:
+
+> Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
+Output: 6
+Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+
+Example 2:
+
+> Input: nums = [1]
+Output: 1
+Explanation: The subarray [1] has the largest sum 1.
+
+Example 3:
+
+Input: nums = [5,4,-1,7,8]
+Output: 23
+Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+
+Constraints:
+
+- 1 <= nums.length <= 10^5
+- 10^4 <= nums[i] <= 10^4
+
+dp[i - 1] + nums[i]，即：nums[i]加入当前连续子序列和
+nums[i]，即：从头开始计算当前连续子序列和
+
+```c++
+// 最大子序和
+class Solution
+{
+public:
+    int maxSubArray(vector<int> &nums)
+    {
+        if (nums.size() == 0)
+            return 0;
+        vector<int> dp(nums.size());
+
+        dp[0] = nums[0];
+        int result = nums[0];
+        for (int i = 1; i < nums.size(); i++)
+        {
+            dp[i] = max(nums[i], nums[i] + dp[i - 1]);
+            if (dp[i] > result)
+                result = dp[i];
+        }
+
+        return result;
     }
 };
 ```
