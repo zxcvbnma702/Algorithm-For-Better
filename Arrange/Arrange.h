@@ -259,10 +259,12 @@ public:
 };
 
 // 接雨水-双指针优化
-class Solution {
+class Solution
+{
 public:
     // 将每一个位置的最大高度用数组给存下来,避免了重复的计算
-    int trap(vector<int>& height) {
+    int trap(vector<int> &height)
+    {
         int result = 0;
 
         // 两根柱子无法接雨水
@@ -274,22 +276,138 @@ public:
 
         // 分别计算左边最大高度
         maxLeft[0] = height[0];
-        for (int i = 1; i < height.size(); i++) {
+        for (int i = 1; i < height.size(); i++)
+        {
             maxLeft[i] = max(height[i], maxLeft[i - 1]);
         }
         // 分别计算右边最大高度
         maxRight[height.size() - 1] = height[height.size() - 1];
-        for (int i = height.size() - 2; i >= 0; i--) {
+        for (int i = height.size() - 2; i >= 0; i--)
+        {
             maxRight[i] = max(maxRight[i + 1], height[i]);
         }
 
         // area = min(maLeft, maxRight) - height
-        for (int i = 0; i < height.size(); i++) {
+        for (int i = 0; i < height.size(); i++)
+        {
             int h = min(maxLeft[i], maxRight[i]) - height[i];
             if (h > 0)
                 result += h;
         }
 
         return result;
+    }
+};
+
+// 合并区间
+class Solution
+{
+public:
+    vector<vector<int>> merge(vector<vector<int>> &intervals)
+    {
+        vector<vector<int>> result;
+
+        sort(intervals.begin(), intervals.end());
+
+        for (int i = 0; i < intervals.size();)
+        {
+            // 用于存储最右边界
+            int tempMax = intervals[i][1];
+
+            int j = i + 1;
+
+            while (j < intervals.size() && intervals[j][0] <= tempMax)
+            {
+                tempMax = max(tempMax, intervals[j][1]);
+                j++;
+            }
+            result.push_back({intervals[i][0], tempMax});
+            i = j;
+        }
+        return result;
+    }
+};
+
+// 旋转数组
+class Solution
+{
+public:
+    void reverse(vector<int> &nums, int left, int right)
+    {
+        while (left < right)
+        {
+            swap(nums[left], nums[right]);
+            left++;
+            right--;
+        }
+    }
+
+    void rotate(vector<int> &nums, int k)
+    {
+
+        k %= nums.size();
+
+        // 首先全局翻转
+        reverse(nums, 0, nums.size() - 1);
+        // 各自翻转
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.size() - 1);
+    }
+};
+
+// 除自身以外数组的乘积
+class Solution
+{
+public:
+    vector<int> productExceptSelf(vector<int> &nums)
+    {
+
+        int len = nums.size();
+        if (len == 0)
+            return {};
+
+        vector<int> result(len, 1);
+
+        result[0] = 1;
+        int temp = 1;
+
+        for (int i = 1; i < len; i++)
+        {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        for (int i = len - 2; i >= 0; i--)
+        {
+            temp *= nums[i + 1];
+            result[i] *= temp;
+        }
+        return result;
+    }
+};
+
+// 第一个缺失的正数
+class Solution
+{
+public:
+    // 对于一个长度为 NNN 的数组，其中没有出现的最小正整数只能在 [1,N+1]中。
+    int firstMissingPositive(vector<int> &nums)
+    {
+        int len = nums.size();
+
+        for (int i = 0; i < len; i++)
+        {
+            while (nums[i] > 0 && nums[i] <= len &&
+                   nums[nums[i] - 1] != nums[i])
+            {
+                swap(nums[nums[i] - 1], nums[i]);
+            }
+        }
+        for (int i = 0; i < len; i++)
+        {
+            if (nums[i] != i + 1)
+            {
+                return i + 1;
+            }
+        }
+        return len + 1;
     }
 };

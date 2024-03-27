@@ -463,6 +463,229 @@ public:
 };
 ```
 
+### 区间合并
+
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+
+Example 1:
+
+> Input: intervals = ``[[1,3],[2,6],[8,10],[15,18]]``
+Output: ``[[1,6],[8,10],[15,18]]``
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+
+Example 2:
+
+> Input: intervals = ``[[1,4],[4,5]]``
+Output: ``[[1,5]]``
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+
+1. 对 vector<vector<int>> 排序，需要按照先比较区间开始，如果相同再比较区间结束，使用默认的排序规则即可
+2. 使用双指针，左边指针指向当前区间的开始
+3. 使用一个变量来记录连续的范围 t
+4. 右指针开始往后寻找，如果后续的区间的开始值比 t 还小，说明重复了，可以归并到一起
+5. 此时更新更大的结束值到 t
+6. 直到区间断开，将 t 作为区间结束，存储到答案里
+7. 然后移动左指针，跳过中间已经合并的区间
+
+```c++
+// 合并区间
+class Solution
+{
+public:
+    vector<vector<int>> merge(vector<vector<int>> &intervals)
+    {
+        vector<vector<int>> result;
+
+        sort(intervals.begin(), intervals.end());
+
+        for (int i = 0; i < intervals.size();)
+        {
+            // 用于存储最右边界
+            int tempMax = intervals[i][1];
+
+            int j = i + 1;
+
+            while (j < intervals.size() && intervals[j][0] <= tempMax)
+            {
+                tempMax = max(tempMax, intervals[j][1]);
+                j++;
+            }
+            result.push_back({intervals[i][0], tempMax});
+            i = j;
+        }
+        return result;
+    }
+};
+```
+
+### 旋转数组
+
+Given an integer array nums, rotate the array to the right by k steps, where k is non-negative.
+
+Example 1:
+
+> Input: nums = [1,2,3,4,5,6,7], k = 3
+Output: [5,6,7,1,2,3,4]
+Explanation:
+rotate 1 steps to the right: [7,1,2,3,4,5,6]
+rotate 2 steps to the right: [6,7,1,2,3,4,5]
+rotate 3 steps to the right: [5,6,7,1,2,3,4]
+
+Example 2:
+
+> Input: nums = [-1,-100,3,99], k = 2
+Output: [3,99,-1,-100]
+Explanation:
+rotate 1 steps to the right: [99,-1,-100,3]
+rotate 2 steps to the right: [3,99,-1,-100]
+
+```c++
+// 旋转数组
+class Solution
+{
+public:
+    void reverse(vector<int> &nums, int left, int right)
+    {
+        while (left < right)
+        {
+            swap(nums[left], nums[right]);
+            left++;
+            right--;
+        }
+    }
+
+    void rotate(vector<int> &nums, int k)
+    {
+
+        k %= nums.size();
+
+        // 首先全局翻转
+        reverse(nums, 0, nums.size() - 1);
+        // 各自翻转
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.size() - 1);
+    }
+};
+```
+
+### 除自身以外数组的乘积
+
+Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].
+
+The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+
+You must write an algorithm that runs in O(n) time and without using the division operation.
+
+Example 1:
+
+> Input: nums = [1,2,3,4]
+Output: [24,12,8,6]
+
+Example 2:
+
+> Input: nums = [-1,1,0,-3,3]
+Output: [0,0,9,0,0]
+
+Constraints:
+
+- 2 <= nums.length <= 10^5
+- 30 <= nums[i] <= 30
+The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+
+![alt text](assets/image-61.png)
+
+```c++
+// 除自身以外数组的乘积
+class Solution
+{
+public:
+    vector<int> productExceptSelf(vector<int> &nums)
+    {
+
+        int len = nums.size();
+        if (len == 0)
+            return {};
+
+        vector<int> result(len, 1);
+
+        result[0] = 1;
+        int temp = 1;
+
+        for (int i = 1; i < len; i++)
+        {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        for (int i = len - 2; i >= 0; i--)
+        {
+            temp *= nums[i + 1];
+            result[i] *= temp;
+        }
+        return result;
+    }
+};
+```
+
+### 第一个缺失的正数
+
+Given an unsorted integer array nums. Return the smallest positive integer that is not present in nums.
+
+You must implement an algorithm that runs in O(n) time and uses O(1) auxiliary space.
+
+Example 1:
+
+> Input: nums = [1,2,0]
+Output: 3
+Explanation: The numbers in the range [1,2] are all in the array.
+
+Example 2:
+
+> Input: nums = [3,4,-1,1]
+Output: 2
+Explanation: 1 is in the array but 2 is missing.
+
+Example 3:
+
+> Input: nums = [7,8,9,11,12]
+Output: 1
+Explanation: The smallest positive integer 1 is missing.
+
+Constraints:
+
+- 1 <= nums.length <= 10^5
+- -2^31 <= nums[i] <= 2^31 - 1
+
+```c++
+// 第一个缺失的正数
+class Solution
+{
+public:
+    // 对于一个长度为 N 的数组，其中没有出现的最小正整数只能在 [1,N+1]中。
+    int firstMissingPositive(vector<int> &nums)
+    {
+        int len = nums.size();
+
+        for (int i = 0; i < len; i++)
+        {
+            while (nums[i] > 0 && nums[i] <= len &&
+                   nums[nums[i] - 1] != nums[i])
+            {
+                swap(nums[nums[i] - 1], nums[i]);
+            }
+        }
+        for (int i = 0; i < len; i++)
+        {
+            if (nums[i] != i + 1)
+            {
+                return i + 1;
+            }
+        }
+        return len + 1;
+    }
+};
+```
+
+![alt text](assets/image-62.png)
+
 ## 线性表
 
 ![Alt text](assets/image-47.png)
